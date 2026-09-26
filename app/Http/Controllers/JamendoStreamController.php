@@ -25,7 +25,7 @@ class JamendoStreamController extends BaseController
                 ->get('https://api.jamendo.com/v3.0/tracks/', [
                     'client_id' => $this->getClientId(),
                     'format' => 'json',
-                    'search' => $query,
+                    'namesearch' => $query,
                     'limit' => 20,
                 ]);
 
