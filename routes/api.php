@@ -12,6 +12,7 @@
 */
 
 use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\AudiusStreamController;
 use App\Http\Controllers\TagsController;
 use App\Http\Controllers\Artist\ArtistFollowersController;
 use App\Http\Controllers\Artist\ArtistTracksController;
@@ -182,6 +183,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['optionalAuth:sanctum', 'verifi
     // YOUTUBE
     Route::post('youtube/log-client-error', [YoutubeLogController::class, 'store']);
     Route::get('youtube/streams/{videoId}', [YoutubeStreamController::class, 'show'])
+        ->withoutMiddleware('verifyApiAccess');
+
+    // AUDIUS
+    Route::get('audius/search', [AudiusStreamController::class, 'search'])
+        ->withoutMiddleware('verifyApiAccess');
+    Route::get('audius/streams/{trackId}', [AudiusStreamController::class, 'show'])
         ->withoutMiddleware('verifyApiAccess');
 
     // IMAGE PROXY (local cache of remote album/artist art)
