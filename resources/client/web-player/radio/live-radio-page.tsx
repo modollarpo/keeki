@@ -61,7 +61,7 @@ export function Component() {
 
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto">
-      <PageMetaTags title="Live Radio" description="Stream over 30,000+ live radio stations worldwide for free." />
+      <PageMetaTags />
       
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
         <div>
