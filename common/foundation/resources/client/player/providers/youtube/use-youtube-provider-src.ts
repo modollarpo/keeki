@@ -16,9 +16,28 @@ export function useYoutubeProviderSrc(
     | YoutubeMediaItem
     | undefined;
 
-  const origin = options.youtube?.useCookies
-    ? 'https://www.youtube.com'
-    : 'https://www.youtube-nocookie.com';
+  const origins = options.youtube?.origins?.length
+    ? options.youtube.origins
+    : options.youtube?.useCookies
+      ? ['https://www.youtube.com', 'https://www.youtube-nocookie.com']
+      : ['https://www.youtube-nocookie.com', 'https://www.youtube.com'];
+
+  const [originIndex, setOriginIndex] = useState(0);
+  const origin = origins[originIndex] ?? origins[0];
+
+  // reset origin to the first one when a different track is cued,
+  // so each track starts on the preferred origin
+  useEffect(() => {
+    setOriginIndex(0);
+  }, [media?.id]);
+
+  const advanceOrigin = useCallback(() => {
+    if (originIndex < origins.length - 1) {
+      setOriginIndex(i => i + 1);
+      return true;
+    }
+    return false;
+  }, [originIndex, origins.length]);
 
   const [initialVideoId, setInitialVideoId] = useState(() => {
     if (media?.src && media.src !== 'resolve') {
@@ -69,5 +88,7 @@ export function useYoutubeProviderSrc(
         }&start=${media?.initialTime ?? 0}`
       : undefined,
     origin,
+    advanceOrigin,
+    videoId: initialVideoId,
   };
 }

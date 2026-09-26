@@ -35,5 +35,7 @@ export interface PlayerStoreOptions {
     srcResolver?: (mediaItem: YoutubeMediaItem) => Promise<YoutubeMediaItem>;
     onStateChange?: (state: YouTubePlayerState) => void;
     useCookies?: boolean;
+    // embed origins to rotate through if video fails to load on one of them
+    origins?: string[];
   };
 }

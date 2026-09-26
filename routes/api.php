@@ -47,6 +47,7 @@ use App\Http\Controllers\UserProfile\UserPlaylistsController;
 use App\Http\Controllers\UserProfile\UserProfileController;
 use App\Http\Controllers\WaveController;
 use App\Http\Controllers\YoutubeLogController;
+use App\Http\Controllers\YoutubeStreamController;
 use Common\Auth\Controllers\FollowedUsersController;
 use Common\Auth\Controllers\FollowersController;
 use Common\Channels\ChannelContentOrderController;
@@ -180,6 +181,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['optionalAuth:sanctum', 'verifi
 
     // YOUTUBE
     Route::post('youtube/log-client-error', [YoutubeLogController::class, 'store']);
+    Route::get('youtube/streams/{videoId}', [YoutubeStreamController::class, 'show'])
+        ->withoutMiddleware('verifyApiAccess');
 
     // IMAGE PROXY (local cache of remote album/artist art)
     Route::get('img-proxy', [ImageProxyController::class, 'show'])

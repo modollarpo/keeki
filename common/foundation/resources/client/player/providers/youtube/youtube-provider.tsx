@@ -39,7 +39,9 @@ export function YoutubeProvider() {
     [youtubeApi],
   );
 
-  const {initialVideoUrl, origin} = useYoutubeProviderSrc(loadVideoById);
+  const {initialVideoUrl, origin, advanceOrigin, videoId} = useYoutubeProviderSrc(
+    loadVideoById,
+  );
   const store = useContext(PlayerStoreContext);
 
   const internalStateRef = useRef<YoutubeInternalState>({
@@ -56,6 +58,8 @@ export function YoutubeProvider() {
   const registerApi = useCallback(() => {
     const internalProviderApi: YoutubeProviderInternalApi = {
       loadVideoById,
+      advanceOrigin,
+      videoId,
     };
     store.setState({
       providerApi: {
@@ -98,7 +102,7 @@ export function YoutubeProvider() {
         internalProviderApi,
       },
     });
-  }, [store, loadVideoById, youtubeApi]);
+  }, [store, loadVideoById, youtubeApi, advanceOrigin, videoId]);
 
   useEffect(() => {
     addGlobalListener(window, 'message', event => {

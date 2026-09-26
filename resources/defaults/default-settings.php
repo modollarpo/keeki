@@ -31,6 +31,8 @@ return [
     ['name' => 'youtube.region_code', 'value' => 'us'],
     ['name' => 'youtube.search_method', 'value' => 'site'],
     ['name' => 'youtube.store_id', 'value' => true],
+    ['name' => 'youtube.yt_dlp_binary', 'value' => ''],
+    ['name' => 'youtube.piped_instances', 'value' => 'https://pipedapi.kavin.rocks'],
     ['name' => 'youtube_api_key', 'value' => 'AIzaSyDsKflLt6BQtfpUGD94CEcmf7kAVYaD0Ao'],
 
     //player

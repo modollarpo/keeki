@@ -99,4 +99,10 @@ export interface YoutubeProviderError {
 
 export interface YoutubeProviderInternalApi {
   loadVideoById: (videoId: string) => void;
+  // rotate to a different embed origin, returns false if no more origins to try
+  advanceOrigin?: () => boolean;
+  // video id that is currently cued in the embed iframe. Unlike the id in
+  // the error event, this is always available, even when embed errors out
+  // before it sends any video data (eg. "not embeddable" errors).
+  videoId?: string;
 }

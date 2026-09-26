@@ -1,16 +1,22 @@
 import {loadMediaItemTracks} from '@app/web-player/requests/load-media-item-tracks';
 import {playerOverlayState} from '@app/web-player/state/player-overlay-store';
+import {findYoutubeDirectStream} from '@app/web-player/tracks/requests/find-youtube-direct-stream';
 import {findYoutubeVideosForTrack} from '@app/web-player/tracks/requests/find-youtube-videos-for-track';
 import {Track} from '@app/web-player/tracks/track';
 import {tracksToMediaItems} from '@app/web-player/tracks/utils/track-to-media-item';
 import {apiClient} from '@common/http/query-client';
-import {MediaItem, YoutubeMediaItem} from '@common/player/media-item';
+import {
+  HtmlAudioMediaItem,
+  MediaItem,
+  YoutubeMediaItem,
+} from '@common/player/media-item';
 import {
   YouTubePlayerState,
   YoutubeProviderError,
   YoutubeProviderInternalApi,
 } from '@common/player/providers/youtube/youtube-types';
 import {PlayerStoreOptions} from '@common/player/state/player-store-options';
+import type {PlayerState} from '@common/player/state/player-state';
 import {getBootstrapData} from '@ui/bootstrap-data/bootstrap-data-store';
 import {toast} from '@shadcn/toast/toast';
 import {Trans} from '@ui/i18n/trans';
@@ -26,6 +32,14 @@ const failedVideoId = ' ';
 const failedVideoIds = new Set<string>();
 let tracksSkippedDueToError = 0;
 
+// keys of direct-stream fallback attempts (trackId:videoId), prevents
+// retrying the same failed direct stream endlessly
+const directStreamGuards = new Set<string>();
+
+// ids of media items that are currently cued as a direct html audio stream,
+// used to detect failures of the fallback provider and skip the track
+const directStreamCuedIds = new Set<string>();
+
 async function resolveYoutubeSrc(
   media: YoutubeMediaItem<Track>,
 ): Promise<YoutubeMediaItem> {
@@ -36,6 +50,55 @@ async function resolveYoutubeSrc(
     ...media,
     src: match || failedVideoId,
   };
+}
+
+// last resort fallback: resolve a directly playable audio url for a video
+// whose embed errored out and play it via the html audio provider. This
+// bypasses embeds/sign-in requirements entirely.
+async function cueDirectStreamFallback(
+  media: MediaItem<Track>,
+  videoId: string,
+  cue: PlayerState['cue'],
+  play: PlayerState['play'],
+): Promise<'playing' | 'skipped' | 'handled'> {
+  if (!videoId) return 'skipped';
+  const guardKey = `${media.id}:${videoId}`;
+  if (directStreamGuards.has(guardKey)) return 'skipped';
+  directStreamGuards.add(guardKey);
+
+  const url = await findYoutubeDirectStream(videoId);
+  if (!url) return 'skipped';
+
+  // keep same id as cued media, so queue pointer (player-queue.ts) still
+  // resolves the current track for playNext/playPrevious. Change groupId
+  // instead, so cue() doesn't bail out early via isSameMedia().
+  const directStreamMedia: HtmlAudioMediaItem<Track> = {
+    ...media,
+    provider: 'htmlAudio',
+    src: url,
+    groupId: `${media.groupId}:direct`,
+  };
+
+  directStreamCuedIds.add(`${media.id}`);
+
+  try {
+    await cue(directStreamMedia);
+    await play();
+    // stream is viable, forget the guard so a future error on this
+    // track+video can re-use the same working direct stream
+    directStreamGuards.delete(guardKey);
+    return 'playing';
+  } catch (err) {
+    // if the html audio errored out, its own "error" event already fired
+    // the htmlAudio branch of our error listener, which removed the id from
+    // the set and skipped the track. Only count this as "skipped" if that
+    // branch did not run yet (eg. play() was rejected by autoplay policy).
+    if (directStreamCuedIds.has(`${media.id}`)) {
+      directStreamCuedIds.delete(`${media.id}`);
+      return 'skipped';
+    }
+    return 'handled';
+  }
 }
 
 function setMediaSessionMetadata(media: MediaItem<Track>) {
@@ -131,20 +194,46 @@ export const playerStoreOptions: Partial<PlayerStoreOptions> = {
       // clear track play
       if (cuedMedia) {
         trackPlays.delete(cuedMedia.meta.id);
+        // no longer a direct-stream fallback, stop tracking its id so a
+        // future error on a normal track with the same id is not misread
+        directStreamCuedIds.delete(`${cuedMedia.id}`);
       }
     },
     error: async ({
       sourceEvent,
-      state: {cuedMedia, providerApi, providerName, emit},
+      state: {cuedMedia, providerApi, providerName, emit, cue, play},
     }) => {
       const e = sourceEvent as YoutubeProviderError;
       if (providerName === 'youtube' && providerApi) {
-        //const provider = state.provider as YoutubeProvider;
         logYoutubeError(e);
 
-        if (e.videoId) {
-          failedVideoIds.add(`${e.videoId}`);
+        const internalApi = providerApi.internalProviderApi as YoutubeProviderInternalApi;
+
+        // not all errors carry a video id, "not embeddable" plugin errors
+        // (100/101/150) fire before any video data arrives, rely on the
+        // currently cued embed id in that case
+        const videoId = e.videoId || internalApi?.videoId;
+        if (!videoId) {
+          tracksSkippedDueToError++;
+
+          // try to play up to two next queued tracks if we can't play
+          // a video for this one. If we can't play 3 tracks in a row
+          // we can assume there's an issue with YouTube API and bail
+          if (tracksSkippedDueToError <= 2) {
+            emit('playbackEnd');
+          }
+          return;
         }
+
+        // FIRST try to rotate to a different embed origin (eg. youtube.com
+        // vs youtube-nocookie.com). If there is an unused origin left, this
+        // reloads the embed with the same video and returns true, so we let
+        // the reloaded embed try to play it before giving up on this video.
+        if (internalApi.advanceOrigin?.()) {
+          return;
+        }
+
+        failedVideoIds.add(`${videoId}`);
 
         const media = cuedMedia
           ? await resolveYoutubeSrc(cuedMedia as YoutubeMediaItem)
@@ -152,12 +241,36 @@ export const playerStoreOptions: Partial<PlayerStoreOptions> = {
 
         // try to play alternative videos we fetched
         if (media?.src && media?.src !== failedVideoId) {
-          await (
-            providerApi.internalProviderApi as YoutubeProviderInternalApi
-          ).loadVideoById(media.src);
+          await internalApi.loadVideoById(media.src);
           providerApi.play();
 
           // there are no more alternative videos to try, we can error out
+        } else if (cuedMedia && videoId) {
+          // last resort: try to play a direct html audio stream of this
+          // video, bypassing the embed entirely
+          const result = await cueDirectStreamFallback(
+            cuedMedia,
+            videoId,
+            cue,
+            play,
+          );
+          if (result === 'playing') {
+            tracksSkippedDueToError = 0;
+          } else if (result === 'skipped') {
+            // no direct stream url available or already tried this one,
+            // html audio did not error so nothing was skipped yet
+            tracksSkippedDueToError++;
+
+            // try to play up to two next queued tracks if we can't play
+            // a video for this one. If we can't play 3 tracks in a row
+            // we can assume there's an issue with YouTube API and bail
+            if (tracksSkippedDueToError <= 2) {
+              emit('playbackEnd');
+            }
+          }
+          // "handled" means html audio errored out during cue, so its own
+          // error event has already skipped the track through the branch
+          // below, no need to double count it here
         } else {
           tracksSkippedDueToError++;
 
@@ -167,6 +280,19 @@ export const playerStoreOptions: Partial<PlayerStoreOptions> = {
           if (tracksSkippedDueToError <= 2) {
             emit('playbackEnd');
           }
+        }
+      } else if (
+        providerName === 'htmlAudio' &&
+        cuedMedia &&
+        directStreamCuedIds.has(`${cuedMedia.id}`)
+      ) {
+        // direct html audio stream failed to play as well, treat it
+        // like any other playback error
+        directStreamCuedIds.delete(`${cuedMedia.id}`);
+        tracksSkippedDueToError++;
+
+        if (tracksSkippedDueToError <= 2) {
+          emit('playbackEnd');
         }
       } else {
         tracksSkippedDueToError = 0;
