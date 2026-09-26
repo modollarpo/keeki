@@ -25,9 +25,9 @@ export function handleYoutubeEmbedMessage(
   // player errors (video not embeddable, region blocked, etc.) arrive
   // with event name "onError" and a numeric info code. Surface them so the
   // store's "error" listener can rotate to an alternative video.
-  if (data.event === 'onError') {
+  if ((data.event as string) === 'onError') {
     const event: YoutubeProviderError = {
-      code: data.info as number,
+      code: String(data.info),
       videoId: internalState.videoId,
     };
     emit('error', {sourceEvent: event});

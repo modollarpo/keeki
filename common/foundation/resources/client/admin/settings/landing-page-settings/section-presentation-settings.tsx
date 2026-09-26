@@ -8,7 +8,8 @@ import {Field} from '@shadcn/forms/field';
 import {HookForm} from '@shadcn/forms/form/hook-form';
 import {Select} from '@shadcn/forms/select/select';
 import {Trans} from '@ui/i18n/trans';
-import {ReactNode, useWatch} from 'react-hook-form';
+import {useWatch} from 'react-hook-form';
+import {ReactNode} from 'react';
 
 type SectionPresentationSettingsProps = {
   prefix: string;
