@@ -9,7 +9,7 @@ class JamendoStreamController extends BaseController
 {
     private function getClientId(): string
     {
-        return (string) settings('jamendo.client_id', '593a2d67');
+        return (string) (settings('jamendo.client_id') ?: '983a02d9');
     }
 
     public function search(Request $request)
