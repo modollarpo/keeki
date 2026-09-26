@@ -1,5 +1,7 @@
 import {usePlayerActions} from '@common/player/hooks/use-player-actions';
 import {usePlayerStore} from '@common/player/hooks/use-player-store';
+import {HtmlAudioMediaItem} from '@common/player/media-item';
+import {Track} from '@app/web-player/tracks/track';
 import {Button} from '@shadcn/button/button';
 import {Input} from '@shadcn/forms/input/input';
 import {PageMetaTags} from '@common/http/page-meta-tags';
@@ -42,7 +44,7 @@ export function Component() {
 
   const handlePlayStation = async (station: Station, index: number) => {
     if (!data) return;
-    const mediaItems = data.map(s => ({
+    const mediaItems: HtmlAudioMediaItem<Track>[] = data.map(s => ({
       id: s.id,
       groupId: 'radio-stations',
       provider: 'htmlAudio' as const,
@@ -53,7 +55,7 @@ export function Component() {
         duration: 0,
         image: s.image,
         artists: [{name: s.artist}],
-      },
+      } as any,
     }));
 
     await player.overrideQueueAndPlay(mediaItems, index);
