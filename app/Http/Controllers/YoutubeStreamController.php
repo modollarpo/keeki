@@ -33,7 +33,7 @@ class YoutubeStreamController extends BaseController
 
     private function viaYtDlp(string $videoId): ?string
     {
-        $binary = (string) settings('youtube.yt_dlp_binary');
+        $binary = (string) (settings('youtube.yt_dlp_binary') ?: '/usr/local/bin/yt-dlp');
         if (!$binary || !is_file($binary) || !is_executable($binary)) {
             return null;
         }
@@ -57,7 +57,16 @@ class YoutubeStreamController extends BaseController
     {
         $instances = array_values(
             array_filter(
-                array_map('trim', explode(',', (string) settings('youtube.piped_instances', 'https://pipedapi.kavin.rocks'))),
+                array_map(
+                    'trim',
+                    explode(
+                        ',',
+                        (string) settings(
+                            'youtube.piped_instances',
+                            'https://pipedapi.kavin.rocks,https://pipedapi.adminforge.de,https://api.piped.private.coffee,https://pipedapi.reallyaweso.me,https://pipedapi.ducks.party,https://pipedapi.orangenet.cc,https://pipedapi-libre.kavin.rocks,https://pipedapi.nosebs.ru,https://pipedapi.leptons.xyz,https://piped-api.privacy.com.de',
+                        ),
+                    ),
+                ),
             ),
         );
 

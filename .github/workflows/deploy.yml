@@ -85,5 +85,18 @@ jobs:
             cd /var/www/bemusic
             sudo -u www-data composer dump-autoload --optimize 2>/dev/null || echo 'composer dump-autoload skipped'
             sudo -u www-data php artisan optimize:clear 2>/dev/null || echo 'optimize:clear skipped'
+            # yt-dlp for the direct-stream fallback endpoint (best-effort)
+            if [ ! -x /usr/local/bin/yt-dlp ]; then
+              sudo curl -sL --retry 3 -o /usr/local/bin/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp || true
+              size=$($(command -v stat) -c %s /usr/local/bin/yt-dlp 2>/dev/null || echo 0)
+              if [ "$size" -lt 1000000 ]; then
+                echo "yt-dlp download failed (size=$size), removing"
+                sudo rm -f /usr/local/bin/yt-dlp
+              else
+                sudo chmod +x /usr/local/bin/yt-dlp
+              fi
+            fi
+            sudo -u www-data php artisan tinker --execute="\Common\Settings\Models\Setting::updateOrCreate(['name' => 'youtube.yt_dlp_binary'], ['value' => '/usr/local/bin/yt-dlp']); \Common\Settings\Models\Setting::updateOrCreate(['name' => 'youtube.piped_instances'], ['value' => 'https://pipedapi.kavin.rocks,https://pipedapi.adminforge.de,https://api.piped.private.coffee,https://pipedapi.reallyaweso.me,https://pipedapi.ducks.party,https://pipedapi.orangenet.cc,https://pipedapi-libre.kavin.rocks,https://pipedapi.nosebs.ru,https://pipedapi.leptons.xyz,https://piped-api.privacy.com.de']);" 2>/dev/null || echo 'setting update skipped'
+            sudo -u www-data php artisan cache:clear 2>/dev/null || echo 'cache:clear skipped'
             sudo systemctl restart php8.3-fpm
             echo 'Deploy complete'
