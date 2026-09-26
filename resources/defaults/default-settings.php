@@ -97,6 +97,12 @@ return [
                         'action' => '/popular-tracks',
                         'id' => 833,
                     ],
+                    [
+                        'type' => 'route',
+                        'label' => 'Live Radio',
+                        'action' => '/live-radio',
+                        'id' => 999,
+                    ],
                 ],
             ],
 

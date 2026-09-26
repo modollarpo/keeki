@@ -74,6 +74,10 @@ export const webPlayerRoutes: RouteObject[] = [
             path: 'lyrics',
             lazy: () => import('@app/web-player/tracks/lyrics/lyrics-page'),
           },
+          {
+            path: 'live-radio',
+            lazy: () => import('@app/web-player/radio/live-radio-page'),
+          },
 
           // artists
           {

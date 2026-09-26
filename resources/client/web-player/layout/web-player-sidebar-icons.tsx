@@ -8,6 +8,7 @@ import {
   ListMusicIcon,
   MicVocalIcon,
   MusicIcon,
+  RadioIcon,
   SearchIcon,
   TagsIcon,
   TrendingUpIcon,
@@ -29,4 +30,5 @@ export const webPlayerSidebarIcons: Record<string, ReactElement> = {
   '/library/playlists': <ListMusicIcon />,
   '/library/history': <HistoryIcon />,
   '/library/downloads': <DownloadIcon />,
+  '/live-radio': <RadioIcon />,
 };
