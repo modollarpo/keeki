@@ -3,6 +3,7 @@
 use Common\Core\BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
 
 class JamendoStreamController extends BaseController
@@ -20,7 +21,7 @@ class JamendoStreamController extends BaseController
         }
 
         try {
-            $response = Http::timeout(8)
+            $response = Http::timeout(20)
                 ->withHeaders(['User-Agent' => 'BeMusic/1.0'])
                 ->get('https://api.jamendo.com/v3.0/tracks/', [
                     'client_id' => $this->getClientId(),
@@ -51,9 +52,11 @@ class JamendoStreamController extends BaseController
                     }
                 }
                 return $this->success(['data' => $results]);
+            } else {
+                Log::warning('Jamendo search failed: ' . $response->body());
             }
         } catch (\Throwable $e) {
-            // fallback
+            Log::error('Jamendo search exception: ' . $e->getMessage());
         }
 
         return $this->success(['data' => []]);
@@ -66,7 +69,7 @@ class JamendoStreamController extends BaseController
         }
 
         try {
-            $response = Http::timeout(8)
+            $response = Http::timeout(20)
                 ->withHeaders(['User-Agent' => 'BeMusic/1.0'])
                 ->get('https://api.jamendo.com/v3.0/tracks/', [
                     'client_id' => $this->getClientId(),
@@ -82,6 +85,7 @@ class JamendoStreamController extends BaseController
                 }
             }
         } catch (\Throwable $e) {
+            Log::error('Jamendo show exception: ' . $e->getMessage());
         }
 
         abort(404, 'Could not resolve Jamendo stream.');
