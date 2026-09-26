@@ -27,20 +27,20 @@ jobs:
           npm ci
           npm run build
 
-      # 4️⃣ Deploy public/build to production server
-      - name: Deploy to server
+      # 4️⃣ Stage build in azureuser home (no permission issues)
+      - name: Stage build for deploy
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
-          source: 'public/build/*'
-          target: '/var/www/bemusic/public/build/'
+          source: 'public/build'
+          target: '/home/azureuser/deploy/'
           overwrite: true
 
-      # 5️⃣ Restart PHP-FPM
-      - name: Restart PHP-FPM
+      # 5️⃣ rsync into place, restore ownership, restart PHP-FPM
+      - name: Install build + restart PHP-FPM
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -48,5 +48,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
+            sudo rsync -a --delete /home/azureuser/deploy/public/build/ /var/www/bemusic/public/build/
+            sudo chown -R www-data:www-data /var/www/bemusic/public/build
             sudo systemctl restart php8.3-fpm
-            echo 'PHP-FPM restarted successfully'
+            echo 'Deploy complete'
