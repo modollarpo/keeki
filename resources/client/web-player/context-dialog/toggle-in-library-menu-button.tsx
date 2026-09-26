@@ -1,0 +1,67 @@
+import {ContextMenuButton} from '@app/web-player/context-dialog/context-dialog-layout';
+import {Likeable} from '@app/web-player/library/likeable';
+import {useAddItemsToLibrary} from '@app/web-player/library/requests/use-add-items-to-library';
+import {useRemoveItemsFromLibrary} from '@app/web-player/library/requests/use-remove-items-from-library';
+import {useLibraryStore} from '@app/web-player/library/state/likes-store';
+import {useAuthClickCapture} from '@app/web-player/use-auth-click-capture';
+import {Trans} from '@ui/i18n/trans';
+import {
+  HeartIcon,
+  HeartOffIcon,
+  UserCheckIcon,
+  UserPlusIcon,
+} from 'lucide-react';
+
+interface ToggleInLibraryMenuButtonProps {
+  items: Likeable[];
+  modelType?: 'track' | 'album' | 'artist';
+}
+export function ToggleInLibraryMenuButton({
+  items,
+  modelType,
+}: ToggleInLibraryMenuButtonProps) {
+  const authHandler = useAuthClickCapture();
+  const addToLibrary = useAddItemsToLibrary();
+  const removeFromLibrary = useRemoveItemsFromLibrary();
+  const allInLibrary = useLibraryStore(s => s.has(items));
+
+  if (allInLibrary) {
+    const label =
+      modelType === 'artist' ? (
+        <Trans message="Following" />
+      ) : (
+        <Trans message="Remove from library" />
+      );
+    return (
+      <ContextMenuButton
+        startIcon={
+          modelType === 'artist' ? <UserCheckIcon /> : <HeartOffIcon />
+        }
+        onClickCapture={authHandler}
+        onClick={() => {
+          removeFromLibrary.mutate({likeables: items});
+        }}
+      >
+        {label}
+      </ContextMenuButton>
+    );
+  }
+
+  const label =
+    modelType === 'artist' ? (
+      <Trans message="Follow" />
+    ) : (
+      <Trans message="Add to library" />
+    );
+  return (
+    <ContextMenuButton
+      startIcon={modelType === 'artist' ? <UserPlusIcon /> : <HeartIcon />}
+      onClickCapture={authHandler}
+      onClick={() => {
+        addToLibrary.mutate({likeables: items});
+      }}
+    >
+      {label}
+    </ContextMenuButton>
+  );
+}

@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@shadcn/*": ["./common/foundation/resources/client/shadcn/*"],
+      "@ui/*": ["./common/foundation/resources/client/ui/library/*"],
+      "@common/*": ["./common/foundation/resources/client/*"],
+      "@app/*": ["./resources/client/*"]
+    },
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
+    "skipLibCheck": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "types": ["grecaptcha", "cloudflare-turnstile", "google.visualization"]
+  },
+  "include": ["resources/client", "common/foundation/resources/client"],
+  "exclude": [
+    "**/*.stories.tsx",
+    "common/foundation/resources/client/custom-domains/*"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}

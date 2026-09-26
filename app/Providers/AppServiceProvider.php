@@ -1,0 +1,140 @@
+<?php
+
+namespace App\Providers;
+
+use App\Listeners\DeleteModelsRelatedToUser;
+use App\Models\Album;
+use App\Models\Artist;
+use App\Models\Channel;
+use App\Models\Genre;
+use App\Models\Playlist;
+use App\Models\Track;
+use App\Models\User;
+use App\Policies\AppUserPolicy;
+use App\Policies\MusicUploadPolicy;
+use App\Policies\TrackCommentPolicy;
+use App\Console\Commands\DownloadDeezerGenres;
+use App\Services\Admin\GetAnalyticsHeaderData;
+use App\Services\AppBootstrapData;
+use App\Services\AppValueLists;
+use App\Services\UrlGenerator;
+use Common\Admin\Analytics\Actions\GetAnalyticsHeaderDataAction;
+use Common\API\PublicApiDocsFilter;
+use Common\Auth\Events\UsersDeleted;
+use Common\Channels\UpdateAllChannelsContent;
+use Common\Comments\Comment;
+use Common\Core\Bootstrap\BootstrapData;
+use Common\Core\Contracts\AppUrlGenerator;
+use Common\Core\Values\ValueLists;
+use Common\Files\FileEntry;
+use Dedoc\Scramble\Scramble;
+use Dedoc\Scramble\Support\Generator\OpenApi;
+use Dedoc\Scramble\Support\Generator\SecurityScheme;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
+use App\Models\Tag;
+use App\Policies\TagPolicy;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
+        Model::preventLazyLoading(!app()->isProduction());
+
+        Relation::enforceMorphMap([
+            Artist::MODEL_TYPE => Artist::class,
+            Album::MODEL_TYPE => Album::class,
+            Track::MODEL_TYPE => Track::class,
+            Playlist::MODEL_TYPE => Playlist::class,
+            Genre::MODEL_TYPE => Genre::class,
+            User::MODEL_TYPE => User::class,
+            Tag::MODEL_TYPE => Tag::class,
+        ]);
+
+        Gate::policy(FileEntry::class, MusicUploadPolicy::class);
+        Gate::policy(Comment::class, TrackCommentPolicy::class);
+        Gate::policy(User::class, AppUserPolicy::class);
+        Gate::policy(Tag::class, TagPolicy::class);
+
+        Route::bind('channel', function (
+            $idOrSlug,
+            \Illuminate\Routing\Route $route,
+        ) {
+            if ($route->getActionMethod() === 'destroy') {
+                $channelIds = explode(',', $idOrSlug);
+                return Channel::query()->whereIn('id', $channelIds)->get();
+            } elseif (ctype_digit($idOrSlug)) {
+                return Channel::query()->findOrFail($idOrSlug);
+            } else {
+                return Channel::query()
+                    ->where('slug', $idOrSlug)
+                    ->firstOrFail();
+            }
+        });
+
+        $this->commands([
+            UpdateAllChannelsContent::class,
+            DownloadDeezerGenres::class,
+        ]);
+
+        $this->configureScramble();
+    }
+
+    public function register()
+    {
+        $this->app->bind(BootstrapData::class, AppBootstrapData::class);
+
+        $this->app->bind(
+            GetAnalyticsHeaderDataAction::class,
+            GetAnalyticsHeaderData::class,
+        );
+
+        $this->app->bind(AppUrlGenerator::class, UrlGenerator::class);
+
+        $this->app->bind(ValueLists::class, AppValueLists::class);
+
+        Event::listen(UsersDeleted::class, DeleteModelsRelatedToUser::class);
+    }
+
+    protected function configureScramble()
+    {
+        Scramble::throwOnError(true);
+
+        Scramble::configure()->withDocumentTransformers(function (
+            OpenApi $openApi,
+        ) {
+            $openApi->secure(SecurityScheme::http('bearer'));
+        });
+
+        Scramble::registerApi('internal')->expose(
+            ui: '/docs/api-internal',
+            document: '/docs/api-internal.json',
+        );
+
+        Scramble::registerApi('public')
+            ->routes(
+                fn(\Illuminate\Routing\Route $route) => Str::startsWith(
+                    $route->uri,
+                    config('scramble.api_path', 'api/v1'),
+                ) && !PublicApiDocsFilter::shouldExcludeRoute($route),
+            )
+            ->withDocumentTransformers(function (OpenApi $document) {
+                PublicApiDocsFilter::removeExcludedOperations(
+                    $document,
+                    excludedTags: [
+                        'Admin',
+                        'Comments',
+                        'Followers',
+                        'Reports',
+                        'Votes',
+                        'PasswordResetLink', // laravel fortify
+                    ],
+                );
+            });
+    }
+}
