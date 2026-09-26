@@ -1,5 +1,7 @@
 import {loadMediaItemTracks} from '@app/web-player/requests/load-media-item-tracks';
 import {playerOverlayState} from '@app/web-player/state/player-overlay-store';
+import {findAudiusStream} from '@app/web-player/tracks/requests/find-audius-stream';
+import {findJamendoStream} from '@app/web-player/tracks/requests/find-jamendo-stream';
 import {findYoutubeDirectStream} from '@app/web-player/tracks/requests/find-youtube-direct-stream';
 import {findYoutubeVideosForTrack} from '@app/web-player/tracks/requests/find-youtube-videos-for-track';
 import {Track} from '@app/web-player/tracks/track';
@@ -66,7 +68,16 @@ async function cueDirectStreamFallback(
   if (directStreamGuards.has(guardKey)) return 'skipped';
   directStreamGuards.add(guardKey);
 
-  const url = await findYoutubeDirectStream(videoId);
+  let url = videoId ? await findYoutubeDirectStream(videoId) : null;
+
+  // Multi-source fallback: if YouTube direct stream fails, search Audius and Jamendo
+  if (!url && media.meta) {
+    const query = `${media.meta.artists?.[0]?.name || ''} ${media.meta.name || ''}`.trim();
+    if (query) {
+      url = (await findAudiusStream(query)) || (await findJamendoStream(query));
+    }
+  }
+
   if (!url) return 'skipped';
 
   // keep same id as cued media, so queue pointer (player-queue.ts) still
