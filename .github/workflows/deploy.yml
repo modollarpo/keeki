@@ -96,7 +96,7 @@ jobs:
                 sudo chmod +x /usr/local/bin/yt-dlp
               fi
             fi
-            sudo -u www-data php artisan tinker --execute="\Common\Settings\Models\Setting::updateOrCreate(['name' => 'youtube.yt_dlp_binary'], ['value' => '/usr/local/bin/yt-dlp']); \Common\Settings\Models\Setting::updateOrCreate(['name' => 'youtube.piped_instances'], ['value' => 'https://pipedapi.kavin.rocks,https://pipedapi.adminforge.de,https://api.piped.private.coffee,https://pipedapi.reallyaweso.me,https://pipedapi.ducks.party,https://pipedapi.orangenet.cc,https://pipedapi-libre.kavin.rocks,https://pipedapi.nosebs.ru,https://pipedapi.leptons.xyz,https://piped-api.privacy.com.de']); \Common\Settings\Models\Setting::updateOrCreate(['name' => 'jamendo.client_id'], ['value' => '593a2d67']);" 2>/dev/null || echo 'setting update skipped'
+            sudo -u www-data php artisan tinker --execute="\Common\Settings\Models\Setting::updateOrCreate(['name' => 'youtube.yt_dlp_binary'], ['value' => '/usr/local/bin/yt-dlp']); \Common\Settings\Models\Setting::updateOrCreate(['name' => 'youtube.piped_instances'], ['value' => 'https://pipedapi.kavin.rocks,https://pipedapi.adminforge.de,https://api.piped.private.coffee,https://pipedapi.reallyaweso.me,https://pipedapi.ducks.party,https://pipedapi.orangenet.cc,https://pipedapi-libre.kavin.rocks,https://pipedapi.nosebs.ru,https://pipedapi.leptons.xyz,https://piped-api.privacy.com.de']); \Common\Settings\Models\Setting::updateOrCreate(['name' => 'jamendo.client_id'], ['value' => '983a02d9']);" 2>/dev/null || echo 'setting update skipped'
             sudo -u www-data php artisan cache:clear 2>/dev/null || echo 'cache:clear skipped'
             sudo systemctl restart php8.3-fpm
             echo 'Deploy complete'
