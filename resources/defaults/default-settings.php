@@ -34,6 +34,7 @@ return [
     ['name' => 'youtube.yt_dlp_binary', 'value' => ''],
     ['name' => 'youtube.piped_instances', 'value' => 'https://pipedapi.kavin.rocks,https://pipedapi.adminforge.de,https://api.piped.private.coffee,https://pipedapi.reallyaweso.me,https://pipedapi.ducks.party,https://pipedapi.orangenet.cc,https://pipedapi-libre.kavin.rocks,https://pipedapi.nosebs.ru,https://pipedapi.leptons.xyz,https://piped-api.privacy.com.de'],
     ['name' => 'youtube_api_key', 'value' => 'AIzaSyDsKflLt6BQtfpUGD94CEcmf7kAVYaD0Ao'],
+    ['name' => 'jamendo.client_id', 'value' => '593a2d67'],
 
     //player
     ['name' => 'img_proxy.enabled', 'value' => true],

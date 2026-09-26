@@ -13,6 +13,7 @@
 
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\AudiusStreamController;
+use App\Http\Controllers\JamendoStreamController;
 use App\Http\Controllers\TagsController;
 use App\Http\Controllers\Artist\ArtistFollowersController;
 use App\Http\Controllers\Artist\ArtistTracksController;
@@ -189,6 +190,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['optionalAuth:sanctum', 'verifi
     Route::get('audius/search', [AudiusStreamController::class, 'search'])
         ->withoutMiddleware('verifyApiAccess');
     Route::get('audius/streams/{trackId}', [AudiusStreamController::class, 'show'])
+        ->withoutMiddleware('verifyApiAccess');
+
+    // JAMENDO
+    Route::get('jamendo/search', [JamendoStreamController::class, 'search'])
+        ->withoutMiddleware('verifyApiAccess');
+    Route::get('jamendo/streams/{trackId}', [JamendoStreamController::class, 'show'])
         ->withoutMiddleware('verifyApiAccess');
 
     // IMAGE PROXY (local cache of remote album/artist art)
