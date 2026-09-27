@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('spotlights', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('artist_id')->constrained()->cascadeOnDelete();
+            $table->unsignedInteger('artist_id');
+            $table->foreign('artist_id')->references('id')->on('artists')->onDelete('cascade');
             $table->string('title')->nullable();
             $table->text('blurb')->nullable();
             $table->string('badge')->nullable();

@@ -24,6 +24,23 @@ function getRegion(): string {
   return (navigator.language || 'XX').split('-').pop()?.toUpperCase() || 'XX';
 }
 
+// Pre-warms the query cache for the given tracks so their video IDs are ready
+// before the user reaches them in the queue. Fire-and-forget — never throws.
+export function prefetchYoutubeVideoIds(tracks: Track[]): void {
+  const region = getRegion();
+  for (const track of tracks) {
+    const query = {
+      queryKey: [endpoint(track, region)],
+      queryFn: () => findMatch(track, undefined, region),
+      staleTime: Infinity,
+    };
+    // skip if already cached
+    if (!queryClient.getQueryData(query.queryKey)) {
+      queryClient.prefetchQuery(query).catch(() => {});
+    }
+  }
+}
+
 export async function findYoutubeVideosForTrack(
   track: Track,
   cancelToken?: CancelTokenSource,

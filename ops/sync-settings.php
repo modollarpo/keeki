@@ -14,9 +14,9 @@ $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 use Common\Settings\Models\Setting;
 
 $updates = [
-    // Branding: Keeki 516x117 logo pair (white for dark bg / black for light bg)
-    'branding.logo_dark'           => 'storage/branding-images/keeki-logo-dark.png',
-    'branding.logo_light'          => 'storage/branding-images/keeki-logo-light.png',
+    // Branding: Keekii 516x117 logo pair (white for dark bg / black for light bg)
+    'branding.logo_dark'           => 'storage/branding-images/keekii-logo-dark.png',
+    'branding.logo_light'          => 'storage/branding-images/keekii-logo-light.png',
     // Direct-stream fallback: absolute yt-dlp binary path
     'youtube.yt_dlp_binary'        => '/usr/local/bin/yt-dlp',
     // YouTube embed origin rotation via Piped instances

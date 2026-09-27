@@ -3,7 +3,7 @@ import {playerOverlayState} from '@app/web-player/state/player-overlay-store';
 import {findAudiusStream} from '@app/web-player/tracks/requests/find-audius-stream';
 import {findJamendoStream} from '@app/web-player/tracks/requests/find-jamendo-stream';
 import {findYoutubeDirectStream} from '@app/web-player/tracks/requests/find-youtube-direct-stream';
-import {findYoutubeVideosForTrack} from '@app/web-player/tracks/requests/find-youtube-videos-for-track';
+import {findYoutubeVideosForTrack, prefetchYoutubeVideoIds} from '@app/web-player/tracks/requests/find-youtube-videos-for-track';
 import {Track} from '@app/web-player/tracks/track';
 import {tracksToMediaItems} from '@app/web-player/tracks/utils/track-to-media-item';
 import {apiClient} from '@common/http/query-client';
@@ -68,13 +68,17 @@ async function cueDirectStreamFallback(
   if (directStreamGuards.has(guardKey)) return 'skipped';
   directStreamGuards.add(guardKey);
 
-  let url = videoId ? await findYoutubeDirectStream(videoId) : null;
+  let url = videoId && videoId !== failedVideoId ? await findYoutubeDirectStream(videoId) : null;
 
-  // Multi-source fallback: if YouTube direct stream fails, search Audius and Jamendo
+  // Multi-source fallback: search Audius and Jamendo in parallel, take the
+  // first one that returns a URL to avoid sequential round-trip delays.
   if (!url && media.meta) {
     const query = `${media.meta.artists?.[0]?.name || ''} ${media.meta.name || ''}`.trim();
     if (query) {
-      url = (await findAudiusStream(query)) || (await findJamendoStream(query));
+      url = await Promise.any([
+        findAudiusStream(query).then(u => { if (!u) throw new Error('no url'); return u; }),
+        findJamendoStream(query).then(u => { if (!u) throw new Error('no url'); return u; }),
+      ]).catch(() => null);
     }
   }
 
@@ -168,8 +172,8 @@ export const playerStoreOptions: Partial<PlayerStoreOptions> = {
     }
   },
   listeners: {
-    // change document title to currently cued track name
-    cued: ({state: {cuedMedia}}) => {
+    // change document title to currently cued track name and prefetch upcoming tracks
+    cued: ({state: {cuedMedia, shuffledQueue}}) => {
       if (!cuedMedia) return;
       const site_name = getBootstrapData().settings.branding.site_name;
       let title = `${cuedMedia.meta.name}`;
@@ -182,6 +186,20 @@ export const playerStoreOptions: Partial<PlayerStoreOptions> = {
       }
 
       document.title = title;
+
+      // Look-ahead: prefetch YouTube video IDs for the next 3 tracks in the
+      // queue that still need resolving, so they're ready before the user
+      // reaches them (eliminates the wait when switching tracks).
+      const currentIndex = shuffledQueue.findIndex(m => m.id === cuedMedia.id);
+      if (currentIndex !== -1) {
+        const upcoming = shuffledQueue
+          .slice(currentIndex + 1, currentIndex + 4)
+          .filter(m => m.provider === 'youtube' && m.src === 'resolve' && m.meta)
+          .map(m => m.meta as Track);
+        if (upcoming.length) {
+          prefetchYoutubeVideoIds(upcoming);
+        }
+      }
     },
     play: ({state: {cuedMedia, pause}}) => {
       // prevent playback if user does not have permission to play music
@@ -246,7 +264,7 @@ export const playerStoreOptions: Partial<PlayerStoreOptions> = {
         // vs youtube-nocookie.com). If there is an unused origin left, this
         // reloads the embed with the same video and returns true, so we let
         // the reloaded embed try to play it before giving up on this video.
-        if (internalApi.advanceOrigin?.()) {
+        if (videoId !== failedVideoId && internalApi.advanceOrigin?.()) {
           return;
         }
 
@@ -277,6 +295,7 @@ export const playerStoreOptions: Partial<PlayerStoreOptions> = {
             // no direct stream url available or already tried this one,
             // html audio did not error so nothing was skipped yet
             tracksSkippedDueToError++;
+            showSkipToast(cuedMedia);
 
             // try to play up to two next queued tracks if we can't play
             // a video for this one. If we can't play 3 tracks in a row
@@ -290,6 +309,7 @@ export const playerStoreOptions: Partial<PlayerStoreOptions> = {
           // below, no need to double count it here
         } else {
           tracksSkippedDueToError++;
+          showSkipToast(cuedMedia);
 
           // try to play up to two next queued tracks if we can't play
           // a video for this one. If we can't play 3 tracks in a row
@@ -321,9 +341,19 @@ export const playerStoreOptions: Partial<PlayerStoreOptions> = {
   },
 };
 
+function showSkipToast(media: MediaItem<Track> | null | undefined) {
+  if (!media?.meta) return;
+  const name = media.meta.name;
+  const artist = media.meta.artists?.[0]?.name;
+  const label = artist ? `${name} - ${artist}` : name;
+  toast.warning(
+    <Trans message="Couldn't play :track — skipping" values={{track: label}} />,
+  );
+}
+
 function logYoutubeError(e: YoutubeProviderError) {
   const code = e?.code;
-  if (!e || !e.videoId) return;
+  if (!e || !e.videoId || code === 'no_results') return;
   const region =
     (navigator.language || 'XX').split('-').pop()?.toUpperCase() || 'XX';
   apiClient.post('youtube/log-client-error', {

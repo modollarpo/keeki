@@ -97,8 +97,8 @@ jobs:
               fi
             fi
             # Branding + multi-source settings sync (idempotent, no tinker needed)
-            sudo cp -f /var/www/bemusic/ops/logo-assets/keeki-logo-dark.png /var/www/bemusic/ops/logo-assets/keeki-logo-light.png /var/www/bemusic/storage/app/public/branding-images/
-            sudo chown www-data:www-data /var/www/bemusic/storage/app/public/branding-images/keeki-logo-*.png
+            sudo cp -f /var/www/bemusic/ops/logo-assets/keekii-logo-dark.png /var/www/bemusic/ops/logo-assets/keekii-logo-light.png /var/www/bemusic/storage/app/public/branding-images/
+            sudo chown www-data:www-data /var/www/bemusic/storage/app/public/branding-images/keekii-logo-*.png
             sudo -u www-data -H php /var/www/bemusic/ops/sync-settings.php || echo 'settings sync skipped'
             sudo -u www-data php artisan cache:clear 2>/dev/null || echo 'cache:clear skipped'
             sudo systemctl restart php8.3-fpm

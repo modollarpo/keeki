@@ -47,6 +47,15 @@ export function useYoutubeProviderSrc(
 
   const updateVideoIds = useCallback(
     (src: string) => {
+      // If src is ' ', the track had no search results. Emit an error
+      // so the fallback waterfall (Audius/Jamendo) is triggered.
+      if (src === ' ') {
+        setTimeout(() => {
+          emit('error', {sourceEvent: {videoId: ' ', code: 'no_results'}});
+        }, 0);
+        return;
+      }
+
       const videoId = youtubeIdFromSrc(src);
       if (!videoId) return;
 
@@ -61,7 +70,7 @@ export function useYoutubeProviderSrc(
         }
       });
     },
-    [loadVideoById]
+    [loadVideoById, emit]
   );
 
   useEffect(() => {

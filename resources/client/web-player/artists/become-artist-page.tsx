@@ -45,7 +45,7 @@ export function BecomeArtistPage() {
         <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8 lg:py-32">
           <div className="mx-auto max-w-3xl text-center">
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              <Trans message="Fresh Keeki" />
+              <Trans message="Fresh Keekii" />
             </h1>
             <p className="mt-6 text-lg text-muted-foreground sm:text-xl">
               <Trans message="Join the next generation of independent artists. Upload your music, reach listeners worldwide, and grow your career — all for free." />
@@ -80,7 +80,7 @@ export function BecomeArtistPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              <Trans message="Why artists choose Keeki" />
+              <Trans message="Why artists choose Keekii" />
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
               <Trans message="Everything you need to share your music with the world." />
@@ -219,7 +219,7 @@ export function BecomeArtistPage() {
                 <Trans message="Ready to share your music?" />
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-lg text-primary-foreground/80">
-                <Trans message="Join thousands of independent artists already sharing their music on Keeki. Start for free today." />
+                <Trans message="Join thousands of independent artists already sharing their music on Keekii. Start for free today." />
               </p>
               <div className="mt-8">
 <Button

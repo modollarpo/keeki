@@ -321,11 +321,11 @@ export const createPlayerStore = (
             return new Promise((resolve, reject) => {
               const previousProvider = get().providerName;
 
-              // wait until media is cued on provider or 3 seconds
+              // wait until media is cued on provider or 8 seconds
               const timeoutId = setTimeout(() => {
                 unsubscribe();
                 resolve();
-              }, 3000);
+              }, 8000);
               const unsubscribe = get().subscribe({
                 cued: () => {
                   clearTimeout(timeoutId);

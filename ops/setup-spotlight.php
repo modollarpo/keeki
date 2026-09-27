@@ -19,7 +19,7 @@ if (!$channel) {
     $channel->slug = 'spotlight';
     $channel->type = 'channel';
     $channel->public = true;
-    $channel->description = 'Featured artists promoted on Keeki';
+    $channel->description = 'Featured artists promoted on Keekii';
     $channel->config = json_encode([
         'contentType' => 'listAll',
         'contentModel' => 'spotlight',
