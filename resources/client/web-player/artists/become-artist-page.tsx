@@ -51,8 +51,8 @@ export function BecomeArtistPage() {
               <Trans message="Join the next generation of independent artists. Upload your music, reach listeners worldwide, and grow your career — all for free." />
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button
-                variant="primary"
+<Button
+                color="primary"
                 size="lg"
                 asChild
               >
@@ -61,8 +61,8 @@ export function BecomeArtistPage() {
                   <ArrowForwardIcon className="ml-2 size-4" />
                 </Link>
               </Button>
-              <Button
-                variant="outline"
+<Button
+                color="primary"
                 size="lg"
                 asChild
               >
@@ -222,11 +222,11 @@ export function BecomeArtistPage() {
                 <Trans message="Join thousands of independent artists already sharing their music on Keeki. Start for free today." />
               </p>
               <div className="mt-8">
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  asChild
-                >
+<Button
+                color="primary"
+                size="lg"
+                asChild
+              >
                   <Link to={isLoggedIn ? '/backstage' : '/register'}>
                     <Trans message="Get started free" />
                     <ArrowForwardIcon className="ml-2 size-4" />
