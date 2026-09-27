@@ -1,4 +1,5 @@
 import {SiteConfig} from '@app/site-config';
+import {debugError} from '@app/debug-errors';
 import {SettingsPreviewListener} from '@common/admin/settings/preview/settings-preview-listener';
 import {auth, useAuth} from '@common/auth/use-auth';
 import {ColorSchemeProvider} from '@common/core/color-scheme-provider';
@@ -84,6 +85,9 @@ export function RootErrorElement() {
   }, [bar]);
 
   console.log(error);
+  useEffect(() => {
+    debugError('route-root', error);
+  }, [error]);
 
   if (apiErrorStatusIs(error, 404)) {
     return <NotFoundPage />;
