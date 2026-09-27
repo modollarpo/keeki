@@ -1,6 +1,7 @@
 import {usePlayerActions} from '@common/player/hooks/use-player-actions';
 import {usePlayerStore} from '@common/player/hooks/use-player-store';
-import {HtmlAudioMediaItem} from '@common/player/media-item';
+import {MediaItem} from '@common/player/media-item';
+import {guessPlayerProvider} from '@common/player/utils/guess-player-provider';
 import {Track} from '@app/web-player/tracks/track';
 import {Button} from '@shadcn/button/button';
 import {Input} from '@shadcn/forms/input/input';
@@ -20,7 +21,19 @@ interface Station {
   artist: string;
   image?: string;
   url: string;
-  provider: 'htmlAudio';
+}
+
+function providerForUrl(url: string): MediaItem['provider'] {
+  switch (guessPlayerProvider(url)) {
+    case 'htmlAudio':
+      return 'htmlAudio';
+    case 'hls':
+      return 'hls';
+    case 'htmlVideo':
+    case 'dash':
+    default:
+      return 'htmlAudio';
+  }
 }
 
 export function Component() {
@@ -44,15 +57,23 @@ export function Component() {
 
   const handlePlayStation = async (station: Station, index: number) => {
     if (!data) return;
-    const mediaItems: HtmlAudioMediaItem<Track>[] = data.map(s => ({
-      id: s.id,
-      groupId: 'radio-stations',
-      provider: 'htmlAudio' as const,
-      src: s.url,
-      meta: stationToTrackMeta(s) as any,
-    }));
+    const mediaItems = data.map(s => {
+      const src = s.url;
+      const provider = providerForUrl(src);
+      return {
+        id: s.id,
+        groupId: 'radio-stations',
+        provider,
+        src,
+        meta: stationToTrackMeta(s) as any,
+      } as MediaItem<Track>;
+    });
 
-    await player.overrideQueueAndPlay(mediaItems, index);
+    try {
+      await player.overrideQueueAndPlay(mediaItems, index);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
 function stationToTrackMeta(s: Station): Track {
