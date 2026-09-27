@@ -1,31 +1,27 @@
-import {Button} from '@ui/button/button';
-import {Link} from '@ui/router/link';
+import {Button} from '@ui/library/buttons/button';
+import {Link} from '@common/router/link';
 import {Trans} from '@ui/i18n/trans';
-import {message} from '@ui/i18n/message';
 import {useAuth} from '@common/auth/use-auth';
-import {getBootstrapData} from '@ui/bootstrap-data/bootstrap-data-store';
-import {LandingPageSection} from '@ui/landing-page/landing-page-section';
-import {SmallArtistImage} from '@ui/artists/small-artist-image';
-import {ArtistLink} from '@ui/artists/artist-link';
-import {TrackLink} from '@ui/tracks/track-link';
-import {AlbumImage} from '@ui/albums/album-image';
-import {AlbumLink} from '@ui/albums/album-link';
 import {useSuspenseQuery} from '@tanstack/react-query';
 import {appQueries} from '@app/app-queries';
-import {useNavigate} from '@ui/router/use-navigate';
-import {ArrowForwardIcon} from '@ui/icons/material/ArrowForward';
-import {HeadphonesIcon} from '@ui/icons/material/Headphones';
-import {CloudUploadIcon} from '@ui/icons/material/CloudUpload';
-import {MonetizationOnIcon} from '@ui/icons/material/MonetizationOn';
-import {TrendingUpIcon} from '@ui/icons/material/TrendingUp';
-import {PublicIcon} from '@ui/icons/material/Public';
+import {useNavigate} from '@common/router/use-navigate';
+import {ArrowForwardIcon} from '@ui/library/icons/material/ArrowForward';
+import {HeadphonesIcon} from '@ui/library/icons/material/Headphones';
+import {CloudUploadIcon} from '@ui/library/icons/material/CloudUpload';
+import {MonetizationOnIcon} from '@ui/library/icons/material/MonetizationOn';
+import {TrendingUpIcon} from '@ui/library/icons/material/TrendingUp';
+import {PublicIcon} from '@ui/library/icons/material/Public';
 import {useEffect} from 'react';
 import type {ReactNode} from 'react';
+import {SmallArtistImage} from '@app/web-player/artists/small-artist-image';
+import {ArtistLink} from '@app/web-player/artists/artist-link';
+import {TrackLink} from '@app/web-player/tracks/track-link';
+import {AlbumImage} from '@app/web-player/albums/album-image';
+import {AlbumLink} from '@app/web-player/albums/album-link';
 
 export function BecomeArtistPage() {
   const {isLoggedIn, user} = useAuth();
   const navigate = useNavigate();
-  const bootstrapData = getBootstrapData();
 
   const {data: spotlightData} = useSuspenseQuery(
     appQueries.landingPageData.get(),
@@ -93,33 +89,33 @@ export function BecomeArtistPage() {
           <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             <BenefitCard
               icon={<CloudUploadIcon className="size-8" />}
-              title={message('Free uploads')}
-              description={message('Upload unlimited tracks and albums at no cost. No hidden fees, no subscriptions required.')}
+              title="Free uploads"
+              description="Upload unlimited tracks and albums at no cost. No hidden fees, no subscriptions required."
             />
             <BenefitCard
               icon={<PublicIcon className="size-8" />}
-              title={message('Global reach')}
-              description={message('Your music is available to listeners worldwide. We promote fresh talent across all genres.')}
+              title="Global reach"
+              description="Your music is available to listeners worldwide. We promote fresh talent across all genres."
             />
             <BenefitCard
               icon={<MonetizationOnIcon className="size-8" />}
-              title={message('Earn revenue')}
-              description={message('Monetize your music through our platform. Keep more of what you earn.')}
+              title="Earn revenue"
+              description="Monetize your music through our platform. Keep more of what you earn."
             />
             <BenefitCard
               icon={<TrendingUpIcon className="size-8" />}
-              title={message('Analytics & insights')}
-              description={message('Track your growth with detailed analytics. Understand your audience and optimize your reach.')}
+              title="Analytics & insights"
+              description="Track your growth with detailed analytics. Understand your audience and optimize your reach."
             />
             <BenefitCard
               icon={<HeadphonesIcon className="size-8" />}
-              title={message('High-quality audio')}
-              description={message('Support for high-quality audio formats. Your music sounds the way you intended.')}
+              title="High-quality audio"
+              description="Support for high-quality audio formats. Your music sounds the way you intended."
             />
             <BenefitCard
               icon={<ArrowForwardIcon className="size-8" />}
-              title={message('Fast approval')}
-              description={message('Get your music live quickly. Our streamlined review process means faster time to market.')}
+              title="Fast approval"
+              description="Get your music live quickly. Our streamlined review process means faster time to market."
             />
           </div>
         </div>
@@ -139,18 +135,18 @@ export function BecomeArtistPage() {
           <div className="mt-16 grid gap-8 md:grid-cols-3">
             <StepCard
               step={1}
-              title={message('Create your account')}
-              description={message('Sign up for free and set up your artist profile. Add your bio, photo, and social links.')}
+              title="Create your account"
+              description="Sign up for free and set up your artist profile. Add your bio, photo, and social links."
             />
             <StepCard
               step={2}
-              title={message('Upload your music')}
-              description={message('Upload your tracks and albums. Add artwork, lyrics, and metadata to make your music stand out.')}
+              title="Upload your music"
+              description="Upload your tracks and albums. Add artwork, lyrics, and metadata to make your music stand out."
             />
             <StepCard
               step={3}
-              title={message('Share & grow')}
-              description={message('Share your music with the world. Build your fanbase and track your growth with our analytics.')}
+              title="Share & grow"
+              description="Share your music with the world. Build your fanbase and track your growth with our analytics."
             />
           </div>
         </div>
@@ -158,54 +154,60 @@ export function BecomeArtistPage() {
 
       {/* Spotlight section */}
       {spotlightChannel?.content?.data?.length ? (
-        <LandingPageSection
-          title={message('Spotlight Artists')}
-          badge={message('Featured')}
-          description={message('Discover artists featured by our editorial team')}
-        >
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {spotlightChannel.content.data.slice(0, 5).map(item => (
-              <div
-                key={item.id}
-                className="group flex flex-col items-center text-center"
-              >
-                {item.model_type === 'artist' ? (
-                  <>
-                    <SmallArtistImage
-                      artist={item}
-                      className="size-24 rounded-full"
-                    />
-                    <ArtistLink
-                      artist={item}
-                      className="mt-3 text-sm font-medium group-hover:underline"
-                    />
-                  </>
-                ) : item.model_type === 'album' ? (
-                  <>
-                    <AlbumImage
-                      album={item}
-                      className="size-24 rounded-lg"
-                    />
-                    <AlbumLink
-                      album={item}
-                      className="mt-3 text-sm font-medium group-hover:underline"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <div className="flex size-24 items-center justify-center rounded-lg bg-muted">
-                      <HeadphonesIcon className="size-8 text-muted-foreground" />
-                    </div>
-                    <TrackLink
-                      track={item}
-                      className="mt-3 text-sm font-medium group-hover:underline"
-                    />
-                  </>
-                )}
-              </div>
-            ))}
+        <section className="py-16 sm:py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                <Trans message="Spotlight Artists" />
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                <Trans message="Discover artists featured by our editorial team" />
+              </p>
+            </div>
+            <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              {spotlightChannel.content.data.slice(0, 5).map(item => (
+                <div
+                  key={item.id}
+                  className="group flex flex-col items-center text-center"
+                >
+                  {item.model_type === 'artist' ? (
+                    <>
+                      <SmallArtistImage
+                        artist={item}
+                        className="size-24 rounded-full"
+                      />
+                      <ArtistLink
+                        artist={item}
+                        className="mt-3 text-sm font-medium group-hover:underline"
+                      />
+                    </>
+                  ) : item.model_type === 'album' ? (
+                    <>
+                      <AlbumImage
+                        album={item}
+                        className="size-24 rounded-lg"
+                      />
+                      <AlbumLink
+                        album={item}
+                        className="mt-3 text-sm font-medium group-hover:underline"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex size-24 items-center justify-center rounded-lg bg-muted">
+                        <HeadphonesIcon className="size-8 text-muted-foreground" />
+                      </div>
+                      <TrackLink
+                        track={item}
+                        className="mt-3 text-sm font-medium group-hover:underline"
+                      />
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </LandingPageSection>
+        </section>
       ) : null}
 
       {/* CTA */}
