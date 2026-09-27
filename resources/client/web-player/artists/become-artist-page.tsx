@@ -13,10 +13,10 @@ import {TrendingUpIcon} from '@ui/icons/material/TrendingUp';
 import {PublicIcon} from '@ui/icons/material/Public';
 import {useEffect} from 'react';
 import type {ReactNode} from 'react';
-import {SmallArtistImage} from '@app/web-player/artists/small-artist-image';
+import {SmallArtistImage} from '@app/web-player/artists/artist-image/small-artist-image';
 import {ArtistLink} from '@app/web-player/artists/artist-link';
 import {TrackLink} from '@app/web-player/tracks/track-link';
-import {AlbumImage} from '@app/web-player/albums/album-image';
+import {AlbumImage} from '@app/web-player/albums/album-image/album-image';
 import {AlbumLink} from '@app/web-player/albums/album-link';
 
 export function BecomeArtistPage() {
