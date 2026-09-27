@@ -194,7 +194,13 @@ export const playerStoreOptions: Partial<PlayerStoreOptions> = {
         return;
       }
       // log track play
-      if (cuedMedia && !trackPlays.has(cuedMedia.meta.id)) {
+      if (
+        cuedMedia &&
+        !trackPlays.has(cuedMedia.meta.id) &&
+        // only log plays for real numeric track ids (eg. radio stations
+        // use uuid-like ids and would hit a garbage play-log endpoint)
+        Number.isInteger(Number(cuedMedia.meta.id))
+      ) {
         trackPlays.add(cuedMedia.meta.id);
         apiClient.post(`tracks/plays/${cuedMedia.meta.id}/log`, {
           queueId: cuedMedia.groupId,

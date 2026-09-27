@@ -49,17 +49,43 @@ export function Component() {
       groupId: 'radio-stations',
       provider: 'htmlAudio' as const,
       src: s.url,
-      meta: {
-        id: s.id,
-        name: s.title,
-        duration: 0,
-        image: s.image,
-        artists: [{name: s.artist}],
-      } as any,
+      meta: stationToTrackMeta(s) as any,
     }));
 
     await player.overrideQueueAndPlay(mediaItems, index);
   };
+
+function stationToTrackMeta(s: Station): Track {
+  return {
+    // keep the station id, so cuedMedia/queue comparisons and the `:radio`
+    // groupId stay consistent; likes store lookups by this key are safe
+    id: s.id as unknown as number,
+    name: s.title,
+    image: s.image || null,
+    duration: 0,
+    artists: [
+      {
+        id: s.id as unknown as number,
+        name: s.artist,
+        image_small: undefined,
+        verified: false,
+        model_type: 'artist',
+      },
+    ],
+    plays: 0,
+    popularity: 0,
+    src: s.url,
+    src_local: false,
+    owner_id: null,
+    model_type: 'track',
+    likes_count: 0,
+    reposts_count: 0,
+    comments_count: 0,
+    created_at: null,
+    updated_at: null,
+    lyric: null,
+  };
+}
 
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto">

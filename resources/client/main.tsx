@@ -1,5 +1,4 @@
 import {appRouter} from '@app/app-router';
-import {debugError} from '@app/debug-errors';
 import {CustomPage} from '@app/gen/schemas/custom-page';
 import {ListProducts200} from '@app/gen/schemas/list-products200';
 import {ALBUM_MODEL} from '@app/web-player/albums/album';
@@ -145,18 +144,5 @@ if (sentryDsn && import.meta.env.PROD) {
     onRecoverableError: Sentry.reactErrorHandler(),
   };
 }
-
-options = {
-  ...options,
-  onUncaughtError: (error, errorInfo) => {
-    debugError('react-uncaught', error, errorInfo?.componentStack);
-  },
-  onCaughtError: (error, errorInfo) => {
-    debugError('react-caught', error, errorInfo?.componentStack);
-  },
-  onRecoverableError: (error) => {
-    debugError('react-recoverable', error);
-  },
-};
 
 createRoot(rootEl, options).render(<CommonProvider router={appRouter} />);

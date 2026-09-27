@@ -1,5 +1,4 @@
 import {useCanOffline} from '@app/offline/use-can-offline';
-import {debugError} from '@app/debug-errors';
 import {useIsOffline} from '@app/web-player/use-is-offline';
 import {PageErrorMessage} from '@common/http/errors/page-error-message';
 import {queryClient} from '@common/http/query-client';
@@ -16,7 +15,6 @@ export function PlayerPageErrorMessage() {
   const isOffline = useIsOffline();
   const error = useRouteError();
   console.warn(error);
-  debugError('route-player', error);
 
   if (isAxiosError(error) && error.response?.status === 404) {
     return <NotFoundPage />;
