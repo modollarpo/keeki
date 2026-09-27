@@ -1,16 +1,16 @@
-import {Button} from '@shadcn/button/button';
+import {LinkButton} from '@shadcn/button/button';
 import {Link} from 'react-router';
 import {Trans} from '@ui/i18n/trans';
 import {useAuth} from '@common/auth/use-auth';
 import {useSuspenseQuery} from '@tanstack/react-query';
 import {appQueries} from '@app/app-queries';
 import {useNavigate} from '@common/ui/navigation/use-navigate';
-import {ArrowForwardIcon} from '@ui/library/icons/material/ArrowForward';
-import {HeadphonesIcon} from '@ui/library/icons/material/Headphones';
-import {CloudUploadIcon} from '@ui/library/icons/material/CloudUpload';
-import {MonetizationOnIcon} from '@ui/library/icons/material/MonetizationOn';
-import {TrendingUpIcon} from '@ui/library/icons/material/TrendingUp';
-import {PublicIcon} from '@ui/library/icons/material/Public';
+import {ArrowForwardIcon} from '@ui/icons/material/ArrowForward';
+import {HeadphonesIcon} from '@ui/icons/material/Headphones';
+import {CloudUploadIcon} from '@ui/icons/material/CloudUpload';
+import {MonetizationOnIcon} from '@ui/icons/material/MonetizationOn';
+import {TrendingUpIcon} from '@ui/icons/material/TrendingUp';
+import {PublicIcon} from '@ui/icons/material/Public';
 import {useEffect} from 'react';
 import type {ReactNode} from 'react';
 import {SmallArtistImage} from '@app/web-player/artists/small-artist-image';
@@ -51,25 +51,21 @@ export function BecomeArtistPage() {
               <Trans message="Join the next generation of independent artists. Upload your music, reach listeners worldwide, and grow your career — all for free." />
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-<Button
+              <LinkButton
                 color="primary"
                 size="lg"
-                asChild
+                to={isLoggedIn ? '/backstage' : '/register'}
               >
-                <Link to={isLoggedIn ? '/backstage' : '/register'}>
-                  <Trans message="Start uploading" />
-                  <ArrowForwardIcon className="ml-2 size-4" />
-                </Link>
-              </Button>
-<Button
+                <Trans message="Start uploading" />
+                <ArrowForwardIcon className="ml-2 size-4" />
+              </LinkButton>
+              <LinkButton
                 color="primary"
                 size="lg"
-                asChild
+                to="/"
               >
-                <Link to="/">
-                  <Trans message="Explore music" />
-                </Link>
-              </Button>
+                <Trans message="Explore music" />
+              </LinkButton>
             </div>
           </div>
         </div>
@@ -222,16 +218,14 @@ export function BecomeArtistPage() {
                 <Trans message="Join thousands of independent artists already sharing their music on Keekii. Start for free today." />
               </p>
               <div className="mt-8">
-<Button
-                color="primary"
-                size="lg"
-                asChild
-              >
-                  <Link to={isLoggedIn ? '/backstage' : '/register'}>
-                    <Trans message="Get started free" />
-                    <ArrowForwardIcon className="ml-2 size-4" />
-                  </Link>
-                </Button>
+                <LinkButton
+                  color="primary"
+                  size="lg"
+                  to={isLoggedIn ? '/backstage' : '/register'}
+                >
+                  <Trans message="Get started free" />
+                  <ArrowForwardIcon className="ml-2 size-4" />
+                </LinkButton>
               </div>
             </div>
           </div>
