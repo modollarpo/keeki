@@ -1,0 +1,395 @@
+{{--
+    Keekii branded app loader (pre-hydration loading screen).
+
+    WHY THIS IS A SEPARATE PARTIAL:
+    common/foundation is upstream vendor code (see .gitmodules -> RamunasO/common-new).
+    Its content is committed into this repo, so the layout at
+    common/foundation/resources/views/framework.blade.php is edited in place --
+    but the only edit there is a single `@include('loader.app-loader')` hook.
+    All loader markup, CSS and JS live HERE, in resources/views/, so refreshing
+    or re-syncing the vendor tree can only ever drop the include hook (loader
+    reverts to the stock spinner) and can never corrupt this file.
+    If the loader ever renders plain/unbranded, check that include still exists.
+
+    Self-contained by design: inlined <style>/<script>, no build step, no
+    external requests, no framework dependency. It must paint before the React
+    bundle arrives, and must be wiped from the DOM when React mounts into #root.
+--}}
+@php
+    $keekiiLoaderName = settings('branding.site_name') ?: 'Keekii';
+    // Fixed bar heights (percent) so the equaliser silhouette is deterministic.
+    $keekiiLoaderBars = [34, 58, 86, 48, 100, 72, 40, 80, 62, 92, 46];
+@endphp
+
+<style>
+    /* All selectors are namespaced under .keekii-loader to stay clear of the
+       app's Tailwind build and the vendor foundation styles. */
+    .keekii-loader {
+        /* Derived from the active theme's brand colour, so the backdrop tint
+           follows whatever --be-primary the admin picked. */
+        --keekii-loader-tint: color-mix(in oklab, var(--be-primary, #16a34a) 20%, transparent);
+        --keekii-eq-speed: 900ms;
+
+        position: fixed;
+        inset: 0;
+        z-index: 2147483647;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        margin: 0;
+        padding: 24px;
+        color: var(--be-foreground, currentColor);
+        background-color: var(--be-background, #fff);
+        font-family: var(--be-font-family, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+        -webkit-tap-highlight-color: transparent;
+        /* Deliberately JS-free reveal: avoids a flash of loader on cached/fast
+           loads, but still appears if JS never runs. */
+        opacity: 0;
+        animation: keekii-loader-reveal 220ms ease-out 120ms forwards;
+        cursor: pointer;
+    }
+
+    .dark .keekii-loader {
+        color-scheme: dark;
+    }
+
+    .light .keekii-loader {
+        color-scheme: light;
+    }
+
+    /* Album-art-ish backdrop: a soft brand glow that slowly drifts. Kept as
+       gradients (no filter: blur()) so it stays cheap on low-end devices. */
+    .keekii-loader__glow {
+        position: absolute;
+        inset: -25%;
+        pointer-events: none;
+        background-image: radial-gradient(50% 42% at 50% 46%, var(--keekii-loader-tint), transparent 70%);
+        animation: keekii-loader-drift 11s ease-in-out infinite alternate;
+        will-change: transform;
+    }
+
+    .keekii-loader__stage {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 22px;
+        max-width: 100%;
+        text-align: center;
+    }
+
+    /* Brand mark: equaliser glyph inside a ring. */
+    .keekii-loader__mark {
+        display: block;
+        width: clamp(64px, 18vw, 84px);
+        height: auto;
+        color: var(--be-foreground, currentColor);
+    }
+
+    .keekii-loader__mark-ring {
+        fill: none;
+        stroke: currentColor;
+        stroke-opacity: 0.16;
+        stroke-width: 2;
+    }
+
+    .keekii-loader__mark-bar {
+        fill: var(--be-primary, #16a34a);
+        transform-origin: 50% 50%;
+        animation: keekii-loader-eq 900ms ease-in-out infinite alternate;
+    }
+
+    .keekii-loader__mark-bar:nth-of-type(1) {
+        animation-delay: -240ms;
+    }
+
+    .keekii-loader__mark-bar:nth-of-type(2) {
+        animation-delay: -560ms;
+    }
+
+    .keekii-loader__mark-bar:nth-of-type(3) {
+        animation-delay: -80ms;
+    }
+
+    .keekii-loader__word {
+        font-size: clamp(1.75rem, 7vw, 2.5rem);
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+    }
+
+    /* Equaliser bars. */
+    .keekii-loader__eq {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        height: 56px;
+    }
+
+    .keekii-loader__bar {
+        width: 6px;
+        height: calc(var(--keekii-h) * 1%);
+        min-height: 5px;
+        border-radius: 999px;
+        background-color: var(--be-primary, #16a34a);
+        transform-origin: 50% 50%;
+        animation: keekii-loader-eq var(--keekii-eq-speed, 900ms) ease-in-out infinite alternate;
+        animation-delay: calc(var(--keekii-i) * -90ms);
+        will-change: transform;
+    }
+
+    .keekii-loader__copy {
+        margin: 0;
+        min-height: 1.5em;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        line-height: 1.5;
+        color: var(--be-muted-foreground, currentColor);
+        transition:
+            opacity 200ms ease,
+            transform 200ms ease;
+    }
+
+    .keekii-loader__copy.is-swapping {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    /* Click/tap "scratch" delight: bars speed up, mark pops. */
+    .keekii-loader.is-scratched {
+        --keekii-eq-speed: 220ms;
+    }
+
+    .keekii-loader.is-scratched .keekii-loader__mark {
+        animation: keekii-loader-pop 620ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Visually hidden, for screen readers only. */
+    .keekii-loader__sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    @keyframes keekii-loader-reveal {
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes keekii-loader-drift {
+        from {
+            transform: translate3d(-2%, -1%, 0) scale(1);
+        }
+        to {
+            transform: translate3d(2%, 2%, 0) scale(1.08);
+        }
+    }
+
+    @keyframes keekii-loader-eq {
+        from {
+            transform: scaleY(0.3);
+        }
+        to {
+            transform: scaleY(1);
+        }
+    }
+
+    @keyframes keekii-loader-pop {
+        0% {
+            transform: scale(1);
+        }
+        40% {
+            transform: scale(1.16) rotate(-4deg);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .keekii-loader {
+            opacity: 1;
+            animation: none;
+        }
+
+        .keekii-loader__glow,
+        .keekii-loader__bar,
+        .keekii-loader__mark-bar {
+            animation: none;
+            transform: none;
+        }
+
+        .keekii-loader.is-scratched .keekii-loader__mark {
+            animation: none;
+        }
+
+        .keekii-loader__copy {
+            transition: none;
+        }
+    }
+</style>
+
+{{-- `.global-spinner` is kept for backwards compatibility: legacy markup in
+     resources/views/app.blade.php toggles that class for a delayed-appearance
+     state. The reveal above is CSS-driven, so nothing depends on it. --}}
+<div
+    class="keekii-loader global-spinner"
+    role="status"
+    data-keekii-loader
+>
+    <span class="keekii-loader__glow" aria-hidden="true"></span>
+
+    <div class="keekii-loader__stage">
+        <svg
+            class="keekii-loader__mark"
+            viewBox="0 0 48 48"
+            aria-hidden="true"
+            focusable="false"
+        >
+            <circle
+                class="keekii-loader__mark-ring"
+                cx="24"
+                cy="24"
+                r="22"
+            />
+            <rect
+                class="keekii-loader__mark-bar"
+                x="14.4"
+                y="20"
+                width="4.4"
+                height="8"
+                rx="2.2"
+            />
+            <rect
+                class="keekii-loader__mark-bar"
+                x="21.8"
+                y="13"
+                width="4.4"
+                height="22"
+                rx="2.2"
+            />
+            <rect
+                class="keekii-loader__mark-bar"
+                x="29.2"
+                y="17.5"
+                width="4.4"
+                height="13"
+                rx="2.2"
+            />
+        </svg>
+
+        <span class="keekii-loader__word">{{ $keekiiLoaderName }}</span>
+
+        <div class="keekii-loader__eq" aria-hidden="true">
+            @foreach ($keekiiLoaderBars as $keekiiBarIndex => $keekiiBarHeight)
+                <span
+                    class="keekii-loader__bar"
+                    style="--keekii-i: {{ $keekiiBarIndex }}; --keekii-h: {{ $keekiiBarHeight }}"
+                ></span>
+            @endforeach
+        </div>
+
+        <p class="keekii-loader__copy" data-keekii-loader-copy aria-hidden="true">
+            Tuning the strings&hellip;
+        </p>
+
+        <span class="keekii-loader__sr">Loading {{ $keekiiLoaderName }}&hellip;</span>
+    </div>
+</div>
+
+<script>
+    (function () {
+        // This <script> is a sibling of the loader, not a descendant, so it is
+        // resolved by its data attribute rather than via currentScript.closest.
+        var root = document.querySelector('[data-keekii-loader]');
+
+        if (!root) {
+            return;
+        }
+
+        var copy = root.querySelector('[data-keekii-loader-copy]');
+        var ellipsis = '\u2026';
+        var lines = [
+            'Tuning the strings' + ellipsis,
+            'Warming up the speakers' + ellipsis,
+            'Cueing up your next favorite track' + ellipsis,
+            'Rolling out the vinyl' + ellipsis,
+            'Mixing the next track' + ellipsis,
+            'Counting in: one, two, three' + ellipsis,
+            'Digging through the crates' + ellipsis,
+            'Pressing play' + ellipsis,
+        ];
+        var scratchLines = [
+            'Ooh, nice arms' + ellipsis,
+            'Scratch that' + ellipsis,
+            'Drop the needle' + ellipsis,
+        ];
+
+        var reduceMotion =
+            window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        var index = 0;
+        var scratchIndex = 0;
+        var swapTimer = null;
+        var scratchTimer = null;
+        var rotateTimer = null;
+
+        function show(text) {
+            if (!copy) {
+                return;
+            }
+            copy.classList.add('is-swapping');
+            clearTimeout(swapTimer);
+            swapTimer = setTimeout(function () {
+                copy.textContent = text;
+                copy.classList.remove('is-swapping');
+            }, reduceMotion ? 0 : 190);
+        }
+
+        // The loader is removed from the DOM when React mounts into #root, so
+        // every timer must bail out once its node is detached.
+        function isGone() {
+            return !root.isConnected;
+        }
+
+        if (copy && !reduceMotion) {
+            rotateTimer = setInterval(function () {
+                if (isGone()) {
+                    clearInterval(rotateTimer);
+                    return;
+                }
+                index = (index + 1) % lines.length;
+                show(lines[index]);
+            }, 2600);
+        }
+
+        // Lightweight interaction: tap/click to "scratch" the record.
+        root.addEventListener('click', function () {
+            if (isGone()) {
+                return;
+            }
+
+            root.classList.add('is-scratched');
+            clearTimeout(scratchTimer);
+            scratchTimer = setTimeout(function () {
+                root.classList.remove('is-scratched');
+            }, 700);
+
+            if (!copy) {
+                return;
+            }
+
+            scratchIndex = (scratchIndex + 1) % scratchLines.length;
+            show(scratchLines[scratchIndex]);
+        });
+    })();
+</script>

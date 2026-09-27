@@ -146,35 +146,10 @@
 
 <body>
     <div id="root">
-        <div class="flex h-screen w-screen items-center justify-center">
-            <svg
-                viewBox="0 0 32 32"
-                fill="none"
-                stroke-width="3"
-                class="progress-circle indeterminate h-10 w-10 overflow-hidden"
-            >
-                <circle
-                    cx="16"
-                    cy="16"
-                    r="13"
-                    role="presentation"
-                    stroke-dasharray="81.68140899333463 81.68140899333463"
-                    stroke-dashoffset="0"
-                    transform="rotate(-90 16 16)"
-                    class="progress-circle-track"
-                ></circle>
-                <circle
-                    cx="16"
-                    cy="16"
-                    r="13"
-                    role="presentation"
-                    stroke-dasharray="81.68140899333463 81.68140899333463"
-                    stroke-dashoffset="61.26105674500097"
-                    transform="rotate(-90 16 16)"
-                    class="progress-circle-fill"
-                ></circle>
-            </svg>
-        </div>
+        {{-- keekii: branded pre-hydration loader. Keep this the only Keekii
+             change in this vendor file -- see the partial for the full
+             rationale, and re-apply after re-syncing common/foundation. --}}
+        @include('loader.app-loader')
     </div>
 
     <noscript>
