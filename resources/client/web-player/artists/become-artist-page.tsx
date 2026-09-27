@@ -1,10 +1,10 @@
-import {Button} from '@ui/library/buttons/button';
-import {Link} from '@common/router/link';
+import {Button} from '@shadcn/button/button';
+import {Link} from 'react-router';
 import {Trans} from '@ui/i18n/trans';
 import {useAuth} from '@common/auth/use-auth';
 import {useSuspenseQuery} from '@tanstack/react-query';
 import {appQueries} from '@app/app-queries';
-import {useNavigate} from '@common/router/use-navigate';
+import {useNavigate} from '@common/ui/navigation/use-navigate';
 import {ArrowForwardIcon} from '@ui/library/icons/material/ArrowForward';
 import {HeadphonesIcon} from '@ui/library/icons/material/Headphones';
 import {CloudUploadIcon} from '@ui/library/icons/material/CloudUpload';
@@ -56,7 +56,7 @@ export function BecomeArtistPage() {
                 size="lg"
                 asChild
               >
-                <Link href={isLoggedIn ? '/backstage' : '/register'}>
+                <Link to={isLoggedIn ? '/backstage' : '/register'}>
                   <Trans message="Start uploading" />
                   <ArrowForwardIcon className="ml-2 size-4" />
                 </Link>
@@ -66,7 +66,7 @@ export function BecomeArtistPage() {
                 size="lg"
                 asChild
               >
-                <Link href="/">
+                <Link to="/">
                   <Trans message="Explore music" />
                 </Link>
               </Button>
@@ -165,7 +165,7 @@ export function BecomeArtistPage() {
               </p>
             </div>
             <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {spotlightChannel.content.data.slice(0, 5).map(item => (
+              {spotlightChannel.content.data.slice(0, 5).map((item: any) => (
                 <div
                   key={item.id}
                   className="group flex flex-col items-center text-center"
@@ -227,7 +227,7 @@ export function BecomeArtistPage() {
                   size="lg"
                   asChild
                 >
-                  <Link href={isLoggedIn ? '/backstage' : '/register'}>
+                  <Link to={isLoggedIn ? '/backstage' : '/register'}>
                     <Trans message="Get started free" />
                     <ArrowForwardIcon className="ml-2 size-4" />
                   </Link>
