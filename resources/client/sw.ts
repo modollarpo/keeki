@@ -71,9 +71,12 @@ const publicAssets = [
   '/icons/favicon-16.png',
   // The app loader paints before hydration, so its mark is needed on the very
   // first paint of an offline load. Both plates are listed because the pair is
-  // theme-swapped in CSS and only one is ever displayed.
-  '/icons/mark-light-256.png',
-  '/icons/mark-dark-256.png',
+  // theme-swapped in CSS and only one is ever displayed. These are the animated
+  // marks rather than the 256px PNGs: the loader renders the vector so the
+  // twin-pulse "i" pair can animate, and the PNGs are only used when building
+  // the splash screens.
+  '/icons/keekii-mark-animated-light.svg',
+  '/icons/keekii-mark-animated-dark.svg',
   '/fonts/bricolage-grotesque-latin-variable.woff2',
 ];
 

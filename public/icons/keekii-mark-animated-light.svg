@@ -1,18 +1,56 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-labelledby="keekii-favicon-title">
-  <title id="keekii-favicon-title">Keekii</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-labelledby="keekii-mark-title">
+  <title id="keekii-mark-title">Keekii, animated twin pulse, light theme</title>
   <!--
-    Favicon built from the Keekii wordmark: the leading "k" is the wordmark's
-    own glyph, and the twin-pulse "i" pair is the wordmark's, shifted beside it.
+    The wordmark "k" with the twin-pulse "i" pair animated, for the loading
+    screen. Geometry is the wordmark's, unchanged, so the static frame of this
+    file is the same drawing as the favicon. Motion is the only difference.
+
+    Self-contained (CSS inside the SVG) so it animates from an <img> tag with no
+    script, and honours prefers-reduced-motion by falling back to the static frame.
+
     Derived by scripts/build-favicon-from-wordmark.ps1; edit that, not this.
   -->
+  <style>
+    /* Only the "i" pair moves. The "k" is the identity; the "i"s are the pulse. */
+    @keyframes keekii-pulse-stem {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY(0.52); }
+    }
+    @keyframes keekii-pulse-dot {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(30px); }
+    }
+
+    .keekii-stem, .keekii-dot { transform-box: fill-box; }
+    .keekii-stem { transform-origin: 50% 100%; }
+    .keekii-dot { transform-origin: 50% 50%; }
+
+    .keekii-lead-stem { animation: keekii-pulse-stem 1050ms ease-in-out infinite; }
+    .keekii-lead-dot { animation: keekii-pulse-dot 1050ms ease-in-out infinite; }
+    .keekii-trail-stem { animation: keekii-pulse-stem 1050ms ease-in-out 160ms infinite; }
+    .keekii-trail-dot { animation: keekii-pulse-dot 1050ms ease-in-out 160ms infinite; }
+
+    /* A beat travelling left to right across the two "i"s. */
+    @media (prefers-reduced-motion: reduce) {
+      .keekii-lead-stem, .keekii-lead-dot,
+      .keekii-trail-stem, .keekii-trail-dot { animation: none; }
+    }  </style>
   <rect x="4" y="4" width="1016" height="1016" rx="222" fill="#fdfdfb" stroke="#e5e3dd" stroke-width="8" />
   <g transform="translate(80.275 130.686) scale(12.92590)">
     <g transform="translate(9.22 53.0) scale(0.04476190 -0.04476190) translate(-60.38133457675576 0)">
       <path fill="#131311" d="M60.38133457675576 0.0V710.9993286132812H201.50625852495432V318.7294781394303Q234.2367422915995 338.7373686283827 262.4037635438144 363.2533298060298Q290.57078479602933 387.7692909836769 313.61077638715506 414.9083060603589Q336.6507679782808 442.04732113704085 354.03586033545434 470.0394466333091Q371.4209526926279 498.0315721295774 382.74630107730627 525.3330078125H547.4502374567091Q533.8151937834918 486.7060987688601 510.1047276109457 448.7140713650733Q486.39426143839955 410.72204396128654 453.2989325169474 378.2061677966267Q420.2036035954952 345.69029163196683 376.9934019073844 321.8926536925137Q333.78320021927357 298.0950157530606 281.4740949347615 287.856885638088V273.380859375Q347.52910892665386 284.2456645667553 390.87018452212214 271.4678175188601Q434.2112601175904 258.6899704709649 461.47717479243875 230.51538788340986Q488.74308946728706 202.3408052958548 505.1322069950402 164.71387518011034Q521.5213245227933 127.08694506436586 533.4263886958361 87.80117555707693L557.0456993468106 0.0H400.4527108334005L387.563501752913 57.04757835716009Q375.41229781135917 103.30166383832693 360.0071369986981 138.41689118929207Q344.60197618603706 173.53211854025722 317.78416007198393 193.4846041239798Q290.9663439579308 213.4370897077024 243.1407281793654 213.4767775759101L201.50625852495432 213.51646544411778V0.0Z" />
     </g>
+    <g class="keekii-stem keekii-lead-stem">
       <rect x="36.3" y="31" width="7" height="22" rx="3" fill="#e8611f" />
+    </g>
+    <g class="keekii-dot keekii-lead-dot">
       <circle cx="39.8" cy="23" r="5" fill="#e8611f" />
+    </g>
+    <g class="keekii-stem keekii-trail-stem">
       <rect x="49.3" y="19" width="7" height="34" rx="3" fill="#f0864a" />
+    </g>
+    <g class="keekii-dot keekii-trail-dot">
       <circle cx="52.8" cy="11" r="5" fill="#f0864a" />
+    </g>
   </g>
 </svg>
