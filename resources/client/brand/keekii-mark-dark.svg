@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-labelledby="t">
+  <title id="t">Keekii Twin Pulse mark, dark theme</title>
+  <!-- Ember #f47b43 = dark primary token (oklch(0.712 0.164 44)) -->
+  <g fill="#f47b43">
+    <rect x="232" y="472" width="200" height="400" rx="60" />
+    <rect x="592" y="622" width="200" height="250" rx="60" />
+    <circle cx="332" cy="267" r="115" />
+    <circle cx="692" cy="417" r="115" />
+  </g>
+</svg>

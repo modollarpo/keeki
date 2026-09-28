@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-labelledby="t">
+  <title id="t">Keekii Twin Pulse animated loader</title>
+  <!--
+    Animated variant of the Concept B Twin Pulse mark, for the loading screen.
+    The static frame is identical to keekii-mark.svg; motion is the only
+    difference. Bars stretch from their base and the dots lift, so the two
+    "i"s read as a beat travelling left to right.
+
+    Self-contained (CSS inside the SVG) so it animates from an <img> tag, and
+    honours prefers-reduced-motion by falling back to the static frame.
+  -->
+  <style>
+    @keyframes kk-bar {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY(0.55); }
+    }
+    @keyframes kk-dot {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(26px); }
+    }
+    .kk-bar { transform-box: fill-box; transform-origin: bottom; }
+    .kk-dot { transform-box: fill-box; transform-origin: center; }
+    .kk-a { animation: kk-bar 1.05s ease-in-out infinite; }
+    .kk-b { animation: kk-bar 1.05s ease-in-out 0.16s infinite; }
+    .kk-da { animation: kk-dot 1.05s ease-in-out infinite; }
+    .kk-db { animation: kk-dot 1.05s ease-in-out 0.16s infinite; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .kk-a, .kk-b, .kk-da, .kk-db { animation: none; }
+    }
+  </style>
+
+  <g fill="currentColor">
+    <g class="kk-dot kk-da">
+      <circle cx="332" cy="267" r="115" />
+    </g>
+    <g class="kk-dot kk-db">
+      <circle cx="692" cy="417" r="115" />
+    </g>
+    <rect class="kk-bar kk-a" x="232" y="472" width="200" height="400" rx="60" />
+    <rect class="kk-bar kk-b" x="592" y="622" width="200" height="250" rx="60" />
+  </g>
+</svg>

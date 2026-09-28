@@ -78,37 +78,37 @@
         text-align: center;
     }
 
-    /* Brand mark: equaliser glyph inside a ring. */
+    /* Brand mark: "Twin Pulse" (Concept B) -- the two "i"s of Keekii as a
+       pair of pulse bars, each topped by a dot. Geometry matches
+       resources/client/brand/keekii-mark.svg. */
     .keekii-loader__mark {
         display: block;
-        width: clamp(64px, 18vw, 84px);
+        width: clamp(58px, 15vw, 74px);
         height: auto;
         color: var(--be-foreground, currentColor);
     }
 
-    .keekii-loader__mark-ring {
-        fill: none;
-        stroke: currentColor;
-        stroke-opacity: 0.16;
-        stroke-width: 2;
-    }
-
     .keekii-loader__mark-bar {
         fill: var(--be-primary, #16a34a);
+        transform-box: fill-box;
+        /* Scale from the baseline so the bar reads as a pulse rising. */
+        transform-origin: 50% 100%;
+        animation: keekii-loader-mark-bar 1050ms ease-in-out infinite;
+    }
+
+    .keekii-loader__mark-bar--b {
+        animation-delay: 160ms;
+    }
+
+    .keekii-loader__mark-dot {
+        fill: var(--be-primary, #16a34a);
+        transform-box: fill-box;
         transform-origin: 50% 50%;
-        animation: keekii-loader-eq 900ms ease-in-out infinite alternate;
+        animation: keekii-loader-mark-dot 1050ms ease-in-out infinite;
     }
 
-    .keekii-loader__mark-bar:nth-of-type(1) {
-        animation-delay: -240ms;
-    }
-
-    .keekii-loader__mark-bar:nth-of-type(2) {
-        animation-delay: -560ms;
-    }
-
-    .keekii-loader__mark-bar:nth-of-type(3) {
-        animation-delay: -80ms;
+    .keekii-loader__mark-dot--b {
+        animation-delay: 160ms;
     }
 
     .keekii-loader__word {
@@ -202,6 +202,26 @@
         }
     }
 
+    @keyframes keekii-loader-mark-bar {
+        0%,
+        100% {
+            transform: scaleY(1);
+        }
+        50% {
+            transform: scaleY(0.55);
+        }
+    }
+
+    @keyframes keekii-loader-mark-dot {
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(22px);
+        }
+    }
+
     @keyframes keekii-loader-pop {
         0% {
             transform: scale(1);
@@ -222,7 +242,8 @@
 
         .keekii-loader__glow,
         .keekii-loader__bar,
-        .keekii-loader__mark-bar {
+        .keekii-loader__mark-bar,
+        .keekii-loader__mark-dot {
             animation: none;
             transform: none;
         }
@@ -248,41 +269,42 @@
     <span class="keekii-loader__glow" aria-hidden="true"></span>
 
     <div class="keekii-loader__stage">
+        {{-- Twin Pulse mark. viewBox is the mark's bounding box plus a small
+             margin, so the glyph fills the slot instead of sitting inside the
+             1024-unit padding of the master file. --}}
         <svg
             class="keekii-loader__mark"
-            viewBox="0 0 48 48"
+            viewBox="200 135 624 754"
             aria-hidden="true"
             focusable="false"
         >
             <circle
-                class="keekii-loader__mark-ring"
-                cx="24"
-                cy="24"
-                r="22"
+                class="keekii-loader__mark-dot"
+                cx="332"
+                cy="267"
+                r="115"
+            />
+            <circle
+                class="keekii-loader__mark-dot keekii-loader__mark-dot--b"
+                cx="692"
+                cy="417"
+                r="115"
             />
             <rect
                 class="keekii-loader__mark-bar"
-                x="14.4"
-                y="20"
-                width="4.4"
-                height="8"
-                rx="2.2"
+                x="232"
+                y="472"
+                width="200"
+                height="400"
+                rx="60"
             />
             <rect
-                class="keekii-loader__mark-bar"
-                x="21.8"
-                y="13"
-                width="4.4"
-                height="22"
-                rx="2.2"
-            />
-            <rect
-                class="keekii-loader__mark-bar"
-                x="29.2"
-                y="17.5"
-                width="4.4"
-                height="13"
-                rx="2.2"
+                class="keekii-loader__mark-bar keekii-loader__mark-bar--b"
+                x="592"
+                y="622"
+                width="200"
+                height="250"
+                rx="60"
             />
         </svg>
 
