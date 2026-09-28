@@ -61,6 +61,7 @@ const manifest: PrecacheEntry[] = self.__WB_MANIFEST
 const publicAssets = [
   '/manifest.json',
   '/favicon.svg',
+  '/favicon-dark.svg',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/maskable-192.png',
@@ -68,6 +69,11 @@ const publicAssets = [
   '/icons/apple-touch-icon.png',
   '/icons/favicon-32.png',
   '/icons/favicon-16.png',
+  // The app loader paints before hydration, so its mark is needed on the very
+  // first paint of an offline load. Both plates are listed because the pair is
+  // theme-swapped in CSS and only one is ever displayed.
+  '/icons/mark-light-256.png',
+  '/icons/mark-dark-256.png',
   '/fonts/bricolage-grotesque-latin-variable.woff2',
 ];
 

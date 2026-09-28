@@ -15,7 +15,23 @@ use Common\Settings\Models\Setting;
 use Common\Settings\Themes\CssTheme;
 
 $updates = [
-    // Branding: Keekii 900x382 logo pair (white for dark bg / black for light bg)
+    // Branding: Keekii 900x382 logo pair.
+    //
+    // The slot names are about the ARTWORK's colour, not the background it is
+    // used on, which is the opposite of what it reads like:
+    //
+    //   branding.logo_dark  -> dark/black artwork -> rendered in LIGHT mode
+    //   branding.logo_light -> light/white artwork -> rendered in DARK mode
+    //
+    // The consumer is `isDarkMode ? branding.logo_light : branding.logo_dark`
+    // in common/foundation/resources/client/auth/ui/auth-layout/auth-layout.tsx,
+    // and the two ops/logo-assets PNGs match it: keekii-logo-dark.png is black
+    // ink, keekii-logo-light.png is white ink.
+    //
+    // An earlier version of this comment read "white for dark bg / black for
+    // light bg" while naming them the other way round. Following it would have
+    // deployed the files swapped and rendered an invisible logo, so the mapping
+    // is spelled out here rather than abbreviated.
     'branding.logo_dark' => 'storage/branding-images/keekii-logo-dark.png',
     'branding.logo_light' => 'storage/branding-images/keekii-logo-light.png',
     // Direct-stream fallback: absolute yt-dlp binary path
