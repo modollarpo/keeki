@@ -3,6 +3,7 @@
 use App\Models\Artist;
 use App\Models\Playlist;
 use App\Models\User;
+use App\Services\Homepage\ResolveGeoHomepage;
 use App\Services\Playlists\PlaylistLoader;
 use Common\Core\Bootstrap\BaseBootstrapData;
 use Illuminate\Support\Collection;
@@ -27,7 +28,36 @@ class AppBootstrapData extends BaseBootstrapData
             'services.spotify.use_deprecated_api',
         );
 
+        $this->setGeoHomepage();
+
         return $this;
+    }
+
+    /**
+     * Serve each visitor the homepage channel mapped to their country, so a
+     * visitor in Nigeria lands on Nigerian content and one in the US on US
+     * content. Overriding `settings.homepage` here is enough: the client
+     * resolves the homepage from the bootstrap data, and it is built per
+     * request, so no redirect and no client-side country logic is needed.
+     *
+     * Must stay fail-safe - if anything goes wrong the default homepage is
+     * served rather than an error.
+     */
+    private function setGeoHomepage(): void
+    {
+        try {
+            $channelId = (new ResolveGeoHomepage())->execute();
+
+            if ($channelId) {
+                $this->data['settings']['homepage'] = [
+                    'type' => 'channel',
+                    'value' => $channelId,
+                ];
+            }
+        } catch (\Throwable $e) {
+            // never let a homepage experiment take the site down
+            report($e);
+        }
     }
 
     /**

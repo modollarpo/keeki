@@ -5,6 +5,7 @@ import {useValueLists} from '@common/http/value-lists';
 import {Field} from '@shadcn/forms/field';
 import {HookForm} from '@shadcn/forms/form/hook-form';
 import {Select} from '@shadcn/forms/select/select';
+import {Textarea} from '@shadcn/forms/textarea/textarea';
 import {Trans} from '@ui/i18n/trans';
 import {useWatch} from 'react-hook-form';
 
@@ -23,6 +24,7 @@ export function Component() {
           homepage: {
             type: data?.client?.homepage?.type,
             value: data?.client?.homepage?.value,
+            geo_countries: data?.client?.homepage?.geo_countries ?? '',
           },
         },
       }}
@@ -86,6 +88,28 @@ function HomepageSection() {
               ))}
             </Select.Content>
           </Select.Root>
+          <Field.Error />
+        </HookForm.Field>
+      )}
+      {selectedType === 'channel' && (
+        <HookForm.Field
+          name="client.homepage.geo_countries"
+          className="mt-5"
+          data-testid="geo-countries-field"
+        >
+          <Field.Label>
+            <Trans message="Homepage per country" />
+          </Field.Label>
+          <Textarea
+            rows={3}
+            placeholder={'{"NG": 12, "US": 13, "GB": 14}'}
+            className="font-mono text-sm"
+          />
+          <Field.Description>
+            <Trans
+              message="Serve a different homepage channel based on the visitor's country, so people in Nigeria get Nigerian content first and people in the US get US content. Enter a JSON object of two-letter country code to channel id. Leave empty to disable. Any country that is not listed falls back to the homepage above."
+            />
+          </Field.Description>
           <Field.Error />
         </HookForm.Field>
       )}

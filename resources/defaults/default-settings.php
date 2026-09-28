@@ -14,6 +14,11 @@ return [
     //homepage
     ['name' => 'homepage.type', 'value' => 'channel'],
     ['name' => 'homepage.value', 'value' => 8],
+    // Per-country homepage channels, as a JSON object of ISO2 country code =>
+    // channel id, eg {"NG":12,"US":13,"GB":14}. Empty disables the feature and
+    // every visitor gets the default homepage above. Countries that are absent
+    // (or mapped to the default channel) also fall back to it.
+    ['name' => 'homepage.geo_countries', 'value' => ''],
 
     //cache
     ['name' => 'cache.report_minutes', 'value' => 60],

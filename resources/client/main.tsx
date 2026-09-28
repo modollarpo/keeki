@@ -67,6 +67,10 @@ declare module '@ui/settings/settings' {
     homepage: {
       type: string;
       value?: number | string;
+      // JSON object of ISO2 country code => channel id, eg {"NG":12,"US":13},
+      // used to serve each visitor the homepage for their country. Empty
+      // string disables it and everyone gets the homepage above.
+      geo_countries?: string;
     };
     landingPage?: {
       sections?: SectionConfig[];
