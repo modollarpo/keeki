@@ -5,9 +5,11 @@
 @endsection
 
 @section('body')
-    <h1>{{ $page->title }}</h1>
+    @php($page = $data['data'] ?? [])
+
+    <h1>{{ $page['title'] }}</h1>
 
     <main>
-        {!! $page->body !!}
+        {!! $page['body'] !!}
     </main>
 @endsection
