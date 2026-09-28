@@ -6,6 +6,7 @@ use App\Models\Channel;
 use BadMethodCallException;
 use Common\Core\Prerender\Actions\ReplacePlaceholders;
 use Common\Database\Datasource\Datasource;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Pagination\Paginator;
@@ -89,9 +90,35 @@ class LoadChannelContent
             // otherwise do a basic pagination for the model
         } else {
             $namespace = modelTypeToNamespace($contentModel);
-            $datasource = new Datasource(app($namespace)::query(), $params);
+            $datasource = new Datasource(
+                $this->applyCountryFilter(app($namespace)::query(), $channel),
+                $params,
+            );
             return $datasource->paginate();
         }
+    }
+
+    /**
+     * Country channels declare `contentCountry` (ISO 3166-1 alpha-2) in their
+     * config. The filter is applied to the base query so it survives the
+     * ordering / pagination the datasource layers on top. Models without a
+     * country scope are left untouched rather than erroring.
+     */
+    private function applyCountryFilter(Builder $query, Channel $channel): Builder
+    {
+        $country = Arr::get($channel->config, 'contentCountry');
+
+        if (!$country) {
+            return $query;
+        }
+
+        $model = $query->getModel();
+
+        if (!method_exists($model, 'scopeInCountry')) {
+            return $query;
+        }
+
+        return $model->scopeInCountry($query, $country);
     }
 
     private function loadCuratedContent(

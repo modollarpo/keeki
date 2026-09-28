@@ -1,6 +1,7 @@
 <?php namespace App\Models;
 
 use App\Traits\OrdersByPopularity;
+use App\Traits\ScopesByCountry;
 use App\Traits\ProxiesImages;
 use Common\Comments\Comment;
 use Common\Core\BaseModel;
@@ -19,7 +20,13 @@ use Laravel\Scout\Searchable;
 
 class Track extends BaseModel
 {
-    use OrdersByPopularity, HasFactory, Searchable, HasAttachedFileEntries, ProxiesImages;
+    use OrdersByPopularity, HasFactory, Searchable, HasAttachedFileEntries, ProxiesImages, ScopesByCountry;
+
+    // a track's country is inherited from its artists
+    protected function countryOwnerRelation(): ?string
+    {
+        return 'artists';
+    }
 
     const MODEL_TYPE = 'track';
 

@@ -2,6 +2,7 @@
 
 use App\Traits\OrdersByPopularity;
 use App\Traits\ProxiesImages;
+use App\Traits\ScopesByCountry;
 use App\Services\Providers\MusicMetadataProvider;
 use Carbon\Carbon;
 use Common\Core\BaseModel;
@@ -15,7 +16,7 @@ use Laravel\Scout\Searchable;
 
 class Artist extends BaseModel
 {
-    use OrdersByPopularity, HasFactory, Searchable, HasAttachedFileEntries, ProxiesImages;
+    use OrdersByPopularity, HasFactory, Searchable, HasAttachedFileEntries, ProxiesImages, ScopesByCountry;
 
     const MODEL_TYPE = 'artist';
 

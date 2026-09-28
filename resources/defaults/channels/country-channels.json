@@ -1,0 +1,272 @@
+[
+    {
+        "name": "Nigerian music",
+        "slug": "country-ng",
+        "internal": false,
+        "presetDescription": "Artists and releases from Nigeria",
+        "config": {
+            "contentType": "listAll",
+            "contentModel": "artist",
+            "contentCountry": "NG",
+            "countryName": "Nigeria",
+            "countryFlag": "🇳🇬",
+            "contentOrder": "popularity:desc",
+            "layout": "grid",
+            "nestedLayout": "grid",
+            "seoTitle": "Nigerian Music - {{site_name}}",
+            "seoDescription": "Listen to the best Nigerian artists and releases on {{site_name}}."
+        }
+    },
+    {
+        "name": "American music",
+        "slug": "country-us",
+        "internal": false,
+        "presetDescription": "Artists and releases from United States",
+        "config": {
+            "contentType": "listAll",
+            "contentModel": "artist",
+            "contentCountry": "US",
+            "countryName": "United States",
+            "countryFlag": "🇺🇸",
+            "contentOrder": "popularity:desc",
+            "layout": "grid",
+            "nestedLayout": "grid",
+            "seoTitle": "American Music - {{site_name}}",
+            "seoDescription": "Listen to the best American artists and releases on {{site_name}}."
+        }
+    },
+    {
+        "name": "British music",
+        "slug": "country-gb",
+        "internal": false,
+        "presetDescription": "Artists and releases from United Kingdom",
+        "config": {
+            "contentType": "listAll",
+            "contentModel": "artist",
+            "contentCountry": "GB",
+            "countryName": "United Kingdom",
+            "countryFlag": "🇬🇧",
+            "contentOrder": "popularity:desc",
+            "layout": "grid",
+            "nestedLayout": "grid",
+            "seoTitle": "British Music - {{site_name}}",
+            "seoDescription": "Listen to the best British artists and releases on {{site_name}}."
+        }
+    },
+    {
+        "name": "Irish music",
+        "slug": "country-ie",
+        "internal": false,
+        "presetDescription": "Artists and releases from Ireland",
+        "config": {
+            "contentType": "listAll",
+            "contentModel": "artist",
+            "contentCountry": "IE",
+            "countryName": "Ireland",
+            "countryFlag": "🇮🇪",
+            "contentOrder": "popularity:desc",
+            "layout": "grid",
+            "nestedLayout": "grid",
+            "seoTitle": "Irish Music - {{site_name}}",
+            "seoDescription": "Listen to the best Irish artists and releases on {{site_name}}."
+        }
+    },
+    {
+        "name": "Canadian music",
+        "slug": "country-ca",
+        "internal": false,
+        "presetDescription": "Artists and releases from Canada",
+        "config": {
+            "contentType": "listAll",
+            "contentModel": "artist",
+            "contentCountry": "CA",
+            "countryName": "Canada",
+            "countryFlag": "🇨🇦",
+            "contentOrder": "popularity:desc",
+            "layout": "grid",
+            "nestedLayout": "grid",
+            "seoTitle": "Canadian Music - {{site_name}}",
+            "seoDescription": "Listen to the best Canadian artists and releases on {{site_name}}."
+        }
+    },
+    {
+        "name": "Australian music",
+        "slug": "country-au",
+        "internal": false,
+        "presetDescription": "Artists and releases from Australia",
+        "config": {
+            "contentType": "listAll",
+            "contentModel": "artist",
+            "contentCountry": "AU",
+            "countryName": "Australia",
+            "countryFlag": "🇦🇺",
+            "contentOrder": "popularity:desc",
+            "layout": "grid",
+            "nestedLayout": "grid",
+            "seoTitle": "Australian Music - {{site_name}}",
+            "seoDescription": "Listen to the best Australian artists and releases on {{site_name}}."
+        }
+    },
+    {
+        "name": "South African music",
+        "slug": "country-za",
+        "internal": false,
+        "presetDescription": "Artists and releases from South Africa",
+        "config": {
+            "contentType": "listAll",
+            "contentModel": "artist",
+            "contentCountry": "ZA",
+            "countryName": "South Africa",
+            "countryFlag": "🇿🇦",
+            "contentOrder": "popularity:desc",
+            "layout": "grid",
+            "nestedLayout": "grid",
+            "seoTitle": "South African Music - {{site_name}}",
+            "seoDescription": "Listen to the best South African artists and releases on {{site_name}}."
+        }
+    },
+    {
+        "name": "Ghanaian music",
+        "slug": "country-gh",
+        "internal": false,
+        "presetDescription": "Artists and releases from Ghana",
+        "config": {
+            "contentType": "listAll",
+            "contentModel": "artist",
+            "contentCountry": "GH",
+            "countryName": "Ghana",
+            "countryFlag": "🇬🇭",
+            "contentOrder": "popularity:desc",
+            "layout": "grid",
+            "nestedLayout": "grid",
+            "seoTitle": "Ghanaian Music - {{site_name}}",
+            "seoDescription": "Listen to the best Ghanaian artists and releases on {{site_name}}."
+        }
+    },
+    {
+        "name": "Indian music",
+        "slug": "country-in",
+        "internal": false,
+        "presetDescription": "Artists and releases from India",
+        "config": {
+            "contentType": "listAll",
+            "contentModel": "artist",
+            "contentCountry": "IN",
+            "countryName": "India",
+            "countryFlag": "🇮🇳",
+            "contentOrder": "popularity:desc",
+            "layout": "grid",
+            "nestedLayout": "grid",
+            "seoTitle": "Indian Music - {{site_name}}",
+            "seoDescription": "Listen to the best Indian artists and releases on {{site_name}}."
+        }
+    },
+    {
+        "name": "Brazilian music",
+        "slug": "country-br",
+        "internal": false,
+        "presetDescription": "Artists and releases from Brazil",
+        "config": {
+            "contentType": "listAll",
+            "contentModel": "artist",
+            "contentCountry": "BR",
+            "countryName": "Brazil",
+            "countryFlag": "🇧🇷",
+            "contentOrder": "popularity:desc",
+            "layout": "grid",
+            "nestedLayout": "grid",
+            "seoTitle": "Brazilian Music - {{site_name}}",
+            "seoDescription": "Listen to the best Brazilian artists and releases on {{site_name}}."
+        }
+    },
+    {
+        "name": "German music",
+        "slug": "country-de",
+        "internal": false,
+        "presetDescription": "Artists and releases from Germany",
+        "config": {
+            "contentType": "listAll",
+            "contentModel": "artist",
+            "contentCountry": "DE",
+            "countryName": "Germany",
+            "countryFlag": "🇩🇪",
+            "contentOrder": "popularity:desc",
+            "layout": "grid",
+            "nestedLayout": "grid",
+            "seoTitle": "German Music - {{site_name}}",
+            "seoDescription": "Listen to the best German artists and releases on {{site_name}}."
+        }
+    },
+    {
+        "name": "French music",
+        "slug": "country-fr",
+        "internal": false,
+        "presetDescription": "Artists and releases from France",
+        "config": {
+            "contentType": "listAll",
+            "contentModel": "artist",
+            "contentCountry": "FR",
+            "countryName": "France",
+            "countryFlag": "🇫🇷",
+            "contentOrder": "popularity:desc",
+            "layout": "grid",
+            "nestedLayout": "grid",
+            "seoTitle": "French Music - {{site_name}}",
+            "seoDescription": "Listen to the best French artists and releases on {{site_name}}."
+        }
+    },
+    {
+        "name": "Spanish music",
+        "slug": "country-es",
+        "internal": false,
+        "presetDescription": "Artists and releases from Spain",
+        "config": {
+            "contentType": "listAll",
+            "contentModel": "artist",
+            "contentCountry": "ES",
+            "countryName": "Spain",
+            "countryFlag": "🇪🇸",
+            "contentOrder": "popularity:desc",
+            "layout": "grid",
+            "nestedLayout": "grid",
+            "seoTitle": "Spanish Music - {{site_name}}",
+            "seoDescription": "Listen to the best Spanish artists and releases on {{site_name}}."
+        }
+    },
+    {
+        "name": "Japanese music",
+        "slug": "country-jp",
+        "internal": false,
+        "presetDescription": "Artists and releases from Japan",
+        "config": {
+            "contentType": "listAll",
+            "contentModel": "artist",
+            "contentCountry": "JP",
+            "countryName": "Japan",
+            "countryFlag": "🇯🇵",
+            "contentOrder": "popularity:desc",
+            "layout": "grid",
+            "nestedLayout": "grid",
+            "seoTitle": "Japanese Music - {{site_name}}",
+            "seoDescription": "Listen to the best Japanese artists and releases on {{site_name}}."
+        }
+    },
+    {
+        "name": "South Korean music",
+        "slug": "country-kr",
+        "internal": false,
+        "presetDescription": "Artists and releases from South Korea",
+        "config": {
+            "contentType": "listAll",
+            "contentModel": "artist",
+            "contentCountry": "KR",
+            "countryName": "South Korea",
+            "countryFlag": "🇰🇷",
+            "contentOrder": "popularity:desc",
+            "layout": "grid",
+            "nestedLayout": "grid",
+            "seoTitle": "South Korean Music - {{site_name}}",
+            "seoDescription": "Listen to the best South Korean artists and releases on {{site_name}}."
+        }
+    }
+]
