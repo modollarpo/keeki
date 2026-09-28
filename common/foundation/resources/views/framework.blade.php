@@ -121,7 +121,7 @@
         @endif
     @endif
 
-    @if ($code = settings('analytics.tracking_code'))
+    @if ($code = settings('analytics.tracking_code') && $_COOKIE['analytics_consent'] === 'true')
         <!-- Google tag (gtag.js) -->
         <script
             async
@@ -140,6 +140,7 @@
             }}');
         </script>
     @endif
+    {{-- TODO: add a consent banner that sets analytics_consent=true cookie --}}
 
     @yield ('head-end')
 </head>
