@@ -2,6 +2,7 @@
 
 @import '../../common/foundation/resources/client/core/common.css';
 @import './web-player/playable-item/content-grid.css';
+@import './keekii-brand.css';
 
 @source '../../**/*.ts*';
 

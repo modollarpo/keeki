@@ -29,7 +29,7 @@ export function ChannelHeading({
         <div
           className={clsx('flex items-center justify-between gap-6', margin)}
         >
-          <h1 className="flex-auto text-3xl">
+          <h1 className="keekii-display flex-auto text-3xl md:text-4xl">
             <Trans message={channel.name} />
           </h1>
           <Tooltip.Root>
@@ -53,7 +53,7 @@ export function ChannelHeading({
       );
     }
     return (
-      <h1 className={clsx('text-3xl', margin)}>
+      <h1 className={clsx('keekii-display text-3xl md:text-4xl', margin)}>
         <Trans message={channel.name} />
       </h1>
     );

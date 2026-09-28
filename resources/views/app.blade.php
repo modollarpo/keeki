@@ -1,5 +1,28 @@
 @extends('common::framework')
 
+{{--
+    Keekii typography pairing.
+
+    Body/UI stays Inter (the vendor default, already wired via --font-sans)
+    because the product is dense: track lists, tables, settings. Bricolage
+    Grotesque is the display face, reserved for brand moments and applied via
+    the `keekii-display` utility in resources/client/keekii-brand.css.
+
+    Uses the framework's own @yield('head-end') hook rather than editing the
+    vendor layout, and mirrors the preconnect + display=swap pattern the
+    framework already uses for per-theme Google Fonts.
+
+    Trade-off: a third-party stylesheet. `display=swap` plus the preconnects
+    keep it off the critical path for text rendering; the alternative is a
+    self-hosted @fontsource package (new npm dependency + build change).
+    Revisit if font-related CLS regresses.
+--}}
+@section('head-end')
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap">
+@endsection
+
 @section('angular-styles')
     {{--angular styles begin--}}
 		<link rel="stylesheet" href="client/styles.41f9cd8f18e85618bcff.css" media="print" onload="this.media=&apos;all&apos;">

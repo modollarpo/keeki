@@ -38,7 +38,7 @@ export function MediaPageHeaderLayout({
           ),
         })}
         <div className="min-w-0 flex-auto pb-2">
-          <h1 className="mb-2.5 text-center text-2xl font-bold md:text-start md:text-4xl">
+          <h1 className="keekii-display mb-2.5 text-center text-2xl font-bold md:text-start md:text-4xl">
             {title}
           </h1>
           {subtitle && (
