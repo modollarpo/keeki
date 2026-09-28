@@ -74,6 +74,12 @@ export default defineConfig({
         enabled: false,
       },
 
+      // Deliberately empty. `includeAssets` entries are injected into
+      // `self.__WB_MANIFEST`, and resources/client/sw.ts rewrites every entry
+      // there with a `build/` prefix because it assumes all of them are Vite
+      // output. Anything added here would be precached as `build/favicon.svg`
+      // and 404 at install. The public/ assets are pushed explicitly in sw.ts
+      // instead, where the prefixing has already been applied.
       includeAssets: [],
 
       workbox: {
@@ -85,7 +91,7 @@ export default defineConfig({
 
         // Stops various paths being intercepted by the service worker
         // if they're not available offline. Telescope is a good
-        // example, if you are using that.
+        // example, if you're using that.
         navigateFallbackDenylist: [/^\/telescope/],
 
         // Add some explicit URLs to the SW precache. This helps us
@@ -94,11 +100,18 @@ export default defineConfig({
           // Cache the root URL to get hold of the PWA HTML entrypoint
           // defined in welcome.blade.php. Ref:
           // https://github.com/vite-pwa/vite-plugin-pwa/issues/431#issuecomment-1703151065
-          {url: '/', revision: `${Date.now()}`},
-          {url: '/manifest.json', revision: `${Date.now()}`},
+          //
+          // No `revision` on either entry. A revision is a cache-busting key:
+          // workbox only refetches the URL when that string changes, so a
+          // `Date.now()` value meant the root document and the manifest were
+          // re-downloaded on every single deploy and never served from cache.
+          {url: '/'},
+          {url: '/manifest.json'},
         ],
 
-        maximumFileSizeToCacheInBytes: 3000000, // 3MB
+        // Bounds the precache so a long-lived install cannot grow without
+        // limit as assets churn between deploys.
+        maximumCacheSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB
       },
     }),
   ],

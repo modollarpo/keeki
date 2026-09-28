@@ -44,7 +44,36 @@ const manifest: PrecacheEntry[] = self.__WB_MANIFEST
   })
   .filter(e => !manifestEntriesToSkip.some(r => r.test(e.url)));
 
-manifest.push({url: '/manifest.json', revision: null});
+/**
+ * Assets that live in `public/` rather than in Vite's output.
+ *
+ * These cannot come from `self.__WB_MANIFEST` via `includeAssets`: the mapping
+ * above rewrites every manifest URL with a `build/` prefix because it assumes
+ * they are all Vite output, so anything injected there would be precached as
+ * `build/favicon.svg` and 404 on install. Pushing them here, after the prefixing
+ * has been applied, keeps the URLs correct.
+ *
+ * Icons matter for an installed app specifically: without them the launcher
+ * entry has no image to show. `revision: null` is correct for all of these
+ * because they are static files served straight from `public/`, and workbox
+ * should only refetch them if the request itself fails.
+ */
+const publicAssets = [
+  '/manifest.json',
+  '/favicon.svg',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/icons/maskable-192.png',
+  '/icons/maskable-512.png',
+  '/icons/apple-touch-icon.png',
+  '/icons/favicon-32.png',
+  '/icons/favicon-16.png',
+  '/fonts/bricolage-grotesque-latin-variable.woff2',
+];
+
+for (const url of publicAssets) {
+  manifest.push({url, revision: null});
+}
 
 cleanupOutdatedCaches();
 precacheAndRoute(manifest);
