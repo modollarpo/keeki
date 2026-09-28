@@ -250,6 +250,9 @@ export const playerStoreOptions: Partial<PlayerStoreOptions> = {
         const videoId = e.videoId || internalApi?.videoId;
         if (!videoId) {
           tracksSkippedDueToError++;
+          // "not embeddable" (100/101/150) is the most common failure, so
+          // this branch must not be silent either.
+          showSkipToast(cuedMedia);
 
           // try to play up to two next queued tracks if we can't play
           // a video for this one. If we can't play 3 tracks in a row
@@ -327,6 +330,8 @@ export const playerStoreOptions: Partial<PlayerStoreOptions> = {
         // like any other playback error
         directStreamCuedIds.delete(`${cuedMedia.id}`);
         tracksSkippedDueToError++;
+        // every source failed for this track, tell the user before dropping it
+        showSkipToast(cuedMedia);
 
         if (tracksSkippedDueToError <= 2) {
           emit('playbackEnd');

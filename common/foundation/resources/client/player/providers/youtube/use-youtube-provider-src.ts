@@ -78,13 +78,27 @@ export function useYoutubeProviderSrc(
       updateVideoIds(media.src);
     } else if (media) {
       emit('buffering', {isBuffering: true});
-      options.youtube?.srcResolver?.(media).then(item => {
-        // check if resolved media matches the one currently in the store to prevent race conditions.
-        // check against current value in store, because this callback will close over old value
-        if (item?.src && getState().cuedMedia?.id === item.id) {
-          updateVideoIds(item.src);
-        }
-      });
+      options.youtube?.srcResolver?.(media)
+        .then(item => {
+          // check if resolved media matches the one currently in the store to prevent race conditions.
+          // check against current value in store, because this callback will close over old value
+          if (item?.src && getState().cuedMedia?.id === item.id) {
+            updateVideoIds(item.src);
+          }
+        })
+        .catch(() => {
+          // a rejected lookup (eg. transient network error) must not surface as
+          // an unhandled rejection, and must not leave the player buffering
+          // forever. Reuse the no-results path so the direct-stream fallback
+          // waterfall still runs and the track still gets skipped with a toast.
+          if (getState().cuedMedia?.id === media.id) {
+            // deferred exactly like the src === ' ' branch in updateVideoIds,
+            // so this emits from a macrotask and not from inside the rejection
+            setTimeout(() => {
+              emit('error', {sourceEvent: {videoId: ' ', code: 'no_results'}});
+            }, 0);
+          }
+        });
     }
     // only update when media id changes to prevent infinite loops
     // eslint-disable-next-line react-hooks/exhaustive-deps
