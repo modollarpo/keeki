@@ -166,6 +166,47 @@
    * file, so it composes with variants (md:keekii-display, group-hover:…). */
 
   /* ---------------------------------------------------------------------
+   * 4b. Small-text weight
+   *
+   * The body stack is a system sans, and at its default 400 the smallest copy
+   * on screen -- table cells, timestamps, track rows, captions, helper text
+   * under inputs, the muted-foreground labels -- reads thin, particularly on
+   * the light surface where it is dark-on-cream rather than dark-on-white.
+   *
+   * Raising the *inherited baseline* on <body> is the smallest change that
+   * moves every one of those at once. Two properties make it safe:
+   *
+   *   - It is in @layer base, so any Tailwind `font-*` utility on an element
+   *     still wins. Nothing that already declares a weight is touched; only
+   *     text that inherits its weight is affected. Headings, which almost all
+   *     carry an explicit weight, are unchanged.
+   *   - It sets no font-family, so the choice of face is untouched.
+   *
+   * 500 rather than 600 on purpose. 600 is a visible jump on the platforms
+   * that resolve the system stack to a static 400/600 pair, and small text
+   * picks up weight far more than large text does, so it is the size most
+   * likely to go muddy. 500 is the one step that stays a step.
+   *
+   * On a variable system face (Segoe UI Variable on Windows 11, SF on Apple
+   * platforms, Roboto on Android) 500 interpolates to a true medium. On an
+   * older static stack it rounds to whichever of 400/600 the platform's font
+   * matcher considers nearer, so the effect is "a step heavier, never
+   * lighter" everywhere but not identical everywhere. If the product ever
+   * needs this exact, the fix is a self-hosted body face with a real 500, not
+   * a larger number here.
+   * ------------------------------------------------------------------- */
+  body {
+    font-weight: 500;
+  }
+
+  /* The loader's status line is the same size of text and is the first thing
+   * anyone sees, so it is pinned explicitly rather than left to inherit. The
+   * loader is inlined and self-contained, so it cannot see this file. */
+  .keekii-loader__copy {
+    font-weight: 500;
+  }
+
+  /* ---------------------------------------------------------------------
    * 5. Brand surfaces
    * ------------------------------------------------------------------- */
 

@@ -15,7 +15,7 @@ use Common\Settings\Models\Setting;
 use Common\Settings\Themes\CssTheme;
 
 $updates = [
-    // Branding: Keekii 900x382 logo pair.
+    // Branding: Keekii 900x344 logo pair.
     //
     // The slot names are about the ARTWORK's colour, not the background it is
     // used on, which is the opposite of what it reads like:
@@ -25,13 +25,36 @@ $updates = [
     //
     // The consumer is `isDarkMode ? branding.logo_light : branding.logo_dark`
     // in common/foundation/resources/client/auth/ui/auth-layout/auth-layout.tsx,
-    // and the two ops/logo-assets PNGs match it: keekii-logo-dark.png is black
-    // ink, keekii-logo-light.png is white ink.
+    // and the two ops/logo-assets PNGs match it: keekii-logo-dark.png is dark
+    // ink on transparency, keekii-logo-light.png is light ink.
     //
     // An earlier version of this comment read "white for dark bg / black for
     // light bg" while naming them the other way round. Following it would have
     // deployed the files swapped and rendered an invisible logo, so the mapping
     // is spelled out here rather than abbreviated.
+    //
+    // GEOMETRY: these were 900x382 until this change. That was a 2.356 aspect
+    // against the artwork's real 2.616, so the wordmark was letterboxed inside
+    // its own frame with ~5% dead margin top and bottom and rendered visibly
+    // too small next to a sibling logo of the true height. The current pair is
+    // 900x344, rendered straight from the SVG viewBox by
+    // scripts/build-wordmark.py, so the PNG aspect now matches the vector and
+    // the twin-pulse 'i' is not cropped. Both PNGs are RGBA with a transparent
+    // background so they sit on either theme surface.
+    //
+    // The artwork itself is the Bricolage Grotesque wordmark, rebuilt from the
+    // self-hosted variable font so the lockup matches the display face used
+    // everywhere in the app. The supplied files are kept verbatim, C2PA
+    // credentials intact, in ops/logo-assets/supplied/ -- they are reference
+    // art, not what ships. See ops/logo-assets/supplied/NOTES.md.
+    //
+    // /storage is gitignored, so these four files are NOT in the repository and
+    // must be produced on each environment before sync-settings.php runs:
+    //   python scripts/build-wordmark.py --font public/fonts/bricolage-grotesque-latin-variable.woff2 \
+    //     --out-dark ops/logo-assets/keekii-logo-dark.svg --out-light ops/logo-assets/keekii-logo-light.svg \
+    //     --png-dark ops/logo-assets/keekii-logo-dark.png --png-light ops/logo-assets/keekii-logo-light.png
+    //   mkdir -p storage/branding-images
+    //   cp ops/logo-assets/keekii-logo-* storage/branding-images/
     'branding.logo_dark' => 'storage/branding-images/keekii-logo-dark.png',
     'branding.logo_light' => 'storage/branding-images/keekii-logo-light.png',
     // Direct-stream fallback: absolute yt-dlp binary path

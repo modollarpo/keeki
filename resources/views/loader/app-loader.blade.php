@@ -26,11 +26,17 @@
        app's Tailwind build and the vendor foundation styles. */
     .keekii-loader {
         /* Derived from the active theme's brand colour, so the backdrop tint
-           follows whatever --be-primary the admin picked. The fallback is the
-           Monochrome Ember light primary; it used to be a green (#16a34a) left
-           over from before the palette was signed off, which would have tinted
-           the loader green for the split second before the theme loaded. */
-        --keekii-loader-tint: color-mix(in oklab, var(--be-primary, #d84b00) 20%, transparent);
+           follows whatever primary the admin picked.
+
+           The glow is a decorative brand wash rather than anything that carries
+           meaning, so it prefers --be-brand-ink (#e8611f, the orange sampled
+           from the supplied K mark and wordmark) over --be-primary, which is
+           the darkened step reserved for text and controls. --be-primary is
+           kept in the chain so a theme row written before --be-brand-ink
+           existed still gets a warm tint, and the final fallback is the brand
+           orange rather than a green left over from before the palette was
+           signed off. */
+        --keekii-loader-tint: color-mix(in oklab, var(--be-brand-ink, var(--be-primary, #e8611f)) 20%, transparent);
         --keekii-eq-speed: 900ms;
 
         position: fixed;
@@ -138,7 +144,7 @@
         height: calc(var(--keekii-h) * 1%);
         min-height: 5px;
         border-radius: 999px;
-        background-color: var(--be-primary, #d84b00);
+        background-color: var(--be-primary, #cf4700);
         transform-origin: 50% 50%;
         animation: keekii-loader-eq var(--keekii-eq-speed, 900ms) ease-in-out infinite alternate;
         animation-delay: calc(var(--keekii-i) * -90ms);

@@ -1,0 +1,221 @@
+import argparse
+import os
+import tempfile
+
+from fontTools.ttLib import TTFont
+from PIL import Image, ImageDraw
+
+WORD = "Keekii"
+BAR_HEIGHTS = [34, 58, 86, 48, 100, 72, 40, 80, 62, 92, 46]
+BAR_WIDTH_VW = 6
+BAR_GAP_VW = 6
+EQ_HEIGHT_VW = 56
+MARK_VW = 15
+MARK_MIN_VW = 58
+MARK_MAX_VW = 74
+WORD_VW = 7
+WORD_MIN_VW = 28
+WORD_MAX_VW = 40
+MARK_RADIUS = 0.22
+TRACKING_EM = -0.03
+GLOW_VW = 50
+GLOW_VH = 42
+GLOW_CX = 0.5
+GLOW_CY = 0.46
+GLOW_ALPHA = 51
+
+PAPER = (254, 252, 249, 255)
+INK = (17, 12, 8, 255)
+BRAND = (232, 97, 31, 255)
+ALT = (240, 134, 74, 255)
+FOREGROUND_LIGHT = INK
+FOREGROUND_DARK = (255, 255, 255, 255)
+
+DEVICES = [
+    ("iphone-15-14-pro-max", 430, 932, 3),
+    ("iphone-15-14-pro", 393, 852, 3),
+    ("iphone-13-12", 390, 844, 3),
+    ("iphone-x-xs-11-pro", 375, 812, 3),
+    ("iphone-xr-11", 414, 896, 2),
+    ("iphone-se-8", 375, 667, 2),
+    ("ipad-pro-12-9", 1024, 1366, 2),
+    ("ipad-pro-11", 834, 1194, 2),
+    ("ipad-air-10-9", 820, 1180, 2),
+    ("ipad-9-7", 768, 1024, 2),
+]
+
+
+def load_display_font(path):
+    font = TTFont(path)
+    font.flavor = None
+    tmp = os.path.join(tempfile.gettempdir(), "keekii-splash-display.ttf")
+    font.save(tmp)
+    return tmp
+
+
+def draw_tracked(draw, xy, text, font, fill, tracking_px):
+    x, y = xy
+    for ch in text:
+        draw.text((x, y), ch, font=font, fill=fill)
+        x += draw.textlength(ch, font=font) + tracking_px
+
+
+def glow_layer(size, brand):
+    w, h = size
+    gx = w * GLOW_CX
+    gy = h * GLOW_CY
+    rx = w * GLOW_VW / 100.0
+    ry = h * GLOW_VH / 100.0
+    div = 8
+    lw = max(4, w // div)
+    lh = max(4, h // div)
+    small = Image.new("RGBA", (lw, lh), (0, 0, 0, 0))
+    d = ImageDraw.Draw(small)
+    scx, scy = lw * GLOW_CX, lh * GLOW_CY
+    srx, sry = rx / div, ry / div
+    steps = 26
+    for i in range(steps, 0, -1):
+        t = i / steps
+        alpha = int(round(GLOW_ALPHA * (1.0 - t) ** 1.6))
+        d.ellipse(
+            [scx - srx * t, scy - sry * t, scx + srx * t, scy + sry * t],
+            fill=(brand[0], brand[1], brand[2], alpha),
+        )
+    return small.resize((w, h), Image.LANCZOS)
+
+
+def build(out_path, width, height, logical_width, theme, mark_path, display_font):
+    scale = width / float(logical_width)
+    dark = theme == "dark"
+    bg = INK if dark else PAPER
+    fg = FOREGROUND_DARK if dark else FOREGROUND_LIGHT
+    mark_src = "mark-dark-256.png" if dark else "mark-light-256.png"
+
+    canvas = Image.new("RGBA", (width, height), bg)
+    canvas.alpha_composite(glow_layer((width, height), BRAND))
+
+    mark_logical = min(max(MARK_MIN_VW, MARK_VW / 100.0 * logical_width), MARK_MAX_VW)
+    mark_w = mark_logical * scale
+    mark = Image.open(mark_path(mark_src)).convert("RGBA")
+    side = max(1, int(round(mark_w)))
+    mark = mark.resize((side, side), Image.LANCZOS)
+    mask = Image.new("L", (side, side), 0)
+    ImageDraw.Draw(mask).rounded_rectangle([0, 0, side - 1, side - 1], radius=int(side * MARK_RADIUS), fill=255)
+    mark.putalpha(Image.composite(mark.getchannel("A"), Image.new("L", (side, side), 0), mask))
+
+    word_logical = min(max(WORD_MIN_VW, WORD_VW / 100.0 * logical_width), WORD_MAX_VW)
+    word_px = word_logical * scale
+    from PIL import ImageFont
+
+    word_font = ImageFont.truetype(display_font, max(1, int(round(word_px))))
+    probe = Image.new("RGBA", (1, 1))
+    pd = ImageDraw.Draw(probe)
+    word_w = sum(pd.textlength(c, font=word_font) for c in WORD) + TRACKING_EM * word_px * (len(WORD) - 1)
+    word_h = word_px * 1.1
+
+    bar_w = BAR_WIDTH_VW * scale
+    bar_gap = BAR_GAP_VW * scale
+    eq_h = EQ_HEIGHT_VW * scale
+    eq_w = len(BAR_HEIGHTS) * bar_w + (len(BAR_HEIGHTS) - 1) * bar_gap
+
+    stage_w = max(mark_w, word_w, eq_w)
+    gap_mark_word = 22 * scale
+    gap_word_eq = 22 * scale
+
+    total_h = mark_w + gap_mark_word + word_h + gap_word_eq + eq_h
+    x0 = (width - stage_w) / 2.0
+    y = (height - total_h) / 2.0
+
+    canvas.alpha_composite(mark, (int(round(x0 + (stage_w - mark_w) / 2.0)), int(round(y))))
+    y += mark_w + gap_mark_word
+
+    d = ImageDraw.Draw(canvas)
+    draw_tracked(
+        d,
+        (x0 + (stage_w - word_w) / 2.0, y),
+        WORD,
+        word_font,
+        fg,
+        TRACKING_EM * word_px,
+    )
+    y += word_h + gap_word_eq
+
+    bx = x0 + (stage_w - eq_w) / 2.0
+    bar_colour = BRAND if dark else BRAND
+    for i, hgt in enumerate(BAR_HEIGHTS):
+        bh = eq_h * hgt / 100.0
+        x = bx + i * (bar_w + bar_gap)
+        d.rounded_rectangle(
+            [x, y + (eq_h - bh), x + bar_w, y + eq_h],
+            radius=bar_w / 2.0,
+            fill=bar_colour,
+        )
+
+    out = canvas.convert("RGB")
+    if out.width * out.height > 40000:
+        out = out.quantize(colors=256, method=Image.FASTOCTREE, dither=Image.Dither.FLOYDSTEINBERG)
+    out.save(out_path, "PNG", optimize=True)
+    return os.path.getsize(out_path)
+
+
+START = "    {{-- keekii:splash:start (generated by scripts/generate-splash-screens.py) --}}"
+END = "    {{-- keekii:splash:end --}}"
+
+
+def patch_blade(path, links):
+    with open(path, encoding="utf-8") as fh:
+        s = fh.read()
+    a = s.index(START) + len(START)
+    b = s.index(END)
+    s = s[:a] + "\n" + links + "\n" + s[b:]
+    with open(path, "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(s)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--font", required=True)
+    ap.add_argument("--mark-dir", required=True)
+    ap.add_argument("--out-dir", required=True)
+    ap.add_argument("--blade", required=True)
+    args = ap.parse_args()
+
+    display_font = load_display_font(args.font)
+
+    def mark_path(name):
+        return os.path.join(args.mark_dir, name)
+
+    os.makedirs(args.out_dir, exist_ok=True)
+    total = 0
+    rows = []
+    for name, lw, lh, scale in DEVICES:
+        for orient, (w, h) in (("portrait", (lw, lh)), ("landscape", (lh, lw))):
+            for theme in ("light", "dark"):
+                px_w, px_h = w * scale, h * scale
+                fname = f"{name}-{orient}-{theme}.png"
+                size = build(
+                    os.path.join(args.out_dir, fname), px_w, px_h, w, theme, mark_path, display_font
+                )
+                total += size
+                rows.append((fname, px_w, px_h, size))
+    print(f"generated {len(rows)} splash images, {total/1024:.0f} KiB total")
+
+    lines = []
+    for name, lw, lh, scale in DEVICES:
+        for orient in ("portrait", "landscape"):
+            for theme in ("light", "dark"):
+                fname = f"{name}-{orient}-{theme}.png"
+                media = (
+                    f"(device-width: {lw}px) and (device-height: {lh}px) "
+                    f"and (-webkit-device-pixel-ratio: {scale}) and (orientation: {orient}) "
+                    f"and (prefers-color-scheme: {theme})"
+                )
+                lines.append(
+                    f'    <link rel="apple-touch-startup-image" media="{media}" href="/splash/{fname}">'
+                )
+    patch_blade(args.blade, "\n".join(lines))
+    print(f"patched {args.blade} with {len(lines)} startup links")
+
+
+if __name__ == "__main__":
+    main()

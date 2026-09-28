@@ -76,6 +76,20 @@ return [
         '--be-primary' => 'oklch(0.582 0.183 40)',
         '--be-primary-foreground' => 'oklch(0.992 0.005 78)',
 
+        // Brand *graphic* ink, kept deliberately separate from --be-primary.
+        // #e8611f is the orange in the supplied K mark and wordmark, sampled
+        // from the artwork. It measures 3.33:1 on the light background #fefcf9
+        // and 5.70:1 on the dark ink #110c08, so it is safe as a large graphic
+        // and safe as text on dark, but it fails 4.5:1 as light-mode body text.
+        // --be-primary is the darkened step that carries text and controls.
+        // The two are not interchangeable: do not point --be-primary at this.
+        '--be-brand-ink' => '#e8611f',
+        // The lighter twin-pulse tone from the tall 'i' in the wordmark. It
+        // measures 2.50:1 on the light background, below even the 3:1 graphic
+        // floor, so it is decorative only and must not carry text, borders, or
+        // focus rings. It is safe on the dark background at 7.61:1.
+        '--be-brand-ink-alt' => '#f0864a',
+
         // Monochrome means monochrome: the accent is a deeper, redder step of
         // the same ember hue, not the violet counterweight this theme used to
         // carry. It carries hover/active emphasis and small highlights.
@@ -137,6 +151,14 @@ return [
         // already clears 4.5:1 as link text.
         '--be-primary' => 'oklch(0.739 0.161 48)',
         '--be-primary-foreground' => 'oklch(0.159 0.012 61)',
+
+        // The artwork is the same file in both themes -- the wordmark swaps ink
+        // colour, not accent -- so these two are intentionally identical to the
+        // light-theme values. On this background the brand ink reads 5.70:1 and
+        // the alt 7.61:1, so both are comfortably legible here. The
+        // graphic-vs-text split is documented in the light theme above.
+        '--be-brand-ink' => '#e8611f',
+        '--be-brand-ink-alt' => '#f0864a',
 
         '--be-accent' => 'oklch(0.6 0.129 45)',
         '--be-accent-foreground' => 'oklch(0.159 0.012 61)',
