@@ -23,7 +23,10 @@ import {
 } from '@app/web-player/users/user-profile-link';
 import {Channel} from '@common/channels/channel';
 import {LandingPage as CommonLandingPage} from '@common/ui/landing-page/landing-page';
-import {SectionPresentation} from '@common/ui/landing-page/landing-page-config';
+import {
+  AppSectionConfig,
+  readSectionChannelId,
+} from '@common/ui/landing-page/landing-page-config';
 import {LandingPageContext} from '@common/ui/landing-page/landing-page-context';
 import {SectionHeading} from '@common/ui/landing-page/primitives/section-heading';
 import {SectionShell} from '@common/ui/landing-page/primitives/section-shell';
@@ -82,7 +85,7 @@ const defaultIcons: Record<string, ReactElement> = {
 
 const sectionRenderers: Record<
   string,
-  ComponentType<{config: ChannelSectionProps['config']; index: number}>
+  ComponentType<{config: AppSectionConfig; index: number}>
 > = {
   channel: ChannelSection,
 };
@@ -132,18 +135,16 @@ export function Component() {
 }
 
 type ChannelSectionProps = {
-  config: {
-    channelId?: number | string;
-    badge?: string;
-    title?: string;
-    description?: string;
-  } & Partial<SectionPresentation>;
+  config: AppSectionConfig;
 };
 function ChannelSection({config}: ChannelSectionProps) {
   const query = useSuspenseQuery(appQueries.landingPageData.get());
-  const channel = query.data.channels?.find(
-    c => c.id == config.channelId,
-  ) as Channel<ChannelContentModel>;
+  const channelId = readSectionChannelId(config);
+  const channel = channelId
+    ? (query.data.channels?.find(c => c.id == channelId) as
+        | Channel<ChannelContentModel>
+        | undefined)
+    : undefined;
 
   if (!channel) {
     return null;

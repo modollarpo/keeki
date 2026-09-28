@@ -1,4 +1,7 @@
+import {LandingPageFooterConfig} from '@common/ui/landing-page/footer/landing-page-footer';
 import {
+  AppSectionConfig,
+  NormalizedSection,
   SectionBackground,
   SectionConfig,
   SectionPresentation,
@@ -10,6 +13,13 @@ import {
 } from '@common/ui/landing-page/section-defs';
 
 /**
+ * Used when a stored section is so malformed it cannot be rendered at all. The
+ * footer is the one section that needs no required fields, so it is the only
+ * safe thing to fall back to — and it is a real config, not a cast.
+ */
+const FALLBACK_SECTION: LandingPageFooterConfig = {name: 'footer'};
+
+/**
  * Normalizes a raw snapshot of `client.landingPage.sections` (as persisted by any
  * previous version of the app) into a stable `SectionConfig[]`.
  *
@@ -19,24 +29,28 @@ import {
  * single, pure, defensive gate every render path goes through so components can
  * trust their props. It never writes back to the snapshot.
  */
-export function normalizeSections(sections: unknown): SectionConfig[] {
+export function normalizeSections(sections: unknown): NormalizedSection[] {
   if (!Array.isArray(sections)) {
     return [];
   }
   return sections.map((raw, index) => normalizeSection(raw, index));
 }
 
-export function normalizeSection(raw: unknown, index: number): SectionConfig {
+export function normalizeSection(raw: unknown, index: number): NormalizedSection {
   if (!isRecord(raw) || typeof raw.name !== 'string') {
-    return {name: 'footer'} as SectionConfig;
+    return FALLBACK_SECTION;
   }
 
   const def = sectionDefsByKey[raw.name];
 
   // Custom sections (registered at runtime by the app, e.g. `channel`) are not in
-  // the shared registry. Keep them untouched so their renderer keeps working.
+  // the shared registry, so there is no definition to normalize them against.
+  // Keep them untouched so their renderer keeps working. This is the one place
+  // an untyped record is asserted into the union: the data is genuinely unknown
+  // here, which is exactly why it is funnelled through this one defensive gate
+  // rather than being cast at the render site.
   if (!def) {
-    return raw as unknown as SectionConfig;
+    return toAppSectionConfig(raw);
   }
 
   const normalized = {...raw};
@@ -168,4 +182,34 @@ function coerceText(value: unknown): string | undefined {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Validates the minimum an app-registered section needs to render, then widens
+ * it into {@link AppSectionConfig}. The fields the shared layer understands are
+ * checked; anything else is carried through as `unknown` for the app renderer to
+ * narrow. A record with no usable `name` cannot be routed to a renderer at all,
+ * so it is rejected rather than passed along.
+ */
+function toAppSectionConfig(raw: Record<string, unknown>): AppSectionConfig {
+  if (typeof raw.name !== 'string' || raw.name.length === 0) {
+    return FALLBACK_SECTION;
+  }
+  const config: AppSectionConfig = {...raw, name: raw.name};
+  if (typeof raw.badge === 'string') {
+    config.badge = raw.badge;
+  } else {
+    delete config.badge;
+  }
+  if (typeof raw.title === 'string') {
+    config.title = raw.title;
+  } else {
+    delete config.title;
+  }
+  if (typeof raw.description === 'string') {
+    config.description = raw.description;
+  } else {
+    delete config.description;
+  }
+  return config;
 }

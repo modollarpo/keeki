@@ -219,6 +219,21 @@ export function getSectionDefinition(name: string): SectionDefinition | undefine
   return sectionDefsByKey[name];
 }
 
+/**
+ * Narrows a section config to the shared `SectionConfig` union.
+ *
+ * This is a real runtime check against the shared registry, not a type
+ * assertion: a name that is not in {@link sectionDefsByKey} is by definition an
+ * app-registered section. It exists because app sections cannot live in the
+ * union — an open `name: string` member would stop TypeScript narrowing every
+ * shared `case` — so the boundary has to be crossed with a guard rather than a
+ * cast.
+ */
+export function isSharedSectionConfig(
+  config: {name: string},
+): config is SectionConfig {
+  return sectionDefsByKey[config.name] !== undefined;
+}
 export const heroSectionDefs = sectionDefs.filter(def => def.name.startsWith('hero-'));
 
 export const heroSectionNames = new Set(

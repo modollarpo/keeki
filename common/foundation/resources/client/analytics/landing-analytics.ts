@@ -1,0 +1,103 @@
+/**
+ * Typed analytics facade for landing-page engagement.
+ *
+ * ── Read this before adding an event ──────────────────────────────────────
+ * This app has no consent mechanism. There is no cookie banner, no consent
+ * store, and no consent gate anywhere in the codebase. `framework.blade.php`
+ * loads gtag.js whenever `analytics.tracking_code` is set in the database, and
+ * that is the only condition — nothing checks whether the visitor agreed.
+ *
+ * So this facade is deliberately inert by default. `LandingAnalytics` sends
+ * nothing unless a provider has been registered *and* consent has been granted.
+ * With no provider registered — which is the state of a fresh checkout — every
+ * call is a no-op and nothing leaves the browser.
+ *
+ * This is a seam, not a consent implementation. Wiring it up requires a
+ * decision that has not been made: which vendor, and what consent UI and legal
+ * copy go with it. Do not add a tracking vendor here, and do not register a
+ * provider that bypasses `hasAnalyticsConsent`.
+ */
+
+/**
+ * Events a visitor can generate on a landing page.
+ *
+ * Discriminated rather than a free-form string so a typo fails at build time
+ * instead of silently creating a new event in whatever tool receives it.
+ *
+ * Note what is deliberately absent: no artist/track/album ids, no search terms,
+ * no email, no session identifiers, no PII of any kind. Analytics here answers
+ * "which parts of this page work", not "who is this person".
+ */
+export type LandingAnalyticsEvent =
+  | {name: 'landing_cta_clicked'; cta: string; placement: string}
+  | {name: 'landing_plan_selected'; plan: string; placement: string}
+  | {name: 'landing_faq_toggled'; question: string; state: 'opened' | 'closed'}
+  | {name: 'landing_video_played'; placement: string}
+  | {name: 'landing_section_viewed'; section: string}
+  | {name: 'landing_signup_started'; placement: string};
+
+/**
+ * A concrete destination for events. Implement this against a real provider —
+ * the shape is the whole contract, so an implementation can be swapped without
+ * touching call sites.
+ */
+export interface LandingAnalyticsProvider {
+  send: (event: LandingAnalyticsEvent) => void;
+}
+
+let provider: LandingAnalyticsProvider | null = null;
+let consentGranted = false;
+let hasWarnedAboutMissingSink = false;
+
+/**
+ * Reads whether the visitor has consented. Kept separate from the provider so a
+ * provider cannot be registered in a way that also implies consent.
+ */
+export function hasAnalyticsConsent(): boolean {
+  return consentGranted;
+}
+
+/**
+ * Grant consent. Nothing should call this until a real consent mechanism exists
+ * and a visitor has actually agreed — a call here is a legal decision, not a
+ * technical one.
+ */
+export function grantAnalyticsConsent(granted: boolean) {
+  consentGranted = granted;
+}
+
+/** Register the destination for events. Passing `null` disables sending. */
+export function setAnalyticsProvider(next: LandingAnalyticsProvider | null) {
+  provider = next;
+  hasWarnedAboutMissingSink = false;
+}
+
+/**
+ * Send an event.
+ *
+ * Dropped, in order of precedence, when: consent has not been granted, or no
+ * provider is registered. In the first-drop case a single console warning is
+ * emitted so that a silently-inert facade is obvious during development rather
+ * than being mistaken for a broken integration.
+ */
+export function trackLandingEvent(event: LandingAnalyticsEvent): void {
+  if (!consentGranted || !provider) {
+    if (!hasWarnedAboutMissingSink) {
+      hasWarnedAboutMissingSink = true;
+      console.info(
+        '[landing-page] analytics is inert: no consent and/or no provider registered. ' +
+          'No data is being sent. This is expected until a consent mechanism and ' +
+          'vendor are chosen.',
+      );
+    }
+    return;
+  }
+  provider.send(event);
+}
+
+/** Test seam. Resets module state so tests do not leak into one another. */
+export function resetAnalyticsForTesting() {
+  provider = null;
+  consentGranted = false;
+  hasWarnedAboutMissingSink = false;
+}
