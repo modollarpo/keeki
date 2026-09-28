@@ -181,8 +181,32 @@ named in one place is what stops a codebase drifting back to
 ## 5. Chart palette
 
 `--be-chart-1..5` are hard-coded vendor blues in `common-tailwind.css:12-16`,
-outside the themeable token set. They are overridden to an ember→violet ramp so
+outside the themeable token set. They are overridden to a single ember ramp so
 analytics surfaces match the brand.
+
+Two defects were corrected. Series 3-5 sat on violet (hue 292/328) even after
+the violet accent was dropped from the palette, putting purple bars on a
+deliberately all-warm theme. And `chart-2` was amber at `L=0.706`, which
+measures **2.64:1** on the light background — under the 3:1 WCAG threshold for
+meaningful non-text graphics, so that bar was genuinely hard to see on a
+near-white chart.
+
+The ramp now descends evenly in OKLCH lightness (~0.042 per step) while the hue
+drifts within the warm arc (41/56/30/46/70) and chroma pulls back, so adjacent
+series separate without any of them going grey:
+
+| series | on light `#fefcf9` | on dark `#110c08` |
+| ------ | ------------------ | ----------------- |
+| 1      | 3.21:1             | 5.92:1            |
+| 2      | 3.71:1             | 5.12:1            |
+| 3      | 4.49:1             | 4.23:1            |
+| 4      | 5.22:1             | 3.64:1            |
+| 5      | 6.01:1             | 3.16:1            |
+
+All ten pairs clear 3:1. The light-theme window is tight — anything above
+roughly `L=0.67` falls under 3:1 on a near-white background — which is why this
+ramp tops out at `0.665` and the *lightest* series is the last one, not the
+first.
 
 ## 5b. The mark — "Twin Pulse" (Concept B)
 
