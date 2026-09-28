@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keekii - palette options</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:32px;background:#f4f4f5;color:#18181b;
+  font:15px/1.55 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+h1{font-size:24px;margin:0 0 6px}
+.lead{max-width:70ch;color:#52525b;margin:0 0 28px}
+.opt{border:1px solid #e4e4e7;border-radius:14px;padding:22px;margin:0 0 26px;background:#fff}
+h2{font-size:19px;margin:0 0 6px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+h3{font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:#71717a;margin:0 0 10px}
+.blurb{max-width:74ch;color:#52525b;margin:0 0 18px}
+em{font-style:normal;font-size:12px;padding:2px 8px;border-radius:999px}
+.ok{background:#dcfce7;color:#166534}.warn{background:#fef9c3;color:#854d0e}.bad{background:#fee2e2;color:#991b1b}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.swrow{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.sw{text-align:center;font-size:10px;color:#71717a}
+.sw i{display:block;width:58px;height:44px;border-radius:8px;border:1px solid #0000001a;margin-bottom:4px}
+.sw b{display:block;font-weight:600;font-size:10px}
+.sw span{font-family:ui-monospace,Menlo,monospace;font-size:9px}
+.mock{border:1px solid;border-radius:12px;padding:16px;margin-bottom:14px}
+.mbar{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.logo{display:flex;gap:3px;align-items:flex-end}
+.logo i{display:block;width:9px;height:18px;border-radius:4px}
+.logo i:last-child{width:9px;height:12px}
+.word{font-weight:800;letter-spacing:-.03em;font-size:19px}
+.mrow{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.art{width:46px;height:46px;border-radius:9px;flex:none}
+.mtrack{flex:1;min-width:0}
+.mtrack b{display:block;font-size:14px}
+.mtrack span{font-size:12px}
+.mrow button{border:0;border-radius:999px;padding:7px 15px;font-weight:700;font-size:12px;cursor:pointer}
+.mchips{display:flex;gap:7px;margin-bottom:12px}
+.mchips span{padding:5px 12px;border-radius:999px;font-size:11px;font-weight:600}
+.mcopy{font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+td{padding:5px 6px;border-top:1px solid #f4f4f5}
+td.num{font-family:ui-monospace,Menlo,monospace;text-align:right}
+td.dim{color:#a1a1aa;font-size:11px}
+</style></head><body>
+<h1>Keekii &mdash; palette options</h1>
+<p class="lead">Three revisions of &ldquo;Ember &amp; Ink&rdquo; with the violet removed. Swatches are real sRGB values converted from
+oklch, and the ratios below are computed WCAG 2.1 contrast (not eyeballed). Each option is shown
+in a light and dark variant in a small player mock, so the pairing can be judged in context.
+Nothing in the repo has been changed yet &mdash; this page is for choosing only.</p>
+<section class="opt" id="A">
+  <h2>A. Monochrome Ember <em class="warn">AA large only</em></h2>
+  <p class="blurb">Violet removed outright. One accent hue, warm near-black neutrals. The most confident and the hardest to get wrong; violet is recoverable later.</p>
+  <div class="grid">
+    <div><h3>Light</h3><div class="swrow"><div class="sw"><i style="background:#fefcf9"></i><b>bg</b><span>#fefcf9</span></div><div class="sw"><i style="background:#1e150e"></i><b>fg</b><span>#1e150e</span></div><div class="sw"><i style="background:#d84b00"></i><b>primary</b><span>#d84b00</span></div><div class="sw"><i style="background:#a24019"></i><b>accent</b><span>#a24019</span></div><div class="sw"><i style="background:#59514b"></i><b>muted</b><span>#59514b</span></div><div class="sw"><i style="background:#ffffff"></i><b>card</b><span>#ffffff</span></div></div><div class="mock" style="background:#fefcf9;color:#1e150e;border-color:#1e150e">
+    <div class="mbar"><span class="logo"><i style="background:#d84b00"></i><i style="background:#a24019"></i></span><span class="word">Keekii</span></div>
+    <div class="mrow"><div class="art" style="background:linear-gradient(135deg,#d84b00,#a24019)"></div>
+      <div class="mtrack"><b>Hold the Line</b><span style="color:#59514b">Tunde Adeyemi</span></div>
+      <button style="background:#d84b00;color:#fefcf9">Play</button></div>
+    <div class="mchips"><span style="background:#d84b00;color:#fefcf9">For you</span><span style="background:#ffffff">Nigerian</span><span style="background:#ffffff">US</span></div>
+    <div class="mcopy" style="color:#59514b">Popular tracks this week</div>
+  </div><table><tr><td>Body text on background</td><td class="num">17.55</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 4.5)</td></tr><tr><td>Muted text on background</td><td class="num">7.62</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 4.5)</td></tr><tr><td>Primary on background</td><td class="num">4.18</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AA large (min 3)</td></tr><tr><td>Accent on background</td><td class="num">6.25</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AA (min 3)</td></tr><tr><td>Text on primary</td><td class="num">4.18</td>
+      <td class="bad">FAIL</td>
+      <td class="dim">AA large (min 4.5)</td></tr></table></div>
+    <div><h3>Dark</h3><div class="swrow"><div class="sw"><i style="background:#110c08"></i><b>bg</b><span>#110c08</span></div><div class="sw"><i style="background:#f7f4ef"></i><b>fg</b><span>#f7f4ef</span></div><div class="sw"><i style="background:#fa8746"></i><b>primary</b><span>#fa8746</span></div><div class="sw"><i style="background:#be6438"></i><b>accent</b><span>#be6438</span></div><div class="sw"><i style="background:#aaa39d"></i><b>muted</b><span>#aaa39d</span></div><div class="sw"><i style="background:#1e1712"></i><b>card</b><span>#1e1712</span></div></div><div class="mock" style="background:#110c08;color:#f7f4ef;border-color:#f7f4ef22">
+    <div class="mbar"><span class="logo"><i style="background:#fa8746"></i><i style="background:#be6438"></i></span><span class="word">Keekii</span></div>
+    <div class="mrow"><div class="art" style="background:linear-gradient(135deg,#fa8746,#be6438)"></div>
+      <div class="mtrack"><b>Hold the Line</b><span style="color:#aaa39d">Tunde Adeyemi</span></div>
+      <button style="background:#fa8746;color:#110c08">Play</button></div>
+    <div class="mchips"><span style="background:#fa8746;color:#110c08">For you</span><span style="background:#1e1712">Nigerian</span><span style="background:#1e1712">US</span></div>
+    <div class="mcopy" style="color:#aaa39d">Popular tracks this week</div>
+  </div><table><tr><td>Body text on background</td><td class="num">17.71</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 4.5)</td></tr><tr><td>Muted text on background</td><td class="num">7.81</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 4.5)</td></tr><tr><td>Primary on background</td><td class="num">7.99</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 3)</td></tr><tr><td>Accent on background</td><td class="num">4.68</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AA (min 3)</td></tr><tr><td>Text on primary</td><td class="num">7.99</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 4.5)</td></tr></table></div>
+  </div>
+</section>
+<section class="opt" id="B">
+  <h2>B. Ember + Teal <em class="warn">AA large only</em></h2>
+  <p class="blurb">Keeps a warm/cool contrast, but swaps violet for deep teal so the two hues are neighbours on the wheel rather than fighting across it. Reads modern, less "loud".</p>
+  <div class="grid">
+    <div><h3>Light</h3><div class="swrow"><div class="sw"><i style="background:#f7fbf9"></i><b>bg</b><span>#f7fbf9</span></div><div class="sw"><i style="background:#0b1b1c"></i><b>fg</b><span>#0b1b1c</span></div><div class="sw"><i style="background:#d84b00"></i><b>primary</b><span>#d84b00</span></div><div class="sw"><i style="background:#006560"></i><b>accent</b><span>#006560</span></div><div class="sw"><i style="background:#485656"></i><b>muted</b><span>#485656</span></div><div class="sw"><i style="background:#ffffff"></i><b>card</b><span>#ffffff</span></div></div><div class="mock" style="background:#f7fbf9;color:#0b1b1c;border-color:#0d1b1c">
+    <div class="mbar"><span class="logo"><i style="background:#d84b00"></i><i style="background:#006560"></i></span><span class="word">Keekii</span></div>
+    <div class="mrow"><div class="art" style="background:linear-gradient(135deg,#d84b00,#006560)"></div>
+      <div class="mtrack"><b>Hold the Line</b><span style="color:#485656">Tunde Adeyemi</span></div>
+      <button style="background:#d84b00;color:#f7fbf9">Play</button></div>
+    <div class="mchips"><span style="background:#d84b00;color:#f7fbf9">For you</span><span style="background:#ffffff">Nigerian</span><span style="background:#ffffff">US</span></div>
+    <div class="mcopy" style="color:#485656">Popular tracks this week</div>
+  </div><table><tr><td>Body text on background</td><td class="num">16.91</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 4.5)</td></tr><tr><td>Muted text on background</td><td class="num">7.39</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 4.5)</td></tr><tr><td>Primary on background</td><td class="num">4.10</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AA large (min 3)</td></tr><tr><td>Accent on background</td><td class="num">6.69</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AA (min 3)</td></tr><tr><td>Text on primary</td><td class="num">4.10</td>
+      <td class="bad">FAIL</td>
+      <td class="dim">AA large (min 4.5)</td></tr></table></div>
+    <div><h3>Dark</h3><div class="swrow"><div class="sw"><i style="background:#040e10"></i><b>bg</b><span>#040e10</span></div><div class="sw"><i style="background:#ebf4f2"></i><b>fg</b><span>#ebf4f2</span></div><div class="sw"><i style="background:#fa8746"></i><b>primary</b><span>#fa8746</span></div><div class="sw"><i style="background:#39bab4"></i><b>accent</b><span>#39bab4</span></div><div class="sw"><i style="background:#93a2a2"></i><b>muted</b><span>#93a2a2</span></div><div class="sw"><i style="background:#0b181b"></i><b>card</b><span>#0b181b</span></div></div><div class="mock" style="background:#040e10;color:#ebf4f2;border-color:#ebf4f222">
+    <div class="mbar"><span class="logo"><i style="background:#fa8746"></i><i style="background:#39bab4"></i></span><span class="word">Keekii</span></div>
+    <div class="mrow"><div class="art" style="background:linear-gradient(135deg,#fa8746,#39bab4)"></div>
+      <div class="mtrack"><b>Hold the Line</b><span style="color:#93a2a2">Tunde Adeyemi</span></div>
+      <button style="background:#fa8746;color:#040e10">Play</button></div>
+    <div class="mchips"><span style="background:#fa8746;color:#040e10">For you</span><span style="background:#0b181b">Nigerian</span><span style="background:#0b181b">US</span></div>
+    <div class="mcopy" style="color:#93a2a2">Popular tracks this week</div>
+  </div><table><tr><td>Body text on background</td><td class="num">17.42</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 4.5)</td></tr><tr><td>Muted text on background</td><td class="num">7.35</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 4.5)</td></tr><tr><td>Primary on background</td><td class="num">8.02</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 3)</td></tr><tr><td>Accent on background</td><td class="num">8.25</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 3)</td></tr><tr><td>Text on primary</td><td class="num">8.02</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 4.5)</td></tr></table></div>
+  </div>
+</section>
+<section class="opt" id="C">
+  <h2>C. Ember + Sand <em class="warn">AA large only</em></h2>
+  <p class="blurb">Analogous warm palette: ember plus a sand/taupe secondary, no cool hue anywhere. Calm and editorial; the least "brand-y", the most timeless.</p>
+  <div class="grid">
+    <div><h3>Light</h3><div class="swrow"><div class="sw"><i style="background:#fbf6ee"></i><b>bg</b><span>#fbf6ee</span></div><div class="sw"><i style="background:#241b13"></i><b>fg</b><span>#241b13</span></div><div class="sw"><i style="background:#c4530f"></i><b>primary</b><span>#c4530f</span></div><div class="sw"><i style="background:#957256"></i><b>accent</b><span>#957256</span></div><div class="sw"><i style="background:#5f564e"></i><b>muted</b><span>#5f564e</span></div><div class="sw"><i style="background:#fffffb"></i><b>card</b><span>#fffffb</span></div></div><div class="mock" style="background:#fbf6ee;color:#241b13;border-color:#241b13">
+    <div class="mbar"><span class="logo"><i style="background:#c4530f"></i><i style="background:#957256"></i></span><span class="word">Keekii</span></div>
+    <div class="mrow"><div class="art" style="background:linear-gradient(135deg,#c4530f,#957256)"></div>
+      <div class="mtrack"><b>Hold the Line</b><span style="color:#5f564e">Tunde Adeyemi</span></div>
+      <button style="background:#c4530f;color:#fbf6ee">Play</button></div>
+    <div class="mchips"><span style="background:#c4530f;color:#fbf6ee">For you</span><span style="background:#fffffb">Nigerian</span><span style="background:#fffffb">US</span></div>
+    <div class="mcopy" style="color:#5f564e">Popular tracks this week</div>
+  </div><table><tr><td>Body text on background</td><td class="num">15.76</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 4.5)</td></tr><tr><td>Muted text on background</td><td class="num">6.65</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AA (min 4.5)</td></tr><tr><td>Primary on background</td><td class="num">4.25</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AA large (min 3)</td></tr><tr><td>Accent on background</td><td class="num">4.05</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AA large (min 3)</td></tr><tr><td>Text on primary</td><td class="num">4.25</td>
+      <td class="bad">FAIL</td>
+      <td class="dim">AA large (min 4.5)</td></tr></table></div>
+    <div><h3>Dark</h3><div class="swrow"><div class="sw"><i style="background:#140e09"></i><b>bg</b><span>#140e09</span></div><div class="sw"><i style="background:#f6f1e9"></i><b>fg</b><span>#f6f1e9</span></div><div class="sw"><i style="background:#ee8545"></i><b>primary</b><span>#ee8545</span></div><div class="sw"><i style="background:#bf9d7d"></i><b>accent</b><span>#bf9d7d</span></div><div class="sw"><i style="background:#a49d95"></i><b>muted</b><span>#a49d95</span></div><div class="sw"><i style="background:#201913"></i><b>card</b><span>#201913</span></div></div><div class="mock" style="background:#140e09;color:#f6f1e9;border-color:#f6f1e922">
+    <div class="mbar"><span class="logo"><i style="background:#ee8545"></i><i style="background:#bf9d7d"></i></span><span class="word">Keekii</span></div>
+    <div class="mrow"><div class="art" style="background:linear-gradient(135deg,#ee8545,#bf9d7d)"></div>
+      <div class="mtrack"><b>Hold the Line</b><span style="color:#a49d95">Tunde Adeyemi</span></div>
+      <button style="background:#ee8545;color:#140e09">Play</button></div>
+    <div class="mchips"><span style="background:#ee8545;color:#140e09">For you</span><span style="background:#201913">Nigerian</span><span style="background:#201913">US</span></div>
+    <div class="mcopy" style="color:#a49d95">Popular tracks this week</div>
+  </div><table><tr><td>Body text on background</td><td class="num">17.03</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 4.5)</td></tr><tr><td>Muted text on background</td><td class="num">7.15</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 4.5)</td></tr><tr><td>Primary on background</td><td class="num">7.35</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 3)</td></tr><tr><td>Accent on background</td><td class="num">7.63</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 3)</td></tr><tr><td>Text on primary</td><td class="num">7.35</td>
+      <td class="ok">PASS</td>
+      <td class="dim">AAA (min 4.5)</td></tr></table></div>
+  </div>
+</section>
+</body></html>

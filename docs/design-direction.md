@@ -20,7 +20,33 @@ but entirely generic identity. Concretely, on `music.keekii.net` today:
 - `@fontsource-variable/inter` is installed in `package.json` but **never
   imported anywhere** — dead dependency.
 
-## 1. Palette — "Ember & Ink"
+## 1. Palette — "Monochrome Ember"
+
+> **Status: signed off — Option A, implemented.** The three no-violet candidates
+> were in `docs/palette-preview.html`; **A** was chosen, so the violet accent is
+> gone and `--be-accent` is now a deeper, redder step of the same ember hue
+> rather than a second hue. The tokens below are live in `config/themes.php`.
+>
+> Every value is **derived, not hand-picked**: the audit walks each token in OKLCH
+> lightness until it clears its WCAG 2.2 AA target against every surface it
+> actually lands on (4.5:1 for text, 3:1 for control boundaries). Re-run the
+> derivation rather than eyeballing a value.
+>
+> That audit settled the open question the preview left hanging. The preview
+> flagged the light ember as the binding constraint at 4.0–4.3, which is below
+> 4.5:1 — dark mode was comfortable and light mode was the real decision. The
+> consequence is that on light surfaces the saturated ember **cannot carry
+> normal-size link text**, and it also means the button label is paper, not ink:
+> near-black `#1e150e` on the ember only measures 4.2:1, so
+> `--be-primary-foreground` is warm paper on ember.
+>
+> One deliberate deviation from the approved hex: light `--be-primary` is
+> `oklch(0.582 0.183 40)` ≈ `#cf4700` rather than the approved `#d84b00`, which
+> measures 4.16:1 on the light background. The shift is 0.020 in OKLCH
+> lightness — not visually distinguishable — and it makes the token safe for text
+> in both themes. `#d84b00` remains the brand reference for the mark and
+> wordmark, where it is a large graphic meeting the 3:1 non-text bar, not body
+> text.
 
 Warm, lit-from-within, like a record sleeve under a lamp. The organising idea is
 **chroma in the neutrals**: greys are warmed toward the primary's hue so the
@@ -29,18 +55,28 @@ separates the product at a glance more than any single accent.
 
 | Token | Keekii light | Keekii dark | Intent |
 |---|---|---|---|
-| `--be-primary` | `oklch(0.652 0.183 41)` | `oklch(0.712 0.164 44)` | Ember. Vivid, warm, high energy |
-| `--be-accent` | `oklch(0.58 0.19 292)` | `oklch(0.68 0.16 294)` | Violet. Night/club counterweight |
-| `--be-background` | `oklch(0.992 0.005 85)` | `oklch(0.168 0.021 292)` | Warm paper / deep ink-plum |
-| `--be-foreground` | `oklch(0.223 0.021 55)` | `oklch(0.972 0.008 85)` | Warm near-black / warm white |
+| `--be-primary` | `oklch(0.582 0.183 40)` | `oklch(0.739 0.161 48)` | Ember. Vivid, warm, high energy |
+| `--be-accent` | `oklch(0.5 0.139 40)` | `oklch(0.6 0.129 45)` | A deeper ember. Same hue, not a second one |
+| `--be-background` | `oklch(0.992 0.005 78)` | `oklch(0.159 0.012 61)` | Warm paper / deep ember-brown ink |
+| `--be-foreground` | `oklch(0.205 0.02 59)` | `oklch(0.968 0.007 81)` | Warm near-black / warm white |
 
 Notes:
-- The dark background is **plum-tinted, not black**. Pure `oklch(0.0969 0 0)` is
-  the vendor default and reads as an unfinished dev build.
-- Chroma stays under ~0.02 in neutrals — enough to feel warm, low enough that
-  text contrast and long-list legibility are unaffected.
+- The dark background is **ember-brown, not black and not plum**. Pure
+  `oklch(0.0969 0 0)` is the vendor default and reads as an unfinished dev
+  build; the plum that preceded this revision was dropped with the violet.
+- Chroma stays low in the neutrals — enough to feel warm, low enough that text
+  contrast and long-list legibility are unaffected.
 - `--be-primary` is dark-mode *lightened and slightly de-saturated* rather than
-  reused verbatim, so it stays legible on ink without glowing.
+  reused verbatim, so it stays legible on ink without glowing. Dark needs no
+  lightness step: it already clears 4.5:1 as link text.
+- `--be-muted-foreground` is solved against `--be-muted`, not `--be-background`,
+  because muted is the closer of the two surfaces in light mode.
+- `--be-input` is a deliberate 3:1 grey (`#99948e` light, `#6b6057` dark) rather
+  than a subtle hairline: an input border is often the only thing identifying
+  the control, so WCAG 1.4.11 applies to it.
+- Only `--be-sidebar` is actually consumed today. The rest of the vendor's
+  side-specific tokens are retained so the sidebar plane is defined if they are
+  ever wired, rather than being deleted on an assumption.
 
 ### Sidebar gets its own treatment
 
@@ -80,23 +116,51 @@ pill, which is the single most recognisable "we restyled this" cue.
 
 ## 3. Type pairing
 
-Body/UI stays **Inter** (already the system sans via `--font-sans`) because the
-UI is dense — tables, track lists, settings — and Inter is the right neutral for
-that. Headings and brand moments get a display face with actual personality.
+> **Status: A chosen and implemented.**
+
+Body/UI resolves to `var(--be-font-family, var(--font-sans))` in `common.css`.
+`--font-sans` is Tailwind's system stack. An earlier revision of this document
+claimed the body face was "already Inter via `--font-sans`" — that was wrong:
+`@fontsource-variable/inter` is in `package.json` but nothing imports it, so it
+is a dead dependency, exactly as this document already noted in the "what looks
+generic" section above. Inter can still reach the page if the **database theme
+row** carries a `font_family`, because the vendor layout then links it from
+Google Fonts. Whether it is set is a live-setting question this repo cannot
+answer.
+
+Headings and brand moments get a display face with actual personality.
 
 | Option | Display face | Reads as | Verdict |
 |---|---|---|---|
-| **A (recommended)** | **Bricolage Grotesque** | Editorial, expressive, slightly odd | Most distinctive. Earns its place. |
+| **A (chosen)** | **Bricolage Grotesque** | Editorial, expressive, slightly odd | Most distinctive. Earns its place. |
 | B | Space Grotesk | Technical, engineered | Safe, still clearly not Inter |
 | C | Sora | Smooth, rounded, friendly | Least distinctive of the three |
 
-**Recommendation: A.** The whole point of this pass is to stop looking
-off-the-shelf, and B/C both still read as "startup sans". Bricolage is
-variable, has real optical size range, and its quirk works at display sizes
-without harming the dense UI beneath it.
-
 Applied as: hero titles, artist/playlist names, player screen headings, section
 headings, and the wordmark. Never on body copy, list rows, or tables.
+
+### Self-hosted, and why
+
+Bricolage is loaded from `public/fonts/bricolage-grotesque-latin-variable.woff2`
+with a `@font-face` in `resources/client/keekii-brand.css` and a `<link
+rel="preload">` in `resources/views/app.blade.php`. It was previously a Google
+Fonts `<link>`, which was render-blocking and added two third-party origins to
+the critical path of the most visible text on the page.
+
+Three details that are easy to get wrong:
+
+- It is the **"standard"** variable file, carrying `wght`, `wdth` **and** `opsz`.
+  The `wght`-only file is 68KB smaller but silently drops the optical-size axis
+  that `.keekii-display` asks for with `font-variation-settings: 'opsz' 32`.
+- The family name is **`Bricolage Grotesque Variable`**, not `Bricolage
+  Grotesque`. The name is what the font declares, and the plain name is kept
+  second in the stack so a locally installed copy still wins.
+- The preload needs `crossorigin` even though the file is same-origin. Font
+  fetches are always CORS-mode, and without it the browser downloads the file
+  twice — once for the preload, once for the `@font-face`.
+
+Latin subset only, 131KB. The full family also ships latin-ext and Vietnamese;
+neither is needed for the product's copy.
 
 ## 4. Motion signature
 
@@ -165,8 +229,9 @@ favicon render; at 1.0× they close up and the mark degrades into two bars.
 **Applying the favicon/app icon.** The favicon is a DB setting, not a build
 artefact, so the master has to go through the admin pipeline once:
 
-1. Admin → Branding → Favicon, upload `keekii-mark-1024-ember.png` (or the dark
-   one). The image is stored in `storage/app` and `GenerateFavicon` emits
+1. Admin → Settings → General → Branding → Favicon, upload
+   `keekii-mark-1024-ember.png` (or the dark one). The image is stored in
+   `storage/app` and `GenerateFavicon` emits
    `public/favicon/icon-{16..512}.png` + `favicon.ico` via Intervention Image
    (`coverDown`, so the square master is used as-is) and saves
    `branding.favicon`.
@@ -180,6 +245,139 @@ The animated loader markup is inlined in `resources/views/loader/app-loader.blad
 coordinates as the master, but its `viewBox` is cropped to the mark's bounding
 box plus a 17px margin so the glyph fills the slot instead of sitting inside the
 master's 1024-unit padding.
+
+**Loader bug (fixed): the loader was 549px off-centre in both themes.** The live
+view is `resources/views/app.blade.php` (`RendersClientSideApp` calls
+`view('app')`), and it still contains a legacy snippet:
+
+```js
+setTimeout(function () {
+  var spinner = document.querySelector('.global-spinner');
+  if (spinner) spinner.style.display = 'flex';
+}, 100);
+```
+
+The loader carried the legacy `global-spinner` class for "backwards
+compatibility", so 100ms after paint that snippet set an **inline**
+`display: flex`, which beats any class rule. The `display: grid` that centres the
+glow and the stage became a flex row pinned to the top-left. Nothing in the
+codebase styles or targets `.global-spinner`, and the reveal is already a CSS
+opacity animation, so the class was dropped from the loader.
+
+Measured on a 1280×720 viewport, past the 100ms override:
+
+| | `display` | stage x | offset from centre |
+|---|---|---|---|
+| before | `flex` | 24 | **549px** |
+| after | `grid` | 573 | 1px |
+
+The colour variables were never at fault — a static repro resolved
+`oklch(0.712 0.164 44)` on the dark surface correctly. It read as "dark is
+broken" because on dark the mis-placed loader sits on a background identical to
+the app's own, hiding the error; on light the shift is at least visible.
+
+### 5c. The wordmark — "Keek" + Twin Pulse as the "ii"
+
+The mark alone is an icon, not a logo. The wordmark sets **Keek** in real
+Bricolage Grotesque outlines and lets the Twin Pulse become the two `i`s, so the
+name and the mark are one drawing.
+
+- Weight 700, `unitsPerEm` 1000, `sxHeight` 525, `sCapHeight` 660
+- Letters are real outlines, not live text: converted with
+  `fontTools.pens.svgPathPen.SVGPathPen` (curves flattened at 24 segments/curve),
+  so there is no webfont dependency in the logo files
+- `TRACKING = 20` font units of optical tracking between letters
+
+**The pulse is a variant of the mark, not a copy.** The standalone mark has
+*asymmetric* stems (400/250) so it reads as a pulse; two equal stems are what
+makes it read as the letters `ii`. Inside the wordmark the stems are therefore
+equal, x-height tall (525), and baseline-aligned.
+
+Everything is measured off the font, not guessed:
+
+| Quantity | Value | Source |
+|---|---|---|
+| i stem width | 144 | `i` = `dotlessi` + `uni0307` composite |
+| i stem positions | x = 66, 343 | so the pair keeps the type's rhythm |
+| i dot top | 744 | |
+| pulse stem width | 160 | wider than the type's 144 so the mark reads at logo size |
+| bar-to-bar gap | 117 | 343 − 226 |
+| dot diameter | 184 | mark's 1.15× bar width |
+| dot centre y | 696 | starts at the type's 79u gap above x-height |
+
+`i` is a composite glyph, so measuring it needs
+`DecomposingRecordingPen` — `RecordingPen` reports `addComponent` and yields no
+contours. The pulse's dots overhang their stems by 12u, so the pulse ink is
+445u wide against the typeset `ii`'s 421u.
+
+Final lockup: 3002×862 units, **3.483:1**, 30u padding on all sides, ink
+`x 73..3015  y -14..788`. The dot tops (788) sit 73u above the `k` ascender
+(715), so the pulse is the tallest element and draws the eye.
+
+Files in `resources/client/brand/`:
+
+- `keekii-wordmark.svg` — themeable, driven by `--keekii-wordmark-ink` and
+  `--keekii-wordmark-pulse` with literal fallbacks
+- `keekii-wordmark-light.svg` / `keekii-wordmark-dark.svg` — explicit tokens
+- `keekii-wordmark-light.png` / `keekii-wordmark-dark.png` — 2048×588, transparent
+
+The PNGs are rasterised from the *same* flattened contours the SVGs are emitted
+from (`build-wordmark.py` → `render-wordmark.js`, nonzero-winding scanline fill
+with 4× vertical supersampling and exact horizontal span coverage), so the two
+cannot drift. No `sharp`, GD, `canvas` or `playwright` is available in the dev
+container.
+
+**Applying the wordmark.** The navbar renders `branding.logo_light` /
+`branding.logo_dark` as an `<img src>`
+(`common/foundation/resources/client/ui/navigation/navbar/logo.tsx`), so this is
+the same one-time upload as the favicon: Admin → Settings → General → Branding →
+Logo. Upload `keekii-wordmark-light.svg` to the logo shown on dark surfaces and
+`keekii-wordmark-dark.svg` to the one shown on light surfaces — the setting names
+are inverted relative to intuition, so check the rendered result.
+
+### 5d. Country channels
+
+15 public channels, one per market, at `country-<iso2>`. They are **generated,
+not hand-made**: `php artisan channels:country`.
+
+Countries were not new entities — an artist's country already lives on its
+profile (`profile_details.country`, formerly `user_profiles.country`). So rather
+than a `Country` model and a lookup table, country channels are a *channel
+config key* plus a query filter:
+
+- `config.contentCountry` — ISO 3166-1 alpha-2, read by
+  `Common\Channels\LoadChannelContent::applyCountryFilter()` and applied to the
+  base query so it survives the datasource's ordering and pagination
+- `App\Traits\ScopesByCountry` — `scopeInCountry()`, which normalises the code
+  and produces two shapes:
+  - `Artist` → `whereHas('profile', fn => where('country', $iso2))`
+  - `Album` / `Track` → `whereHas('artists', …whereHas('profile', …))`, via
+    their `countryOwnerRelation()` override
+- Models without the scope are left untouched rather than erroring, so a channel
+  pointed at an unsupported model degrades to unfiltered instead of 500ing
+
+Markets: NG, US, GB, IE, CA, AU, ZA, GH, IN, BR, DE, FR, ES, JP, KR. Each shows
+artists ordered by popularity. WA, TZ, KE and EG are one JSON entry away.
+
+The command is idempotent (`updateOrCreate` by slug), reports the **real artist
+count per market** before writing anything, and refuses to map markets with zero
+artists unless `--include-empty` is passed. It also merges into any existing
+`homepage.geo_countries` so hand-added countries survive. If artist profile
+country data has not been imported yet, every market will report `EMPTY` and
+the geo map is left alone — that is the expected first run on a fresh catalogue,
+and the reason the mapping is driven by measured content rather than by the
+country list.
+
+`--dry-run`, `--no-geo` and `--include-empty` are available; `--dry-run` prints
+the mapping it would write without touching anything.
+
+When markets come back `EMPTY` the command does not just shrug — it dumps the
+most common values actually stored in `profile_details.country` and flags any
+that are not upper-case ISO alpha-2, because "no data" and "data stored as
+lowercase / 3-letter codes / full names" look identical from the outside and
+need opposite fixes. The reported counts come from the same
+`scopeInCountry()` the channel filters on, so a count can never disagree with
+what a visitor would see.
 
 ---
 
@@ -210,11 +408,12 @@ lever is *presentation*, not content — no backend, routing, or fetching change
 | Surface | Status | Action |
 |---|---|---|
 | Favicon / app icons | Twin Pulse master now committed at `resources/client/brand/`; generation is still by `Common\Settings\GenerateFavicon` from the last **uploaded** image | One-time manual step: upload the PNG master via admin branding; all 8 sizes + `favicon.ico` regenerate. No code change. Code side is **done**, not live until that upload happens. See §5b. |
+| Wordmark | `Keek` + Twin Pulse drawn in `resources/client/brand/` (SVG + 2048×588 PNG, light/dark) | One-time manual step: upload the two SVGs via admin branding. Code side is **done**, not live until that upload happens. See §5c. |
 | `manifest.json` | Vendor `manifest-example.json` | Set Keekii name/short_name/theme colour to match tokens. |
 | Empty states | `shadcn/empty` + `notification-empty-state.tsx`, generic | Replace the generic glyph with an equaliser motif, warm-tinted, display-face heading. |
-| Page `<title>` | Still `Keeki Pod` | Rename `branding.site_name` to `Keekii` (separate fix, flagged earlier). |
+| Page `<title>` | `branding.site_name` updated to `Keekii` | Done (operator action). The loader's hard-coded `Keeki Pod` fallback was replaced with `Keekii`. |
 | Iconography | `lucide-react` throughout | Acceptable. Selective swap of the ~6 most-visible player/nav glyphs to a custom set is a later pass. |
-| `--be-font-family` | Inter via theme, Google-Fonts-capable but unset | Keekii display face is added as a separate, deliberate pairing. |
+| `--be-font-family` | Body face comes from the theme row via Google Fonts, or falls back to Tailwind's `--font-sans` system stack. `@fontsource-variable/inter` is installed but never imported, so Inter is only in play if the DB row names it. | Settled as-is: body copy keeps the system stack. Deciding whether to adopt Inter is a separate call from the display face, and should not be made as a side effect. The display face is **done** — self-hosted, preloaded, see §3. |
 
 ### 8. Known-unrelated bug
 

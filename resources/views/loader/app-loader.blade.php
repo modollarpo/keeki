@@ -258,11 +258,24 @@
     }
 </style>
 
-{{-- `.global-spinner` is kept for backwards compatibility: legacy markup in
-     resources/views/app.blade.php toggles that class for a delayed-appearance
-     state. The reveal above is CSS-driven, so nothing depends on it. --}}
+{{-- Deliberately NOT carrying the legacy `global-spinner` class.
+
+     resources/views/app.blade.php (the live view, via view('app')) runs:
+         setTimeout(function () {
+             var spinner = document.querySelector('.global-spinner');
+             if (spinner) spinner.style.display = 'flex';
+         }, 100);
+     That sets an INLINE style 100ms after load, which beats any class rule.
+     With it applied, `display: grid` became `display: flex`, so the glow and
+     the stage laid out as a row from the top-left instead of being centred -
+     the loader looked broken (most obviously against the dark theme, where
+     the mis-placed content sits on a background identical to the app's).
+
+     The loader reveals itself with its own opacity animation above, so it
+     needs nothing from that legacy path. Nothing else in the codebase styles
+     or targets `.global-spinner`. --}}
 <div
-    class="keekii-loader global-spinner"
+    class="keekii-loader"
     role="status"
     data-keekii-loader
 >

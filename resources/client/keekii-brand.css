@@ -87,10 +87,16 @@
   /* ---------------------------------------------------------------------
    * 4. Typography pairing
    *
-   * Body/UI stays Inter — it is the right neutral for dense lists, tables and
-   * settings, and it is already the system sans via --font-sans. Bricolage
-   * Grotesque is loaded separately (see resources/views/app.blade.php) and
-   * reserved for brand moments, where its character earns its keep.
+   * Body/UI resolves to var(--be-font-family, var(--font-sans)) in
+   * common.css. --font-sans is Tailwind's system stack, and nothing in this
+   * repo imports @fontsource-variable/inter, so Inter is not applied from the
+   * stylesheet. It can still reach the page if the database theme row carries a
+   * font_family: the vendor layout then links it from Google Fonts (see
+   * framework.blade.php). Whether it is set is a live-setting question this
+   * stylesheet cannot answer, so neither should a comment here.
+   *
+   * Bricolage Grotesque is the display face, self-hosted below and reserved
+   * for brand moments, where its character earns its keep.
    *
    * The fallback stack is deliberately wide: if the webfont request fails the
    * display face must degrade to something with real character rather than
@@ -98,8 +104,38 @@
    * ------------------------------------------------------------------- */
   :root {
     --keekii-font-display:
-      'Bricolage Grotesque', 'Avenir Next', 'Futura', 'Trebuchet MS',
-      ui-sans-serif, system-ui, sans-serif;
+      'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Avenir Next',
+      'Futura', 'Trebuchet MS', ui-sans-serif, system-ui, sans-serif;
+  }
+
+  /* Self-hosted rather than a Google Fonts <link>.
+   *
+   * A third-party stylesheet was render-blocking and cost a DNS + TLS
+   * round-trip to two origins before any text could paint, on the most
+   * visible text on the page. This is the same file that Google would have
+   * served, copied into public/fonts so the URL is stable and can be
+   * preloaded (see resources/views/app.blade.php).
+   *
+   * It is the "standard" variable file, which carries the full axis set
+   * (wght, wdth and opsz). That matters because `.keekii-display` sets
+   * `font-variation-settings: 'opsz' 32`; the wght-only file is 68KB smaller
+   * but silently drops the optical-size axis the utility asks for.
+   *
+   * Latin subset only (131KB). The full family also ships latin-ext and
+   * Vietnamese; neither is needed for the product's copy, and the unicode-range
+   * below keeps a future extra subset to an opt-in addition.
+   */
+  @font-face {
+    font-family: 'Bricolage Grotesque Variable';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 200 800;
+    font-stretch: 75% 100%;
+    src: url('/fonts/bricolage-grotesque-latin-variable.woff2')
+      format('woff2-variations');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+      U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+      U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
 
   /* `.keekii-display` itself is declared as a @utility at the bottom of this

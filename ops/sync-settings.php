@@ -41,7 +41,7 @@ echo "Processed $changed settings.\n";
 
 /*
  * ---------------------------------------------------------------------------
- * Theme tokens ("Ember & Ink" — see docs/design-direction.md)
+ * Theme tokens ("Monochrome Ember" — see docs/design-direction.md)
  * ---------------------------------------------------------------------------
  * The rendered theme comes from the `css_themes` table, NOT from
  * config/themes.php: CssThemesTableSeeder only INSERTs a theme when one is
