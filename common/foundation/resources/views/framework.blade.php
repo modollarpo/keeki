@@ -121,7 +121,7 @@
         @endif
     @endif
 
-    @if ($code = settings('analytics.tracking_code') && $_COOKIE['analytics_consent'] === 'true')
+    @if ($code = settings('analytics.tracking_code') && cookie('analytics_consent') === 'true')
         <!-- Google tag (gtag.js) -->
         <script
             async
