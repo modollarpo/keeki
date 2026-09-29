@@ -4,7 +4,7 @@ import {Item} from '@ui/forms/listbox/item';
 import {Trans} from '@ui/i18n/trans';
 import {Menu, MenuTrigger} from '@ui/menu/menu-trigger';
 import {useSettings} from '@ui/settings/use-settings';
-import {UserIcon} from 'lucide-react';
+import {UserRoundIcon} from 'lucide-react';
 import {Fragment} from 'react';
 
 interface NavbarAuthButtonsProps {
@@ -49,8 +49,8 @@ function MobileButtons() {
   const navigate = useNavigate();
   return (
     <MenuTrigger>
-      <Button variant="ghost" size="icon" type="button" className="md:hidden">
-        <UserIcon />
+      <Button variant="ghost" size="icon" type="button" className="md:hidden !w-12 !h-12 text-foreground">
+        <UserRoundIcon className="!size-7" />
       </Button>
       <Menu>
         <Item value="login" onSelected={() => navigate('/login')}>
