@@ -1,73 +1,108 @@
 import {useState} from 'react';
 
+/**
+ * KeekiiInteractiveHeroGraphic
+ * ──────────────────────────────────────────────────────────────────────────
+ * A self-contained, interactive music-player card that lives in the right
+ * column of the hero section.  It is always above the fold because it shares
+ * the same row as the hero headline text on every viewport.
+ *
+ * Visual contract
+ * ───────────────
+ * • Solid opaque background — never depends on an ancestor colour to be
+ *   visible.  Uses a near-black dark-amber tone that reads on any hero image.
+ * • Brand-orange glow ring and accent strip so it feels native to Keekii.
+ * • Clicking the card (or the play button) toggles play state, animating the
+ *   equaliser bars and spinning the vinyl ring on the album art.
+ */
 export function KeekiiInteractiveHeroGraphic() {
   const [playing, setPlaying] = useState(false);
-  const bars = [30, 60, 45, 80, 55, 90, 40, 70, 50, 85, 35, 65, 75];
+
+  const bars = [28, 55, 42, 78, 52, 88, 38, 68, 48, 82, 32, 62, 72];
+
+  const togglePlay = () => setPlaying(p => !p);
 
   return (
-    <div className="w-full flex justify-center items-center py-10 px-4">
+    <div
+      className="w-full max-w-sm cursor-pointer select-none rounded-3xl"
+      role="button"
+      tabIndex={0}
+      aria-label={playing ? 'Pause preview' : 'Play preview'}
+      onClick={togglePlay}
+      onKeyDown={e => e.key === 'Enter' && togglePlay()}
+      style={{
+        /* Solid dark background — visible on ANY hero image or gradient */
+        background: 'linear-gradient(145deg, #1c110a 0%, #110a04 55%, #1e120c 100%)',
+        boxShadow:
+          '0 0 0 1.5px rgba(232,97,31,0.30), ' +
+          '0 0 60px rgba(232,97,31,0.22), ' +
+          '0 24px 80px rgba(0,0,0,0.65)',
+      }}
+    >
+      {/* Brand-orange top accent line */}
       <div
-        className="relative w-full max-w-md cursor-pointer select-none rounded-3xl overflow-hidden"
+        className="rounded-t-3xl h-[2px]"
         style={{
-          background: 'linear-gradient(145deg, #1a1208 0%, #0f0a04 60%, #1e100a 100%)',
-          boxShadow:
-            '0 0 0 1px rgba(232,97,31,0.25), 0 8px 80px rgba(232,97,31,0.3), 0 2px 32px rgba(0,0,0,0.7)',
+          background:
+            'linear-gradient(90deg, transparent 0%, var(--be-brand-ink,#e8611f) 30%, var(--be-brand-ink-alt,#f0864a) 70%, transparent 100%)',
         }}
-        onClick={() => setPlaying(p => !p)}
-        role="button"
-        aria-label={playing ? 'Pause' : 'Play'}
-        tabIndex={0}
-        onKeyDown={e => e.key === 'Enter' && setPlaying(p => !p)}
-      >
-        {/* Brand gradient top strip */}
+      />
+
+      {/* Ambient glow spots */}
+      <div aria-hidden="true" className="relative overflow-hidden rounded-b-3xl">
         <div
-          className="absolute inset-x-0 top-0 h-[2px]"
-          style={{
-            background:
-              'linear-gradient(90deg, transparent, var(--be-brand-ink,#e8611f), var(--be-brand-ink-alt,#f0864a), transparent)',
-          }}
+          className="absolute -top-16 -right-16 w-48 h-48 rounded-full pointer-events-none"
+          style={{background: 'radial-gradient(circle, rgba(232,97,31,0.18) 0%, transparent 65%)'}}
+        />
+        <div
+          className="absolute -bottom-12 -left-12 w-36 h-36 rounded-full pointer-events-none"
+          style={{background: 'radial-gradient(circle, rgba(240,134,74,0.12) 0%, transparent 65%)'}}
         />
 
-        {/* Ambient glow orbs */}
-        <div
-          className="absolute -top-12 -right-12 w-40 h-40 rounded-full pointer-events-none"
-          style={{background: 'radial-gradient(circle, rgba(232,97,31,0.2) 0%, transparent 70%)'}}
-        />
-        <div
-          className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full pointer-events-none"
-          style={{background: 'radial-gradient(circle, rgba(240,134,74,0.15) 0%, transparent 70%)'}}
-        />
-
-        <div className="relative z-10 p-6">
-          {/* Header row */}
-          <div className="flex items-center gap-4 mb-5">
-            {/* Album art */}
+        <div className="relative z-10 p-5">
+          {/* ── Track header ──────────────────────────────────────────────── */}
+          <div className="flex items-center gap-3 mb-5">
+            {/* Album art with spinning vinyl ring */}
             <div
-              className="w-14 h-14 rounded-2xl shrink-0 flex items-center justify-center relative overflow-hidden"
+              className="w-14 h-14 rounded-2xl shrink-0 relative overflow-hidden flex items-center justify-center"
               style={{
-                background: 'linear-gradient(135deg, #e8611f 0%, #f0864a 100%)',
-                boxShadow: '0 4px 16px rgba(232,97,31,0.45)',
+                background: 'linear-gradient(135deg, var(--be-brand-ink,#e8611f), var(--be-brand-ink-alt,#f0864a))',
+                boxShadow: playing
+                  ? '0 0 24px rgba(232,97,31,0.6)'
+                  : '0 4px 16px rgba(232,97,31,0.35)',
+                transition: 'box-shadow 0.4s',
               }}
             >
-              {/* Vinyl ring */}
+              {/* Spinning vinyl ring (visible when playing) */}
               <div
                 className="absolute inset-0 flex items-center justify-center"
-                style={{animation: playing ? 'ihg-spin 4s linear infinite' : 'none'}}
+                style={{
+                  animation: playing ? 'ihg-spin 3.5s linear infinite' : 'none',
+                  opacity: playing ? 1 : 0,
+                  transition: 'opacity 0.3s',
+                }}
               >
-                <div className="w-10 h-10 rounded-full border-2 border-white/20 flex items-center justify-center">
-                  <div className="w-2.5 h-2.5 rounded-full bg-white/40" />
+                <div className="w-10 h-10 rounded-full border-2 border-white/20">
+                  <div className="w-full h-full rounded-full flex items-center justify-center">
+                    <div className="w-3 h-3 rounded-full bg-white/30" />
+                  </div>
                 </div>
               </div>
-              {/* Music icon on top */}
+              {/* Music icon (visible when paused) */}
               <svg
                 width="22"
                 height="22"
                 viewBox="0 0 24 24"
                 fill="white"
-                className="relative z-10 drop-shadow"
-                style={{opacity: playing ? 0 : 1, transition: 'opacity 0.3s'}}
+                style={{
+                  opacity: playing ? 0 : 1,
+                  transition: 'opacity 0.3s',
+                  position: 'relative',
+                  zIndex: 1,
+                  filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.4))',
+                }}
               >
-                <path d="M9 18V5l12-2v13" strokeWidth="0" />
+                <path d="M9 18V5l12-2v13" />
                 <circle cx="6" cy="18" r="3" />
                 <circle cx="18" cy="16" r="3" />
               </svg>
@@ -78,13 +113,16 @@ export function KeekiiInteractiveHeroGraphic() {
               <p className="text-white/50 text-xs mt-0.5 truncate">Stream · Discover · Vibe</p>
             </div>
 
-            {/* Live badge */}
+            {/* Status badge */}
             <div
-              className="flex items-center gap-1.5 rounded-full px-2.5 py-1 shrink-0"
+              className="flex items-center gap-1.5 rounded-full px-2.5 py-1 shrink-0 transition-all duration-400"
               style={{
-                background: playing ? 'rgba(34,197,94,0.15)' : 'rgba(232,97,31,0.15)',
-                border: playing ? '1px solid rgba(34,197,94,0.4)' : '1px solid rgba(232,97,31,0.4)',
-                transition: 'all 0.4s',
+                background: playing
+                  ? 'rgba(34,197,94,0.15)'
+                  : 'rgba(232,97,31,0.15)',
+                border: playing
+                  ? '1px solid rgba(34,197,94,0.4)'
+                  : '1px solid rgba(232,97,31,0.4)',
               }}
             >
               <span
@@ -95,7 +133,7 @@ export function KeekiiInteractiveHeroGraphic() {
                 }}
               />
               <span
-                className="text-xs font-semibold"
+                className="text-xs font-semibold tracking-wide"
                 style={{color: playing ? '#22c55e' : 'var(--be-brand-ink-alt,#f0864a)'}}
               >
                 {playing ? 'PLAYING' : 'LIVE'}
@@ -103,13 +141,14 @@ export function KeekiiInteractiveHeroGraphic() {
             </div>
           </div>
 
-          {/* Equalizer visualiser */}
+          {/* ── Equaliser visualiser ─────────────────────────────────────── */}
           <div
-            className="flex items-end justify-center gap-[3px] mb-5 rounded-2xl p-3"
+            className="flex items-end justify-center gap-[3px] rounded-xl px-3"
             style={{
-              height: '72px',
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.06)',
+              height: '64px',
+              background: 'rgba(255,255,255,0.035)',
+              border: '1px solid rgba(255,255,255,0.07)',
+              marginBottom: '16px',
             }}
           >
             {bars.map((h, i) => (
@@ -117,13 +156,14 @@ export function KeekiiInteractiveHeroGraphic() {
                 key={i}
                 className="rounded-full flex-1"
                 style={{
-                  minWidth: '6px',
-                  height: playing ? `${h}%` : `${Math.max(10, h * 0.25)}%`,
-                  background: `linear-gradient(to top, var(--be-brand-ink,#e8611f), var(--be-brand-ink-alt,#f0864a))`,
-                  opacity: playing ? 1 : 0.35,
-                  transition: 'height 0.15s ease, opacity 0.4s',
+                  minWidth: '5px',
+                  height: playing ? `${h}%` : `${Math.max(8, h * 0.22)}%`,
+                  background:
+                    'linear-gradient(to top, var(--be-brand-ink,#e8611f), var(--be-brand-ink-alt,#f0864a))',
+                  opacity: playing ? 1 : 0.3,
+                  transition: 'height 0.18s ease, opacity 0.4s',
                   animation: playing
-                    ? `ihg-eq ${0.55 + (i % 5) * 0.15}s ease-in-out ${i * 0.06}s infinite alternate`
+                    ? `ihg-eq ${0.5 + (i % 5) * 0.18}s ease-in-out ${i * 0.06}s infinite alternate`
                     : 'none',
                   transformOrigin: 'bottom',
                 }}
@@ -131,45 +171,49 @@ export function KeekiiInteractiveHeroGraphic() {
             ))}
           </div>
 
-          {/* Progress bar */}
+          {/* ── Progress bar ─────────────────────────────────────────────── */}
           <div
-            className="h-1 rounded-full mb-5 overflow-hidden"
+            className="h-1 rounded-full mb-5"
             style={{background: 'rgba(255,255,255,0.1)'}}
           >
             <div
-              className="h-full rounded-full"
+              className="h-full rounded-full transition-[width] duration-500 ease-out"
               style={{
-                width: playing ? '60%' : '0%',
-                background: 'linear-gradient(90deg, var(--be-brand-ink,#e8611f), var(--be-brand-ink-alt,#f0864a))',
-                transition: 'width 0.5s ease',
+                width: playing ? '58%' : '0%',
+                background:
+                  'linear-gradient(90deg, var(--be-brand-ink,#e8611f), var(--be-brand-ink-alt,#f0864a))',
               }}
             />
           </div>
 
-          {/* Transport controls */}
+          {/* ── Transport controls ───────────────────────────────────────── */}
           <div className="flex items-center justify-between">
+            {/* Prev */}
             <button
-              className="rounded-full p-2.5 transition-all active:scale-90"
-              style={{background: 'rgba(255,255,255,0.06)'}}
-              aria-label="Previous"
+              type="button"
+              aria-label="Previous track"
+              className="rounded-full p-2.5 transition-transform active:scale-90 hover:opacity-80"
+              style={{background: 'rgba(255,255,255,0.07)'}}
               onClick={e => e.stopPropagation()}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,255,255,0.6)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="rgba(255,255,255,0.65)">
                 <path d="M19 20L9 12l10-8v16zM5 4h2v16H5z" />
               </svg>
             </button>
 
-            {/* Central play/pause */}
+            {/* Play / pause (primary CTA) */}
             <button
+              type="button"
+              aria-label={playing ? 'Pause' : 'Play'}
               className="w-14 h-14 rounded-full flex items-center justify-center transition-transform active:scale-90"
               style={{
-                background: 'linear-gradient(135deg, var(--be-brand-ink,#e8611f), var(--be-brand-ink-alt,#f0864a))',
+                background:
+                  'linear-gradient(135deg, var(--be-brand-ink,#e8611f), var(--be-brand-ink-alt,#f0864a))',
                 boxShadow: playing
-                  ? '0 0 32px rgba(232,97,31,0.7), 0 0 12px rgba(232,97,31,0.4)'
+                  ? '0 0 32px rgba(232,97,31,0.75), 0 0 12px rgba(232,97,31,0.4)'
                   : '0 0 20px rgba(232,97,31,0.4)',
                 transition: 'box-shadow 0.3s',
               }}
-              aria-label={playing ? 'Pause' : 'Play'}
             >
               {playing ? (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
@@ -177,41 +221,49 @@ export function KeekiiInteractiveHeroGraphic() {
                   <rect x="14" y="4" width="4" height="16" rx="1.5" />
                 </svg>
               ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="white" style={{marginLeft: '2px'}}>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="white"
+                  style={{marginLeft: '2px'}}
+                >
                   <path d="M5 3l14 9-14 9V3z" />
                 </svg>
               )}
             </button>
 
+            {/* Next */}
             <button
-              className="rounded-full p-2.5 transition-all active:scale-90"
-              style={{background: 'rgba(255,255,255,0.06)'}}
-              aria-label="Next"
+              type="button"
+              aria-label="Next track"
+              className="rounded-full p-2.5 transition-transform active:scale-90 hover:opacity-80"
+              style={{background: 'rgba(255,255,255,0.07)'}}
               onClick={e => e.stopPropagation()}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,255,255,0.6)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="rgba(255,255,255,0.65)">
                 <path d="M5 4l10 8-10 8V4zM19 4h-2v16h2z" />
               </svg>
             </button>
           </div>
         </div>
-
-        {/* Inline keyframes */}
-        <style>{`
-          @keyframes ihg-eq {
-            from { transform: scaleY(0.25); }
-            to   { transform: scaleY(1); }
-          }
-          @keyframes ihg-spin {
-            from { transform: rotate(0deg); }
-            to   { transform: rotate(360deg); }
-          }
-          @keyframes ihg-pulse {
-            0%, 100% { opacity: 1; }
-            50%       { opacity: 0.3; }
-          }
-        `}</style>
       </div>
+
+      {/* Keyframes */}
+      <style>{`
+        @keyframes ihg-eq {
+          from { transform: scaleY(0.2); }
+          to   { transform: scaleY(1);   }
+        }
+        @keyframes ihg-spin {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
+        }
+        @keyframes ihg-pulse {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0.25; }
+        }
+      `}</style>
     </div>
   );
 }

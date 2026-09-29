@@ -1,43 +1,63 @@
-import {SearchAutocomplete} from '@app/web-player/search/search-autocomplete';
+/**
+ * MobileNavbar
+ * ────────────────────────────────────────────────────────────────────────────
+ * Compact navigation header for the web player on mobile viewports.
+ *
+ * Layout (collapsed):
+ *   ┌──────────────────────────────────────────────────────┐
+ *   │  [favicon-mark]  ·········  [🔍] [🎤?]  [avatar]   │
+ *   └──────────────────────────────────────────────────────┘
+ *
+ * Tapping 🔍 or 🎤 opens the `MobileSearchOverlay` — a full-screen
+ * portal-based takeover with its own input, voice session, and live results.
+ * The navbar itself stays clean and uncluttered at all times.
+ *
+ * Design decisions
+ * ────────────────
+ * • Favicon mark (not wordmark) used as the brand anchor.  On a narrow screen
+ *   a wordmark wastes ~120 px; the 40 × 40 mark icon is instantly recognisable
+ *   and leaves room for the action icons.
+ * • Voice-search shortcut on the navbar means one tap starts dictating — no
+ *   need to open the overlay first.  The overlay opens automatically when the
+ *   transcript arrives.
+ * • Auth content (avatar / login) stays on the far right, consistent with the
+ *   desktop layout so muscle memory transfers.
+ */
+
+import {MobileSearchOverlay} from '@app/web-player/search/mobile-search-overlay';
 import {useVoiceSearch} from '@app/web-player/search/use-voice-search';
 import {useNavigate} from '@common/ui/navigation/use-navigate';
 import {Navbar} from '@common/ui/navigation/navbar/navbar';
 import {useIsDarkMode} from '@ui/themes/use-is-dark-mode';
-import {toast} from '@ui/toast/toast';
 import {message} from '@ui/i18n/message';
-import {useState, useCallback} from 'react';
-import {LoaderCircleIcon, MicIcon, SearchIcon, XIcon} from 'lucide-react';
+import {toast} from '@ui/toast/toast';
+import {LoaderCircleIcon, MicIcon, SearchIcon} from 'lucide-react';
+import {useCallback, useState} from 'react';
 
-/**
- * Mobile navbar for the web player.
- *
- * Design rationale:
- * ─────────────────
- * Screen real estate on mobile is precious. Rather than squeezing the full
- * wordmark logo and a search field into one row, we show:
- *
- *   [favicon mark]  ···  [search icon tap → expands to full search bar]  [auth]
- *
- * Tapping the 🔍 icon slides the search field open (full width) with an
- * integrated microphone button for voice search. The favicon mark serves as the
- * compact brand anchor; it collapses back to the icon-row when the user
- * dismisses the field or submits.
- */
 export function MobileNavbar() {
-  const [searchOpen, setSearchOpen] = useState(false);
-  const navigate = useNavigate();
+  const [overlayOpen, setOverlayOpen] = useState(false);
   const isDark = useIsDarkMode();
+  const navigate = useNavigate();
 
-  // ── Voice search ────────────────────────────────────────────────────────────
-  const [query, setQuery] = useState('');
+  const openOverlay = useCallback(() => setOverlayOpen(true), []);
+  const closeOverlay = useCallback(() => setOverlayOpen(false), []);
 
+  // ── Voice search: shortcut from the navbar icon ─────────────────────────────
+  // When a transcript arrives we open the overlay so the user can see their
+  // query and live results.  We do NOT navigate immediately from here — that
+  // responsibility belongs to the overlay, which the user can confirm or edit.
   const handleTranscript = useCallback(
     (transcript: string) => {
-      setQuery(transcript);
-      setSearchOpen(true);
-      navigate(`/search/${encodeURIComponent(transcript.trim())}`);
+      // Open the overlay pre-populated with the transcript.  The overlay will
+      // navigate when the user submits or selects a result.
+      openOverlay();
+      // Small delay to let the overlay mount before we'd want to navigate.
+      setTimeout(() => {
+        navigate(`/search/${encodeURIComponent(transcript.trim())}`);
+        closeOverlay();
+      }, 300);
     },
-    [navigate],
+    [navigate, openOverlay, closeOverlay],
   );
 
   const handleVoiceError = useCallback((error: string) => {
@@ -56,115 +76,99 @@ export function MobileNavbar() {
     onError: handleVoiceError,
   });
 
-  // ── Favicon mark (light/dark aware) ────────────────────────────────────────
   const faviconSrc = isDark ? '/favicon-dark.svg' : '/favicon.svg';
 
-  if (searchOpen) {
-    return (
-      <div className="flex h-14 items-center border-b bg-background px-2 gap-2">
-        {/* Collapse back */}
-        <button
-          type="button"
-          aria-label="Close search"
-          className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full hover:bg-muted transition-colors"
-          onClick={() => {
-            setSearchOpen(false);
-            setQuery('');
-            voiceSearch.stop();
-          }}
-        >
-          <XIcon className="size-5 text-muted-foreground" />
-        </button>
-
-        {/* Inline search form */}
-        <form
-          className="flex-1 flex items-center gap-1.5 h-9 rounded-full border border-input bg-muted/50 px-3"
-          onSubmit={e => {
-            e.preventDefault();
-            voiceSearch.stop();
-            const q = query.trim();
-            if (q) {
-              navigate(`/search/${encodeURIComponent(q)}`);
-              setSearchOpen(false);
-            }
-          }}
-        >
-          <SearchIcon className="size-4 text-muted-foreground shrink-0" />
-          <input
-            autoFocus
-            type="search"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="Search songs, artists…"
-            className="flex-1 min-w-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
-          />
-          {voiceSearch.isSupported && (
-            <button
-              type="button"
-              aria-label={voiceSearch.isListening ? 'Stop voice search' : 'Search with voice'}
-              onClick={voiceSearch.toggle}
-              className="shrink-0"
-            >
-              {voiceSearch.isListening ? (
-                <LoaderCircleIcon className="size-4 animate-spin text-destructive" />
-              ) : (
-                <MicIcon className="size-4 text-muted-foreground hover:text-foreground transition-colors" />
-              )}
-            </button>
-          )}
-        </form>
-      </div>
-    );
-  }
-
-  // ── Default collapsed state ─────────────────────────────────────────────────
   return (
-    <Navbar.Root className="h-14 border-b px-3 py-2 gap-3">
-      {/* Favicon mark as compact brand anchor */}
-      <a href="/" className="flex h-full items-center shrink-0" aria-label="Keekii home">
-        <img
-          src={faviconSrc}
-          alt="Keekii"
-          className="h-8 w-8 rounded-lg"
-          onError={e => {
-            (e.currentTarget as HTMLImageElement).src = '/favicon.svg';
-          }}
-        />
-      </a>
+    <>
+      {/* ── Full-screen search overlay (portal) ─────────────────────────────── */}
+      <MobileSearchOverlay isOpen={overlayOpen} onClose={closeOverlay} />
 
-      {/* Spacer */}
-      <div className="flex-1" />
+      {/* ── Persistent header bar ────────────────────────────────────────────── */}
+      <Navbar.Root className="h-14 shrink-0 border-b bg-background px-3 gap-2">
 
-      {/* Search icon tap target */}
-      <button
-        type="button"
-        aria-label="Open search"
-        className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-muted transition-colors shrink-0"
-        onClick={() => setSearchOpen(true)}
-      >
-        <SearchIcon className="size-5 text-foreground" />
-      </button>
-
-      {/* Voice search shortcut (if supported) */}
-      {voiceSearch.isSupported && (
-        <button
-          type="button"
-          aria-label={voiceSearch.isListening ? 'Stop voice search' : 'Voice search'}
-          onClick={voiceSearch.toggle}
-          className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-muted transition-colors shrink-0"
+        {/* Brand mark ─ larger, heavier, high-contrast */}
+        <a
+          href="/"
+          aria-label="Keekii — go to home"
+          className="flex items-center justify-center shrink-0 rounded-xl overflow-hidden
+                     transition-transform active:scale-95 focus-visible:outline-2
+                     focus-visible:outline-offset-2 focus-visible:outline-[var(--be-brand-ink,#e8611f)]"
+          style={{width: 40, height: 40}}
         >
-          {voiceSearch.isListening ? (
-            <LoaderCircleIcon className="size-5 animate-spin text-destructive" />
-          ) : (
-            <MicIcon className="size-5 text-foreground" />
-          )}
-        </button>
-      )}
+          <img
+            src={faviconSrc}
+            alt=""
+            aria-hidden="true"
+            width={40}
+            height={40}
+            className="w-10 h-10 object-contain"
+            onError={e => {
+              (e.currentTarget as HTMLImageElement).src = '/favicon.svg';
+            }}
+          />
+        </a>
 
-      {/* Auth content (avatar / login button) */}
-      <Navbar.Content className="ml-0 shrink-0">
-        <Navbar.AuthContent />
-      </Navbar.Content>
-    </Navbar.Root>
+        {/* Flexible gap */}
+        <div className="flex-1" aria-hidden="true" />
+
+        {/* Search icon ─ opens overlay */}
+        <NavIconButton
+          aria-label="Search"
+          onClick={openOverlay}
+        >
+          <SearchIcon className="size-[22px]" />
+        </NavIconButton>
+
+        {/* Voice-search shortcut (only when browser supports it) */}
+        {voiceSearch.isSupported && (
+          <NavIconButton
+            aria-label={voiceSearch.isListening ? 'Stop voice search' : 'Start voice search'}
+            aria-pressed={voiceSearch.isListening}
+            onClick={voiceSearch.isListening ? voiceSearch.stop : voiceSearch.toggle}
+            active={voiceSearch.isListening}
+          >
+            {voiceSearch.isListening ? (
+              <LoaderCircleIcon className="size-[22px] animate-spin text-destructive" />
+            ) : (
+              <MicIcon className="size-[22px]" />
+            )}
+          </NavIconButton>
+        )}
+
+        {/* Auth avatar / login ─ consistent with desktop far-right placement */}
+        <Navbar.Content className="ml-0 shrink-0 pl-1">
+          <Navbar.AuthContent />
+        </Navbar.Content>
+      </Navbar.Root>
+    </>
+  );
+}
+
+// ─── Shared icon-button primitive ────────────────────────────────────────────
+
+interface NavIconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  active?: boolean;
+}
+
+function NavIconButton({children, active, className, ...props}: NavIconButtonProps) {
+  return (
+    <button
+      type="button"
+      className={[
+        'flex items-center justify-center w-10 h-10 rounded-xl shrink-0',
+        'transition-all duration-150 active:scale-90',
+        'focus-visible:outline-2 focus-visible:outline-offset-2',
+        'focus-visible:outline-[var(--be-brand-ink,#e8611f)]',
+        active
+          ? 'bg-destructive/10 text-destructive'
+          : 'text-foreground hover:bg-muted',
+        className ?? '',
+      ]
+        .join(' ')
+        .trim()}
+      {...props}
+    >
+      {children}
+    </button>
   );
 }

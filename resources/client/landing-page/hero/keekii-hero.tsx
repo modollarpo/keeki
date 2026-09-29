@@ -41,6 +41,8 @@ export function KeekiiHero({config}: Props) {
       )}
     >
       <SectionNav mode="floating" isDarkMode={isDarkMode} />
+
+      {/* ── Background layer stack ─────────────────────────────────────────── */}
       <div className="relative isolate overflow-hidden">
         {heroConfig.image ? (
           <>
@@ -66,44 +68,56 @@ export function KeekiiHero({config}: Props) {
             />
           </>
         )}
-        
-        {/* Keekii Brand Wash (defined in keekii-brand.css) */}
+
+        {/* Keekii brand wash */}
         <div
           aria-hidden="true"
           className="absolute inset-0 -z-10 keekii-hero-wash opacity-70"
         />
 
-        {/* Enterprise-Grade Animated Waveform Motif */}
-        <div className="absolute inset-x-0 top-[15%] sm:top-[20%] -z-10 flex justify-center opacity-40 mix-blend-screen pointer-events-none" aria-hidden="true">
-          <svg viewBox="0 0 1000 400" className="w-full max-w-[1200px] h-auto drop-shadow-2xl">
+        {/* Animated waveform motif */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 top-[10%] -z-10 flex justify-center opacity-30 mix-blend-screen pointer-events-none"
+        >
+          <svg viewBox="0 0 1000 400" className="w-full max-w-[1400px] h-auto">
             <defs>
               <linearGradient id="hero-pulse-grad" x1="0" y1="1" x2="0" y2="0">
-                <stop offset="0%" stopColor="var(--be-brand-ink, #e8611f)" />
-                <stop offset="100%" stopColor="var(--be-brand-ink-alt, #f0864a)" />
+                <stop offset="0%" stopColor="var(--be-brand-ink,#e8611f)" />
+                <stop offset="100%" stopColor="var(--be-brand-ink-alt,#f0864a)" />
               </linearGradient>
               <filter id="hero-glow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="12" result="blur" />
+                <feGaussianBlur stdDeviation="10" result="blur" />
                 <feComposite in="SourceGraphic" in2="blur" operator="over" />
               </filter>
             </defs>
             <style>{`
-              .bar-anim { animation: equalize 2s ease-in-out infinite alternate; }
-              @keyframes equalize {
-                0% { transform: scaleY(0.4); }
-                100% { transform: scaleY(1); }
-              }
+              .bar-anim { animation: equalize 2s ease-in-out infinite alternate; transform-origin: bottom; }
+              @keyframes equalize { 0% { transform: scaleY(0.3); } 100% { transform: scaleY(1); } }
             `}</style>
-            
-            <g fill="url(#hero-pulse-grad)" filter="url(#hero-glow)" className="transform-origin-center" style={{transformOrigin: '50% 50%'}}>
-              <rect x="380" y="160" width="10" height="80" rx="5" className="bar-anim" style={{animationDuration: '1.4s', animationDelay: '0.1s'}} />
-              <rect x="410" y="140" width="10" height="120" rx="5" className="bar-anim" style={{animationDuration: '1.7s', animationDelay: '0.4s'}} />
-              <rect x="440" y="100" width="10" height="200" rx="5" className="bar-anim" style={{animationDuration: '1.3s', animationDelay: '0.2s'}} />
-              <rect x="470" y="60"  width="12" height="280" rx="6" className="bar-anim" style={{animationDuration: '1.9s', animationDelay: '0.5s'}} />
-              <rect x="500" y="40"  width="14" height="320" rx="7" className="bar-anim" style={{animationDuration: '1.5s', animationDelay: '0.0s'}} />
-              <rect x="530" y="60"  width="12" height="280" rx="6" className="bar-anim" style={{animationDuration: '2.1s', animationDelay: '0.3s'}} />
-              <rect x="560" y="100" width="10" height="200" rx="5" className="bar-anim" style={{animationDuration: '1.4s', animationDelay: '0.6s'}} />
-              <rect x="590" y="140" width="10" height="120" rx="5" className="bar-anim" style={{animationDuration: '1.8s', animationDelay: '0.1s'}} />
-              <rect x="620" y="160" width="10" height="80" rx="5" className="bar-anim" style={{animationDuration: '1.6s', animationDelay: '0.4s'}} />
+            <g fill="url(#hero-pulse-grad)" filter="url(#hero-glow)">
+              {[
+                [380, 160, 10, 80, 5, '1.4s', '0.1s'],
+                [410, 140, 10, 120, 5, '1.7s', '0.4s'],
+                [440, 100, 10, 200, 5, '1.3s', '0.2s'],
+                [470, 60, 12, 280, 6, '1.9s', '0.5s'],
+                [500, 40, 14, 320, 7, '1.5s', '0.0s'],
+                [530, 60, 12, 280, 6, '2.1s', '0.3s'],
+                [560, 100, 10, 200, 5, '1.4s', '0.6s'],
+                [590, 140, 10, 120, 5, '1.8s', '0.1s'],
+                [620, 160, 10, 80, 5, '1.6s', '0.4s'],
+              ].map(([x, y, w, h, rx, dur, delay], i) => (
+                <rect
+                  key={i}
+                  x={x}
+                  y={y}
+                  width={w}
+                  height={h}
+                  rx={rx}
+                  className="bar-anim"
+                  style={{animationDuration: String(dur), animationDelay: String(delay)}}
+                />
+              ))}
             </g>
           </svg>
         </div>
@@ -111,41 +125,63 @@ export function KeekiiHero({config}: Props) {
         {heroConfig.image ? (
           <div
             aria-hidden="true"
-            className="absolute inset-0 -z-10 bg-linear-to-t from-background via-background/60 to-transparent"
+            className="absolute inset-0 -z-10 bg-linear-to-t from-background via-background/50 to-transparent"
           />
         ) : null}
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16 sm:pb-24">
-          <div className="mx-auto max-w-3xl pt-28 pb-10 sm:pt-40 sm:pb-12 text-center keekii-enter">
-            {heroConfig.badge ? (
-              <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs sm:text-sm/6 text-white backdrop-blur-md shadow-2xl transition-transform hover:scale-105">
-                <span className="w-2 h-2 rounded-full bg-[var(--be-brand-ink)] mr-2 animate-pulse" />
-                <Trans message={heroConfig.badge} />
-              </div>
-            ) : null}
-            {heroConfig.title ? (
-              <Heading className="mt-8 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight keekii-display">
-                <Trans message={heroConfig.title} />
-              </Heading>
-            ) : null}
-            {heroConfig.description ? (
-              <Description className="mt-6 font-medium text-base sm:text-lg text-white/70 max-w-2xl mx-auto leading-relaxed">
-                <Trans message={heroConfig.description} />
-              </Description>
-            ) : null}
-            {SearchBarCmp ? (
-              <div className="light mt-8 sm:mt-12 pb-8 sm:pb-12 text-muted-foreground transition-all hover:scale-[1.01] duration-500">
-                <SearchBarCmp background="bg-white/95 backdrop-blur-xl shadow-2xl" config={heroConfig} />
-              </div>
-            ) : null}
-            {heroConfig.buttons?.length ? (
-              <Buttons
-                buttons={heroConfig.buttons}
-                className="mt-6 sm:mt-10 justify-center gap-x-4 gap-y-4 flex-col sm:flex-row"
-              />
-            ) : null}
+        {/* ── Two-column hero layout ───────────────────────────────────────── */}
+        {/*                                                                    */}
+        {/* Desktop: [text left 55%] [graphic right 45%] side by side         */}
+        {/* Mobile:  text stacked on top, graphic below (both full-width)      */}
+        {/*                                                                    */}
+        {/* The graphic is always in the SAME visual row as the text, so it   */}
+        {/* is always above the fold on any viewport ≥ 320 px.                */}
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:gap-12 pt-24 sm:pt-32 lg:pt-36 pb-16 sm:pb-20">
+
+            {/* Left column — text content */}
+            <div className="flex-1 text-center lg:text-left max-w-2xl mx-auto lg:mx-0 keekii-enter">
+              {heroConfig.badge ? (
+                <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs sm:text-sm/6 text-white backdrop-blur-md shadow-2xl transition-transform hover:scale-105">
+                  <span className="w-2 h-2 rounded-full bg-[var(--be-brand-ink)] mr-2 animate-pulse" />
+                  <Trans message={heroConfig.badge} />
+                </div>
+              ) : null}
+
+              {heroConfig.title ? (
+                <Heading className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight keekii-display">
+                  <Trans message={heroConfig.title} />
+                </Heading>
+              ) : null}
+
+              {heroConfig.description ? (
+                <Description className="mt-5 font-medium text-base sm:text-lg text-white/70 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                  <Trans message={heroConfig.description} />
+                </Description>
+              ) : null}
+
+              {SearchBarCmp ? (
+                <div className="light mt-8 sm:mt-10 pb-2 text-muted-foreground transition-all hover:scale-[1.01] duration-500">
+                  <SearchBarCmp background="bg-white/95 backdrop-blur-xl shadow-2xl" config={heroConfig} />
+                </div>
+              ) : null}
+
+              {heroConfig.buttons?.length ? (
+                <Buttons
+                  buttons={heroConfig.buttons}
+                  className="mt-6 sm:mt-8 justify-center lg:justify-start gap-x-4 gap-y-3 flex-col sm:flex-row"
+                />
+              ) : null}
+            </div>
+
+            {/* Right column — interactive graphic */}
+            {/* On mobile this renders below the text, still above the fold   */}
+            {/* because the text column is compact without the giant pt-28.   */}
+            <div className="mt-10 lg:mt-0 w-full lg:w-auto lg:shrink-0 lg:w-[420px] flex justify-center lg:justify-end">
+              <KeekiiInteractiveHeroGraphic />
+            </div>
+
           </div>
-          <KeekiiInteractiveHeroGraphic />
         </div>
       </div>
     </div>
