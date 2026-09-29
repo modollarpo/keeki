@@ -49,7 +49,7 @@ export function KeekiiHero({config}: Props) {
               width={heroConfig.image.width}
               height={heroConfig.image.height}
               className="absolute inset-0 -z-30 size-full object-cover"
-              fetchpriority="high"
+              fetchPriority="high"
             />
             <div
               aria-hidden="true"

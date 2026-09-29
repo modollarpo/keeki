@@ -5,6 +5,7 @@ import {BufferingIndicator} from '@app/web-player/player-controls/buffering-indi
 import {useCuedTrack} from '@app/web-player/player-controls/use-cued-track';
 import {playerOverlayState} from '@app/web-player/state/player-overlay-store';
 import {TrackImage} from '@app/web-player/tracks/track-image/track-image';
+import {UserImage} from '@app/web-player/users/user-image';
 import {useAuth} from '@common/auth/use-auth';
 import {UnstyledCustomMenuItem} from '@common/menus/custom-menu';
 import {useCustomMenu} from '@common/menus/use-custom-menu';
@@ -94,7 +95,7 @@ function PlayerProgressBar() {
       size="xs"
       className="absolute right-0 bottom-0 left-0"
       trackColor="bg-border/30"
-      fillColor="bg-[var(--be-brand-ink,var(--be-primary))]"
+      progressColor="bg-[var(--be-brand-ink,var(--be-primary))]"
       trackHeight="h-[2px]"
       radius="rounded-none"
       minValue={0}
@@ -167,12 +168,15 @@ function AccountButton() {
   const trigger = (
     <Dropdown.Trigger className="relative text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors outline-none">
       {user ? (
-        <UserImage user={user} className="mx-auto mb-1 block size-[22px] rounded-full object-cover shadow-sm border border-border/50" />
+        <UserImage
+          user={user}
+          className="mx-auto mb-1 block size-[22px] rounded-full object-cover shadow-sm border border-border/50"
+        />
       ) : (
         <CircleUser className="mx-auto mb-1 block size-[22px] opacity-80" strokeWidth={1.5} />
       )}
       {hasUnreadNotif ? (
-        <Badge className="absolute -top-1.5 -right-2 min-w-4 h-4 px-1 flex items-center justify-center text-[9px] bg-red-500 text-white border border-background shadow-sm" radius="rounded-full">
+        <Badge className="absolute -top-1.5 -right-2 min-w-4 h-4 px-1 flex items-center justify-center text-[9px] rounded-full bg-red-500 text-white border border-background shadow-sm">
           {user?.unread_notifications_count}
         </Badge>
       ) : null}
