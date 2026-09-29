@@ -142,3 +142,25 @@ foreach ($tokenSources as $flag => $scheme) {
 }
 
 echo "Processed {$themesChanged} theme(s).\n";
+
+/*
+ * ---------------------------------------------------------------------------
+ * Landing Page Sync
+ * ---------------------------------------------------------------------------
+ * The landing page is stored as a JSON string in the settings table.
+ * We want to forcibly push our newly engineered AIDA-compliant Keekii
+ * landing page design to the production database so the React frontend sees it.
+ */
+$defaultSettings = require $appBase . '/resources/defaults/default-settings.php';
+$landingPageConfig = null;
+foreach ($defaultSettings as $setting) {
+    if ($setting['name'] === 'landingPage') {
+        $landingPageConfig = $setting['value'];
+        break;
+    }
+}
+
+if ($landingPageConfig) {
+    Setting::updateOrCreate(['name' => 'landingPage'], ['value' => $landingPageConfig]);
+    echo "[updated] landingPage JSON config applied from default-settings.php\n";
+}
