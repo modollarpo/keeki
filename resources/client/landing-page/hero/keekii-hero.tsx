@@ -23,6 +23,19 @@ type Props = {
   index: number;
 };
 
+// Waveform bar data — defined as a typed tuple to satisfy TSC.
+const WAVE_BARS: Array<{x: number; y: number; w: number; h: number; rx: number; dur: string; del: string}> = [
+  {x: 380, y: 160, w: 10, h: 80,  rx: 5, dur: '1.4s', del: '0.1s'},
+  {x: 410, y: 140, w: 10, h: 120, rx: 5, dur: '1.7s', del: '0.4s'},
+  {x: 440, y: 100, w: 10, h: 200, rx: 5, dur: '1.3s', del: '0.2s'},
+  {x: 470, y: 60,  w: 12, h: 280, rx: 6, dur: '1.9s', del: '0.5s'},
+  {x: 500, y: 40,  w: 14, h: 320, rx: 7, dur: '1.5s', del: '0.0s'},
+  {x: 530, y: 60,  w: 12, h: 280, rx: 6, dur: '2.1s', del: '0.3s'},
+  {x: 560, y: 100, w: 10, h: 200, rx: 5, dur: '1.4s', del: '0.6s'},
+  {x: 590, y: 140, w: 10, h: 120, rx: 5, dur: '1.8s', del: '0.1s'},
+  {x: 620, y: 160, w: 10, h: 80,  rx: 5, dur: '1.6s', del: '0.4s'},
+];
+
 export function KeekiiHero({config}: Props) {
   const heroConfig = config as KeekiiHeroConfig;
   const {heroSearchBarSlot} = useContext(LandingPageContext);
@@ -44,6 +57,8 @@ export function KeekiiHero({config}: Props) {
 
       {/* ── Background layer stack ─────────────────────────────────────────── */}
       <div className="relative isolate overflow-hidden">
+
+        {/* Hero image or colour blobs */}
         {heroConfig.image ? (
           <>
             <img
@@ -70,12 +85,9 @@ export function KeekiiHero({config}: Props) {
         )}
 
         {/* Keekii brand wash */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 -z-10 keekii-hero-wash opacity-70"
-        />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 keekii-hero-wash opacity-70" />
 
-        {/* Animated waveform motif */}
+        {/* Animated waveform background motif */}
         <div
           aria-hidden="true"
           className="absolute inset-x-0 top-[10%] -z-10 flex justify-center opacity-30 mix-blend-screen pointer-events-none"
@@ -91,37 +103,21 @@ export function KeekiiHero({config}: Props) {
                 <feComposite in="SourceGraphic" in2="blur" operator="over" />
               </filter>
             </defs>
-            <style>{`
-              .bar-anim { animation: equalize 2s ease-in-out infinite alternate; transform-origin: bottom; }
-              @keyframes equalize { 0% { transform: scaleY(0.3); } 100% { transform: scaleY(1); } }
-            `}</style>
+            <style>{`.bar-anim{animation:equalize 2s ease-in-out infinite alternate;transform-origin:bottom}@keyframes equalize{0%{transform:scaleY(.3)}to{transform:scaleY(1)}}`}</style>
             <g fill="url(#hero-pulse-grad)" filter="url(#hero-glow)">
-              {[
-                [380, 160, 10, 80, 5, '1.4s', '0.1s'],
-                [410, 140, 10, 120, 5, '1.7s', '0.4s'],
-                [440, 100, 10, 200, 5, '1.3s', '0.2s'],
-                [470, 60, 12, 280, 6, '1.9s', '0.5s'],
-                [500, 40, 14, 320, 7, '1.5s', '0.0s'],
-                [530, 60, 12, 280, 6, '2.1s', '0.3s'],
-                [560, 100, 10, 200, 5, '1.4s', '0.6s'],
-                [590, 140, 10, 120, 5, '1.8s', '0.1s'],
-                [620, 160, 10, 80, 5, '1.6s', '0.4s'],
-              ].map(([x, y, w, h, rx, dur, delay], i) => (
+              {WAVE_BARS.map((b, i) => (
                 <rect
                   key={i}
-                  x={x}
-                  y={y}
-                  width={w}
-                  height={h}
-                  rx={rx}
+                  x={b.x} y={b.y} width={b.w} height={b.h} rx={b.rx}
                   className="bar-anim"
-                  style={{animationDuration: String(dur), animationDelay: String(delay)}}
+                  style={{animationDuration: b.dur, animationDelay: b.del}}
                 />
               ))}
             </g>
           </svg>
         </div>
 
+        {/* Vignette fade at the bottom when a hero image is present */}
         {heroConfig.image ? (
           <div
             aria-hidden="true"
@@ -129,18 +125,18 @@ export function KeekiiHero({config}: Props) {
           />
         ) : null}
 
-        {/* ── Two-column hero layout ───────────────────────────────────────── */}
+        {/* ── Two-column content layout ────────────────────────────────────── */}
         {/*                                                                    */}
-        {/* Desktop: [text left 55%] [graphic right 45%] side by side         */}
-        {/* Mobile:  text stacked on top, graphic below (both full-width)      */}
+        {/* lg+  : [text 55%] | [graphic 45%]  — side by side, both visible   */}
+        {/* <lg  : text → graphic, stacked vertically                          */}
         {/*                                                                    */}
-        {/* The graphic is always in the SAME visual row as the text, so it   */}
-        {/* is always above the fold on any viewport ≥ 320 px.                */}
+        {/* IMPORTANT: the graphic lives in the SAME row as the headline text  */}
+        {/* so it is always above the fold, regardless of viewport height.     */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:gap-12 pt-24 sm:pt-32 lg:pt-36 pb-16 sm:pb-20">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:gap-16 pt-24 sm:pt-32 lg:pt-36 pb-16 sm:pb-20">
 
-            {/* Left column — text content */}
-            <div className="flex-1 text-center lg:text-left max-w-2xl mx-auto lg:mx-0 keekii-enter">
+            {/* ── Left: text content ──────────────────────────────────────── */}
+            <div className="flex-1 min-w-0 text-center lg:text-left max-w-2xl mx-auto lg:mx-0 keekii-enter">
               {heroConfig.badge ? (
                 <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs sm:text-sm/6 text-white backdrop-blur-md shadow-2xl transition-transform hover:scale-105">
                   <span className="w-2 h-2 rounded-full bg-[var(--be-brand-ink)] mr-2 animate-pulse" />
@@ -174,10 +170,10 @@ export function KeekiiHero({config}: Props) {
               ) : null}
             </div>
 
-            {/* Right column — interactive graphic */}
-            {/* On mobile this renders below the text, still above the fold   */}
-            {/* because the text column is compact without the giant pt-28.   */}
-            <div className="mt-10 lg:mt-0 w-full lg:w-auto lg:shrink-0 lg:w-[420px] flex justify-center lg:justify-end">
+            {/* ── Right: interactive graphic ───────────────────────────────── */}
+            {/* The graphic is always in the same visual viewport row as the   */}
+            {/* headline — no scrolling required on any screen size.           */}
+            <div className="flex-shrink-0 mt-12 lg:mt-0 flex justify-center lg:justify-end">
               <KeekiiInteractiveHeroGraphic />
             </div>
 
