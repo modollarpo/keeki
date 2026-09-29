@@ -17,6 +17,7 @@ import {PlaylistImage} from '@app/web-player/playlists/playlist-image';
 import {getPlaylistLink} from '@app/web-player/playlists/playlist-link';
 import {queueGroupId} from '@app/web-player/queue-group-id';
 import {SearchResponse} from '@app/web-player/search/search-response';
+import {useVoiceSearch} from '@app/web-player/search/use-voice-search';
 import {TrackContextDialog} from '@app/web-player/tracks/context-dialog/track-context-dialog';
 import {TRACK_MODEL} from '@app/web-player/tracks/track';
 import {TrackImage} from '@app/web-player/tracks/track-image/track-image';
@@ -36,10 +37,18 @@ import {keepPreviousData, useQuery} from '@tanstack/react-query';
 import {message} from '@ui/i18n/message';
 import {Trans} from '@ui/i18n/trans';
 import {useTrans} from '@ui/i18n/use-trans';
+import {toast} from '@ui/toast/toast';
 import {USER_MODEL} from '@ui/types/user';
 import {cn} from '@ui/utils/cn';
-import {SearchIcon} from 'lucide-react';
-import {cloneElement, ReactElement, ReactNode, useMemo, useState} from 'react';
+import {LoaderCircleIcon, MicIcon, SearchIcon} from 'lucide-react';
+import {
+  cloneElement,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
 import {useLocation, useParams} from 'react-router';
 
 type SearchResultItem = NonNullable<
@@ -62,6 +71,39 @@ export function SearchAutocomplete({className}: SearchAutocompleteProps) {
   const isOnSearchPage = pathname.startsWith('/search/');
   const [query, setQuery] = useState(searchQuery || '');
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleTranscript = useCallback((transcript: string) => {
+    setQuery(transcript);
+    setIsOpen(true);
+  }, []);
+
+  const handleVoiceError = useCallback((error: string) => {
+    switch (error) {
+      case 'unsupported':
+        toast.danger(
+          message('Voice search is not supported in this browser.'),
+        );
+        break;
+      case 'not-allowed':
+      case 'service-not-allowed':
+        toast.danger(message('Microphone access was denied.'));
+        break;
+      case 'audio-capture':
+        toast.danger(message('No microphone was found.'));
+        break;
+      case 'network':
+        toast.danger(message('Voice search needs a network connection.'));
+        break;
+      default:
+        toast.danger(message('Voice search failed. Please try again.'));
+    }
+  }, []);
+
+  const voiceSearch = useVoiceSearch({
+    onTranscript: handleTranscript,
+    onError: handleVoiceError,
+  });
+
   const {isFetching, data} = useQuery({
     ...appQueries.search.results('search', query),
     enabled: !!query && !isOnSearchPage,
@@ -101,6 +143,9 @@ export function SearchAutocomplete({className}: SearchAutocompleteProps) {
     <form
       onSubmit={e => {
         e.preventDefault();
+        // Submitting while dictating would navigate away from under the
+        // recognition session, so flush it first.
+        voiceSearch.stop();
         const encodedQuery = encodeURIComponent(query.trim());
         if (encodedQuery) {
           setIsOpen(false);
@@ -163,6 +208,33 @@ export function SearchAutocomplete({className}: SearchAutocompleteProps) {
                 <SearchIcon />
               </InputGroupButton>
             </InputGroupAddon>
+            {voiceSearch.isSupported && (
+              <InputGroupAddon align="inline-end">
+                <InputGroupButton
+                  type="button"
+                  size="icon-sm"
+                  variant="ghost"
+                  color="default"
+                  onClick={voiceSearch.toggle}
+                  aria-label={
+                    voiceSearch.isListening
+                      ? trans(message('Stop voice search'))
+                      : trans(message('Search with voice'))
+                  }
+                  aria-pressed={voiceSearch.isListening}
+                  className={cn(
+                    'text-muted-foreground hover:text-foreground',
+                    voiceSearch.isListening && 'text-destructive',
+                  )}
+                >
+                  {voiceSearch.isListening ? (
+                    <LoaderCircleIcon className="animate-spin" />
+                  ) : (
+                    <MicIcon />
+                  )}
+                </InputGroupButton>
+              </InputGroupAddon>
+            )}
           </Combobox.Input>
           <Combobox.Content sideOffset={12} className="max-h-167.5">
             {!isFetching && (
