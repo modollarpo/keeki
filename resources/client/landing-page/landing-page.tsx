@@ -16,6 +16,8 @@ import {
 import {TRACK_MODEL} from '@app/web-player/tracks/track';
 import {TrackImage} from '@app/web-player/tracks/track-image/track-image';
 import {getTrackLink, TrackLink} from '@app/web-player/tracks/track-link';
+import {useVoiceSearch} from '@app/web-player/search/use-voice-search';
+import {toast} from '@ui/toast/toast';
 import {UserImage} from '@app/web-player/users/user-image';
 import {
   getUserProfileLink,
@@ -33,6 +35,7 @@ import {SectionShell} from '@common/ui/landing-page/primitives/section-shell';
 import {
   InputGroup,
   InputGroupAddon,
+  InputGroupButton,
   InputGroupInput,
 } from '@shadcn/forms/input-group/input-group';
 import {useSuspenseQuery} from '@tanstack/react-query';
@@ -52,6 +55,8 @@ import {
   LightbulbIcon,
   ListMusicIcon,
   MessageCircleIcon,
+  MicIcon,
+  LoaderCircleIcon,
   NewspaperIcon,
   RadioIcon,
   Repeat2Icon,
@@ -61,7 +66,7 @@ import {
   UploadIcon,
   UserRoundIcon,
 } from 'lucide-react';
-import {cloneElement, ComponentType, ReactElement, ReactNode} from 'react';
+import {cloneElement, ComponentType, ReactElement, ReactNode, useState, useCallback} from 'react';
 import {Link, useNavigate} from 'react-router';
 
 const defaultIcons: Record<string, ReactElement> = {
@@ -105,13 +110,48 @@ type HeroSearchBarProps = {
 function HeroSearchBar({background}: HeroSearchBarProps) {
   const navigate = useNavigate();
   const {trans} = useTrans();
+  const [query, setQuery] = useState('');
+
+  const handleTranscript = useCallback((transcript: string) => {
+    setQuery(transcript);
+    // Auto-submit when dictation finishes
+    navigate(`/search/${encodeURIComponent(transcript.trim())}`);
+  }, [navigate]);
+
+  const handleVoiceError = useCallback((error: string) => {
+    switch (error) {
+      case 'unsupported':
+        toast.danger(message('Voice search is not supported in this browser.'));
+        break;
+      case 'not-allowed':
+      case 'service-not-allowed':
+        toast.danger(message('Microphone access was denied.'));
+        break;
+      case 'audio-capture':
+        toast.danger(message('No microphone was found.'));
+        break;
+      case 'network':
+        toast.danger(message('Voice search needs a network connection.'));
+        break;
+      default:
+        toast.danger(message('Voice search failed. Please try again.'));
+    }
+  }, []);
+
+  const voiceSearch = useVoiceSearch({
+    onTranscript: handleTranscript,
+    onError: handleVoiceError,
+  });
 
   return (
     <form
       className="w-full"
       onSubmit={e => {
         e.preventDefault();
-        navigate(`search/${(e.currentTarget[0] as HTMLInputElement).value}`);
+        voiceSearch.stop();
+        if (query.trim()) {
+          navigate(`/search/${encodeURIComponent(query.trim())}`);
+        }
       }}
     >
       <InputGroup className={clsx('h-12.5 rounded-full', background)}>
@@ -120,8 +160,37 @@ function HeroSearchBar({background}: HeroSearchBarProps) {
         </InputGroupAddon>
         <InputGroupInput
           bindToHookForm={false}
+          value={query}
+          onChange={e => setQuery(e.target.value)}
           placeholder={trans(message('Search for artists, albums, songs...'))}
         />
+        {voiceSearch.isSupported && (
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton
+              type="button"
+              size="icon-sm"
+              variant="ghost"
+              color="default"
+              onClick={voiceSearch.toggle}
+              aria-label={
+                voiceSearch.isListening
+                  ? trans(message('Stop voice search'))
+                  : trans(message('Search with voice'))
+              }
+              aria-pressed={voiceSearch.isListening}
+              className={clsx(
+                'text-muted-foreground hover:text-foreground',
+                voiceSearch.isListening && 'text-destructive'
+              )}
+            >
+              {voiceSearch.isListening ? (
+                <LoaderCircleIcon className="animate-spin" />
+              ) : (
+                <MicIcon />
+              )}
+            </InputGroupButton>
+          </InputGroupAddon>
+        )}
       </InputGroup>
     </form>
   );
