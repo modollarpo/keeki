@@ -5,7 +5,6 @@ import {BufferingIndicator} from '@app/web-player/player-controls/buffering-indi
 import {useCuedTrack} from '@app/web-player/player-controls/use-cued-track';
 import {playerOverlayState} from '@app/web-player/state/player-overlay-store';
 import {TrackImage} from '@app/web-player/tracks/track-image/track-image';
-import {UserImage} from '@app/web-player/users/user-image';
 import {useAuth} from '@common/auth/use-auth';
 import {UnstyledCustomMenuItem} from '@common/menus/custom-menu';
 import {useCustomMenu} from '@common/menus/use-custom-menu';
@@ -167,9 +166,10 @@ function AccountButton() {
 
   const trigger = (
     <Dropdown.Trigger className="relative text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors outline-none">
-      {user ? (
-        <UserImage
-          user={user}
+      {user?.image ? (
+        <img
+          src={user.image}
+          alt=""
           className="mx-auto mb-1 block size-[22px] rounded-full object-cover shadow-sm border border-border/50"
         />
       ) : (
