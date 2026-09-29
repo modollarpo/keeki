@@ -173,7 +173,7 @@ export function KeekiiHero({config}: Props) {
             {/* ── Right: interactive graphic ───────────────────────────────── */}
             {/* The graphic is always in the same visual viewport row as the   */}
             {/* headline — no scrolling required on any screen size.           */}
-            <div className="flex-shrink-0 mt-12 lg:mt-0 flex justify-center lg:justify-end">
+            <div className="w-full sm:max-w-sm lg:w-[420px] shrink-0 mt-12 lg:mt-0 flex justify-center lg:justify-end mx-auto lg:mx-0">
               <KeekiiInteractiveHeroGraphic />
             </div>
 
