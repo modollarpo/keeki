@@ -35,13 +35,13 @@ export function KeekiiHero({config}: Props) {
   return (
     <div
       className={clsx(
-        'relative overflow-hidden bg-muted text-foreground',
+        'relative bg-muted text-foreground',
         heroConfig.showAsPanel && 'm-2 sm:m-4 rounded-[2rem]',
         heroConfig.forceDarkMode && 'dark',
       )}
     >
       <SectionNav mode="floating" isDarkMode={isDarkMode} />
-      <div className="relative isolate overflow-visible">
+      <div className="relative isolate overflow-hidden">
         {heroConfig.image ? (
           <>
             <img
@@ -95,16 +95,12 @@ export function KeekiiHero({config}: Props) {
             `}</style>
             
             <g fill="url(#hero-pulse-grad)" filter="url(#hero-glow)" className="transform-origin-center" style={{transformOrigin: '50% 50%'}}>
-              {/* Symmetrical Twin-Pulse Waveform */}
               <rect x="380" y="160" width="10" height="80" rx="5" className="bar-anim" style={{animationDuration: '1.4s', animationDelay: '0.1s'}} />
               <rect x="410" y="140" width="10" height="120" rx="5" className="bar-anim" style={{animationDuration: '1.7s', animationDelay: '0.4s'}} />
               <rect x="440" y="100" width="10" height="200" rx="5" className="bar-anim" style={{animationDuration: '1.3s', animationDelay: '0.2s'}} />
               <rect x="470" y="60"  width="12" height="280" rx="6" className="bar-anim" style={{animationDuration: '1.9s', animationDelay: '0.5s'}} />
-              
-              {/* Twin 'i' center peaks */}
               <rect x="500" y="40"  width="14" height="320" rx="7" className="bar-anim" style={{animationDuration: '1.5s', animationDelay: '0.0s'}} />
               <rect x="530" y="60"  width="12" height="280" rx="6" className="bar-anim" style={{animationDuration: '2.1s', animationDelay: '0.3s'}} />
-              
               <rect x="560" y="100" width="10" height="200" rx="5" className="bar-anim" style={{animationDuration: '1.4s', animationDelay: '0.6s'}} />
               <rect x="590" y="140" width="10" height="120" rx="5" className="bar-anim" style={{animationDuration: '1.8s', animationDelay: '0.1s'}} />
               <rect x="620" y="160" width="10" height="80" rx="5" className="bar-anim" style={{animationDuration: '1.6s', animationDelay: '0.4s'}} />
@@ -115,7 +111,7 @@ export function KeekiiHero({config}: Props) {
         {heroConfig.image ? (
           <div
             aria-hidden="true"
-            className="absolute inset-0 -z-10 bg-linear-to-t from-background via-background/80 to-transparent opacity-100"
+            className="absolute inset-0 -z-10 bg-linear-to-t from-background via-background/60 to-transparent"
           />
         ) : null}
 
@@ -149,10 +145,10 @@ export function KeekiiHero({config}: Props) {
               />
             ) : null}
           </div>
-          {/* Interactive graphic — full-width so it isn't clipped by the text column */}
-          <KeekiiInteractiveHeroGraphic />
         </div>
       </div>
+      {/* Interactive graphic — outside overflow-hidden so 3D transform is never clipped */}
+      <KeekiiInteractiveHeroGraphic />
     </div>
   );
 }
