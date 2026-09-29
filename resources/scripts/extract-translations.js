@@ -1,129 +1,216 @@
 // extract-translations.js
-// Scans PHP/Blade source for Laravel translation calls (__(), trans(), @lang)
-// and generates resources/lang/en.json with sentence keys (gitignored *.json).
-// Dotted keys are reported against committed PHP files without modifying them.
-// --dry-run: preview changes only.
+//
+// Regenerates the CLIENT half of the translation catalog:
+//   resources/client-translations.json
+//
+// That file is committed, and Common\Localizations\LocalizationsRepository
+// merges it with server-translations.json (DEFAULT_TRANS_PATHS) to seed every
+// new locale. So this is the manifest of every user-facing string in the React
+// app, and anything missing here silently falls back to English at runtime --
+// see use-trans.ts, where an unmissed key resolves to itself.
+//
+// This script scans TypeScript and JavaScript only, for `message('...')` and
+// `<Trans message="..." />`. Server-side strings are somebody else's job:
+//   php artisan translations:export
+// which writes resources/server-translations.json and additionally covers
+// `Lang::get`, custom FormRequest validation messages, default menu labels and
+// permission names. That command is the authority for PHP; do not duplicate it
+// here, because it already scans app/, common/, resources/views,
+// resources/lang/en, resources/defaults and vendor/laravel.
+//
+// Usage:
+//   node resources/scripts/extract-translations.js            refresh the catalog
+//   node resources/scripts/extract-translations.js --dry-run  report only
+//   node resources/scripts/extract-translations.js --prune     also drop orphans
+//   node resources/scripts/extract-translations.js --check     exit 1 if stale (CI)
 
 const fs = require('fs');
 const path = require('path');
 
-const GITIGNORED_JSON = path.join('resources', 'lang', 'en', 'en.json');
-const LANG_DIR = path.join('resources', 'lang', 'en');
+const CATALOG = path.join('resources', 'client-translations.json');
+
 const SOURCE_ROOTS = [
-  'app',
-  'resources/views',
-  'common/foundation/resources/views',
-  'common/foundation/resources/lists',
+  path.join('resources', 'client'),
+  path.join('common', 'foundation', 'resources', 'client'),
 ];
 
-const SKIP = /node_modules|\.git|\/vendor\//;
+const EXTENSIONS = /\.(tsx|ts|jsx|js)$/;
 
-function *walk(dir) {
-  let ents;
-  try { ents = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
-  for (const e of ents) {
-    const p = path.join(dir, e.name);
-    if (SKIP.test(p)) continue;
-    if (e.isDirectory()) yield *walk(p);
-    else if (/\.php$/.test(e.name)) yield p;
+// `gen/` holds Orval-generated API schemas. It is excluded because it is
+// machine-written and can never contain a translatable literal, and because it
+// is large enough to dominate the scan.
+const SKIP = /node_modules|\.git|[\\/]gen[\\/]|\.storybook|[\\/]dist[\\/]/;
+
+// A leading boundary so `foo.message('x')` and `errorMessage('x')` are not
+// mistaken for the i18n helper.
+const MESSAGE_CALL =
+  /(?<![\w$.])message\(\s*(['"])((?:\\.|(?!\1)[^\\])*)\1/g;
+
+// `[^>]*?` rather than `[\s\S]*?` so the match cannot run past the end of the
+// tag and pair a message attribute with a string from some later element.
+const TRANS_TAG = /<Trans\b[^>]*?\bmessage=(['"])((?:\\.|(?!\1)[^\\])*)\1/g;
+
+// Same test `ExportTranslations` applies, so a dotted key dropped here is also
+// dropped on the server side and the two catalogs stay consistent.
+const DOTTED_KEY = /^[^.\s]\S*\.\S*[^.\s]$/;
+
+function* walk(dir) {
+  let entries;
+  try {
+    entries = fs.readdirSync(dir, {withFileTypes: true});
+  } catch {
+    return;
+  }
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (SKIP.test(full)) continue;
+    if (entry.isDirectory()) yield* walk(full);
+    else if (EXTENSIONS.test(entry.name)) yield full;
   }
 }
 
-function extractKeysFromSource(src) {
-  const keys = { sentence: new Set(), dotted: new Set() };
-  // __() and trans()
-  const re1 = /(?<![\w$>])(__|trans)\s*\(\s*(['"])((?:\\.|(?!\2)[^\\])*)\2/g;
-  let m;
-  while ((m = re1.exec(src))) {
-    const key = m[3];
-    if (key.includes('.')) keys.dotted.add(key);
-    else keys.sentence.add(key);
+function extractFromSource(source) {
+  const sentences = new Set();
+  const dotted = new Set();
+  for (const match of source.matchAll(MESSAGE_CALL)) {
+    addKey(sentences, dotted, match[2]);
   }
-  // @lang() in Blade
-  const re2 = /@lang\s*\(\s*(['"])((?:\\.|(?!\1)[^\\])*)\1/g;
-  let m2;
-  while ((m2 = re2.exec(src))) {
-    const key = m2[2];
-    if (key.includes('.')) keys.dotted.add(key);
-    else keys.sentence.add(key);
+  for (const match of source.matchAll(TRANS_TAG)) {
+    addKey(sentences, dotted, match[2]);
   }
-  return keys;
+  return {sentences, dotted};
+}
+
+function addKey(sentences, dotted, key) {
+  if (!key) return;
+  if (DOTTED_KEY.test(key)) dotted.add(key);
+  else sentences.add(key);
+}
+
+function readCatalog() {
+  if (!fs.existsSync(CATALOG)) {
+    return {};
+  }
+  try {
+    return JSON.parse(fs.readFileSync(CATALOG, 'utf8'));
+  } catch (error) {
+    console.error(`Could not parse ${CATALOG}: ${error.message}`);
+    console.error('Fix or delete the file, then re-run. Refusing to overwrite it.');
+    process.exit(1);
+  }
+}
+
+function format(catalog) {
+  // Minified and newline-free, matching how the committed file is already
+  // written. Pretty-printing here would reformat all 2000-odd existing keys
+  // and bury the handful of real changes in the diff.
+  return JSON.stringify(catalog);
 }
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
+const prune = args.includes('--prune');
+const check = args.includes('--check');
 
-function *walk(dir) {
-  let ents;
-  try { ents = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
-  for (const e of ents) {
-    const p = path.join(dir, e.name);
-    if (SKIP.test(p)) continue;
-    if (e.isDirectory()) yield *walk(p);
-    else if (/\.php$/.test(e.name)) yield p;
+const files = SOURCE_ROOTS.filter(root => fs.existsSync(root)).flatMap(root => [
+  ...walk(root),
+]);
+
+const found = new Set();
+const dotted = new Set();
+for (const file of files) {
+  const extracted = extractFromSource(fs.readFileSync(file, 'utf8'));
+  for (const key of extracted.sentences) found.add(key);
+  for (const key of extracted.dotted) dotted.add(key);
+}
+
+const existing = readCatalog();
+
+// Existing values win. The catalog is the seed for every locale, and a value
+// that differs from its key is a real translation somebody has written, so
+// regenerating it to `key => key` would discard work that is not ours to lose.
+const catalog = {...existing};
+const added = [];
+for (const key of [...found].sort()) {
+  if (!(key in catalog)) {
+    catalog[key] = key;
+    added.push(key);
   }
 }
 
-// locate source files
-const files = [...new Set(
-  ...SOURCE_ROOTS.map(root => [...walk(root)].flat())
-)].filter(f => !SKIP.test(f));
-
-console.log(`Scanning ${files.length} PHP/Blade files`);
-
-// collect keys
-let sentenceKeys = new Set(), dottedKeys = new Set();
-for (const f of files) {
-  const src = fs.readFileSync(f, 'utf8');
-  const k = extractKeysFromSource(src);
-  sentenceKeys = new Set([...sentenceKeys, ...k.sentence]);
-  dottedKeys = new Set([...dottedKeys, ...k.dotted]);
-}
-
-// load existing en.json if present (gitignored artifact)
-let existingJSON = new Map();
-if (!dryRun && fs.existsSync(GITIGNORED_JSON)) {
-  try {
-    const raw = JSON.parse(fs.readFileSync(GITIGNORED_JSON, 'utf8'));
-    existingJSON = new Map(Object.entries(raw));
-    console.log(`Loaded existing en.json: ${existingJSON.size} entries`);
-  } catch (e) {
-    console.error('Failed to parse existing en.json:', e.message);
+const orphans = Object.keys(existing).filter(key => !found.has(key));
+if (prune) {
+  for (const key of orphans) {
+    delete catalog[key];
   }
 }
 
-// ---- write sentence keys to en.json ----
-const newSentenceEntries = new Map();
-for (const key of sentenceKeys) {
-  if (existingJSON.has(key)) continue;
-  newSentenceEntries.set(key, key);
+const changed = added.length > 0 || (prune && orphans.length > 0);
+
+console.log(`Scanned ${files.length} files under ${SOURCE_ROOTS.length} roots`);
+console.log(`Distinct client strings in source: ${found.size}`);
+console.log(`Keys already in catalog:          ${Object.keys(existing).length}`);
+console.log(`Added:                             ${added.length}`);
+console.log(`Orphans (in catalog, not in source): ${orphans.length}`);
+
+if (dotted.size) {
+  console.log(
+    `\n${dotted.size} dotted key(s) skipped -- these look like translation ` +
+      'keys rather than sentences and belong in a per-locale PHP file:',
+  );
+  for (const key of [...dotted].sort()) {
+    console.log(`  - ${key}`);
+  }
 }
 
-if (dryRun) {
-  console.log(`[dry-run] Would add ${newSentenceEntries.size} new sentence keys to en.json`);
-  console.log(`Found ${dottedKeys.size} dotted keys in source`);
-  // simple report: which PHP files might contain which dotted keys, by basename
-  const byBasename = {};
-  for (const dk of [...dottedKeys].sort()) {
-    const seg = dk.split('.')[0];
-    if (!byBasename[seg]) byBasename[seg] = [];
-    byBasename[seg].push(dk);
+if (orphans.length) {
+  const verb = prune ? 'Removed' : 'Kept';
+  console.log(
+    `\n${orphans.length} orphan(s) ${verb}. These are in the catalog but no ` +
+      'longer in source, so they may be dead or may live in a directory this ' +
+      'script does not scan:',
+  );
+  for (const key of orphans.slice(0, 20)) {
+    console.log(`  - ${key}`);
   }
-  for (const [basename, keys] of Object.entries(byBasename).sort()) {
-    const phpFile = path.join(LANG_DIR, basename + '.php');
-    console.log(`  ${phpFile}: ${keys.length} dotted keys`);
+  if (orphans.length > 20) {
+    console.log(`  ... and ${orphans.length - 20} more`);
   }
+  if (!prune) {
+    console.log('  Re-run with --prune to remove them.');
+  }
+}
+
+if (added.length) {
+  console.log(`\nAdded ${added.length} key(s), first 20:`);
+  for (const key of added.slice(0, 20)) {
+    console.log(`  + ${key}`);
+  }
+  if (added.length > 20) {
+    console.log(`  ... and ${added.length - 20} more`);
+  }
+}
+
+if (check) {
+  if (changed) {
+    console.error(
+      '\nCatalog is out of date. Run: node resources/scripts/extract-translations.js',
+    );
+    process.exit(1);
+  }
+  console.log('\nCatalog is up to date.');
   process.exit(0);
 }
 
-// merge new entries into existing JSON, preserving everything
-const merged = new Map(existingJSON);
-for (const [k, v] of newSentenceEntries) merged.set(k, v);
+if (dryRun) {
+  console.log('\n[dry-run] Nothing written.');
+  process.exit(0);
+}
 
-const outJson = JSON.stringify([...merged.entries()], null, 2);
-fs.writeFileSync(GITIGNORED_JSON, outJson + '\n');
-console.log(`Wrote ${newSentenceEntries.size} new sentence keys to ${GITIGNORED_JSON}`);
-console.log(`Total en.json now has ${merged.size} entries`);
+if (!changed) {
+  console.log('\nCatalog already up to date. Nothing written.');
+  process.exit(0);
+}
 
-console.log('\ndone. Review the generated en.json. Dotted keys reported above can be');
-console.log('hand-added to the matching resources/lang/en/*.php files as needed.');
+fs.writeFileSync(CATALOG, format(catalog));
+console.log(`\nWrote ${CATALOG} (${Object.keys(catalog).length} keys)`);
