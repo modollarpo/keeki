@@ -76,7 +76,10 @@ export function MobileNavbar() {
     onError: handleVoiceError,
   });
 
-  const faviconSrc = isDark ? '/favicon-dark.svg' : '/favicon.svg';
+  // Use the animated mark so the twin-pulse "i" dots animate in the navbar.
+  const faviconSrc = isDark
+    ? '/icons/keekii-mark-animated-dark.svg'
+    : '/icons/keekii-mark-animated-light.svg';
 
   return (
     <>
