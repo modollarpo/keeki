@@ -14,9 +14,9 @@
  *
  * Design decisions
  * ────────────────
- * • Favicon mark (not wordmark) used as the brand anchor.  On a narrow screen
- *   a wordmark wastes ~120 px; the 40 × 40 mark icon is instantly recognisable
- *   and leaves room for the action icons.
+ * • Full animated wordmark logo (mark + "Keekii") used as the brand anchor,
+ *   matching the desktop Navbar.Logo and branding.logo_* artwork so the brand
+ *   registers identically on every breakpoint.
  * • Voice-search shortcut on the navbar means one tap starts dictating — no
  *   need to open the overlay first.  The overlay opens automatically when the
  *   transcript arrives.
@@ -76,10 +76,11 @@ export function MobileNavbar() {
     onError: handleVoiceError,
   });
 
-  // Use the animated mark so the twin-pulse "i" dots animate in the navbar.
-  const faviconSrc = isDark
-    ? '/icons/keekii-mark-animated-dark.svg'
-    : '/icons/keekii-mark-animated-light.svg';
+  // Full animated wordmark logo — mirrors Navbar.Logo theming: light artwork on
+  // dark backgrounds, dark artwork on light backgrounds.
+  const logoSrc = isDark
+    ? '/images/logo-light.svg'
+    : '/images/logo-dark.svg';
 
   return (
     <>
@@ -89,7 +90,7 @@ export function MobileNavbar() {
       {/* ── Persistent header bar ────────────────────────────────────────────── */}
       <Navbar.Root className="h-14 shrink-0 border-b bg-background px-3 gap-2">
 
-        {/* Brand mark — animated "i" dots, no border ring */}
+        {/* Brand logo — full animated wordmark, no border ring */}
         <a
           href="/"
           aria-label="Keekii — go to home"
@@ -97,17 +98,19 @@ export function MobileNavbar() {
                      transition-transform active:scale-90
                      focus-visible:outline-2 focus-visible:outline-offset-2
                      focus-visible:outline-[var(--be-brand-ink,#e8611f)]"
-          style={{width: 52, height: 52}}
+          style={{height: 52}}
         >
           <img
-            src={faviconSrc}
+            src={logoSrc}
             alt=""
             aria-hidden="true"
-            width={52}
-            height={52}
-            className="object-contain w-full h-full"
+            width={130}
+            height={50}
+            className="block h-[44px] w-auto object-contain"
             onError={e => {
-              (e.currentTarget as HTMLImageElement).src = '/favicon.svg';
+              (e.currentTarget as HTMLImageElement).src = isDark
+                ? '/icons/keekii-mark-animated-dark.svg'
+                : '/icons/keekii-mark-animated-light.svg';
             }}
           />
         </a>
