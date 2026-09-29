@@ -145,10 +145,9 @@ export function KeekiiHero({config}: Props) {
               />
             ) : null}
           </div>
+          <KeekiiInteractiveHeroGraphic />
         </div>
       </div>
-      {/* Interactive graphic — outside overflow-hidden so 3D transform is never clipped */}
-      <KeekiiInteractiveHeroGraphic />
     </div>
   );
 }
