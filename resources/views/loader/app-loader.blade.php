@@ -129,10 +129,28 @@
     }
 
     .keekii-loader__word {
-        font-size: clamp(1.75rem, 7vw, 2.5rem);
-        font-weight: 700;
-        line-height: 1.1;
-        letter-spacing: -0.03em;
+        /* kept for SR span — hidden when wordmark imgs are present */
+        display: none;
+    }
+
+    /* Wordmark image — the full animated logo-{light,dark}.svg */
+    .keekii-loader__wordmark {
+        display: block;
+        height: clamp(28px, 8vw, 42px);
+        width: auto;
+    }
+
+    /* Theme switching mirrors __mark above */
+    .keekii-loader__wordmark--dark {
+        display: none;
+    }
+
+    .dark .keekii-loader__wordmark--light {
+        display: none;
+    }
+
+    .dark .keekii-loader__wordmark--dark {
+        display: block;
     }
 
     /* Equaliser bars. */
@@ -295,7 +313,23 @@
              The wordmark below is still text driven by the branding setting, so
              the lockup stays renameable. /images/logo-{dark,light}.svg carries
              the full mark-plus-word artwork for the places that want it baked in. --}}
-        <span class="keekii-loader__word">Keekii</span>
+        {{-- Wordmark: light logo (dark ink) shown in light mode, dark logo (light ink) in dark mode --}}
+        <img
+            class="keekii-loader__wordmark keekii-loader__wordmark--light"
+            src="/images/logo-dark.svg"
+            alt="Keekii"
+            height="42"
+            decoding="sync"
+            fetchpriority="high"
+        >
+        <img
+            class="keekii-loader__wordmark keekii-loader__wordmark--dark"
+            src="/images/logo-light.svg"
+            alt="Keekii"
+            height="42"
+            decoding="sync"
+        >
+        <span class="keekii-loader__word keekii-loader__sr">Keekii</span>
 
         <div class="keekii-loader__eq" aria-hidden="true">
             @foreach ($keekiiLoaderBars as $keekiiBarIndex => $keekiiBarHeight)
