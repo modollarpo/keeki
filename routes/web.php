@@ -23,6 +23,7 @@ use App\Http\Controllers\UserProfile\UserProfileController;
 use Common\API\CanViewPublicApiDocs;
 use Common\Channels\ChannelController;
 use Common\Core\Controllers\HomeController;
+use Common\Pages\CustomPageController;
 use Dedoc\Scramble\Scramble;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +47,8 @@ Route::get('track/{track}/{name}/embed', [TrackControllerAlias::class, 'show']);
 Route::get('playlist/{id}', [PlaylistController::class, 'show']);
 Route::get('playlist/{id}/{name}', [PlaylistController::class, 'show']);
 Route::get('user/{user}/{name}', [UserProfileController::class, 'show']);
+Route::get('pages/{page}', [CustomPageController::class, 'show']);
+Route::get('pages/{page}/{name}', [CustomPageController::class, 'show']);
 Route::get('user/{user}/{name}/{tab}', [UserProfileController::class, 'show']);
 Route::get('search/{query}', [SearchController::class, 'index']);
 Route::get('search/{query}/{tab}', [SearchController::class, 'index']);

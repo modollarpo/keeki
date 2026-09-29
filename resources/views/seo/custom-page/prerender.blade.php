@@ -5,7 +5,7 @@
 @endsection
 
 @section('body')
-    @php($page = $data['data'] ?? [])
+    @php($page = $data ?? [])
 
     <h1>{{ $page['title'] }}</h1>
 
