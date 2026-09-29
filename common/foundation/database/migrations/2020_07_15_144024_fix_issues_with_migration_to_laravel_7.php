@@ -14,9 +14,15 @@ class FixIssuesWithMigrationToLaravel7 extends Migration
         try {
             collect(File::allFiles(resource_path('views/vendor')))
                 ->filter(function(SplFileInfo $file) {
-                    return Str::endsWith($file->getPathname(), 'blade.php') &&
-                        !Str::endsWith($file->getPathname(), 'html/message.blade.php') &&
-                        !Str::endsWith($file->getPathname(), 'email.blade.php');
+                    // Compare basenames rather than full paths: getPathname()
+                    // uses backslashes on Windows, so an exclusion containing a
+                    // forward slash never matched and deleted the very file it
+                    // was meant to preserve.
+                    return Str::endsWith($file->getFilename(), 'blade.php') &&
+                        !in_array($file->getFilename(), [
+                            'message.blade.php',
+                            'email.blade.php',
+                        ]);
                 })->each(function(SplFileInfo $file) {
                     File::delete($file->getPathname());
                 });
