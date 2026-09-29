@@ -53,7 +53,9 @@ import {
   ListMusicIcon,
   MessageCircleIcon,
   NewspaperIcon,
+  RadioIcon,
   Repeat2Icon,
+  ScrollTextIcon,
   SearchIcon,
   TrendingUpIcon,
   UploadIcon,
@@ -81,13 +83,20 @@ const defaultIcons: Record<string, ReactElement> = {
   waves: <AudioWaveformIcon />,
   message: <MessageCircleIcon />,
   notifications: <BellIcon />,
+  radio: <RadioIcon />,
+  lyrics: <ScrollTextIcon />,
 };
+
+import {KeekiiHero} from './hero/keekii-hero';
+import {KeekiiFeatureWithSvg} from './features/keekii-feature-with-svg';
 
 const sectionRenderers: Record<
   string,
   ComponentType<{config: AppSectionConfig; index: number}>
 > = {
   channel: ChannelSection,
+  'hero-with-background-image': KeekiiHero,
+  'keekii-feature-with-svg': KeekiiFeatureWithSvg,
 };
 
 type HeroSearchBarProps = {

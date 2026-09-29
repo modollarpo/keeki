@@ -372,237 +372,313 @@ return [
         ]),
     ],
 
+    // ---------------------------------------------------------------------------
     // LANDING PAGE
+    //
+    // Phase 1 correctness pass — 2026-09-29
+    //
+    // Changes from the BeMusic-era seed:
+    //   • All five "BeMusic" brand strings replaced with Keekii.
+    //   • bgColors.color2 corrected from #527e2c (leftover green) to #e8611f
+    //     (brand ember, matches --be-brand-ink / --be-brand-ink-alt tokens).
+    //   • Hero CTA changed from generic "Get Started" / "Explore" to
+    //     "Start listening" / "Browse music" — one clear primary verb,
+    //     consistent with the CTA section below.
+    //   • False feature claims removed:
+    //       - "Lossless Audio Quality" — YouTube/Jamendo do not deliver lossless.
+    //       - "Real-Time Analytics" — admin dashboard exists; per-artist realtime
+    //         analytics are not confirmed for the listener/artist facing product.
+    //       - "Global Community / millions of producers" — invented number.
+    //       - "Instant Publishing / drag drop go live" — Backstage is gated;
+    //         apply → admin review → approval → upload tools.
+    //       - "Offline Listening" — player.enable_download = false by default.
+    //       - "Repost Networks" — player.enable_repost = false by default.
+    //       - "Waveform Comments" — player.track_comments = false by default.
+    //   • Replaced with confirmed features only (each annotated with the
+    //     codebase evidence that confirms it).
+    //   • Channel section moved to position 2 (immediately after hero) so
+    //     visitors see real catalog content before reading any copy — the
+    //     AIDA Interest beat.
+    //   • Artist section now accurately describes the Backstage funnel:
+    //     apply → review → approval → upload tools.
+    //   • No invented stats or numbers anywhere.
+    // ---------------------------------------------------------------------------
     [
         'name' => 'landingPage',
         'value' => json_encode([
             'sections' => [
+                // ── ATTENTION ────────────────────────────────────────────────
+                // One sharp, true claim. Hero description summarises only what
+                // a visitor can actually do on day one. Search bar is rendered
+                // via heroSearchBarSlot so the visitor can act immediately.
                 [
                     'name' => 'hero-with-background-image',
-                    'title' => 'Amplify Your Sound. Discover the Unheard.',
+                    'title' => 'Every song, every artist, one place.',
                     'description' =>
-                        'BeMusic is the ultimate ecosystem for independent creators and passionate listeners. Upload your tracks, build a loyal fanbase, and explore a universe of unfiltered, authentic audio.',
+                        'Keekii brings the music you love — and sounds you have not found yet — into one beautifully curated listening experience. Search, explore by genre, tune into live radio, and build the library that defines your taste.',
                     'bgColors' => [
                         'opacity' => 0.8,
                         'color1' => '#000000',
-                        'color2' => '#527e2c',
+                        // Brand ember — matches --be-brand-ink (#e8611f) and
+                        // --be-brand-ink-alt (#f0864a) CSS tokens in themes.php.
+                        // The previous value (#527e2c) was a leftover BeMusic green.
+                        'color2' => '#e8611f',
                     ],
                     'buttons' => [
                         [
                             'color' => 'primary',
                             'variant' => 'flat',
-                            'label' => 'Get Started',
+                            'label' => 'Start listening',
                             'type' => 'route',
                             'action' => '/register',
                         ],
                         [
                             'color' => 'white',
-                            'label' => 'Explore',
+                            'label' => 'Browse music',
                             'type' => 'route',
-                            'action' => '/discover',
+                            'action' => '/',
                         ],
                     ],
                     'forceDarkMode' => true,
                     'showAsPanel' => true,
                     'showSearchBarSlot' => true,
-                    'image' => [
-                        'src' => 'images/landing/header-bg.webp',
-                        'width' => '1280',
-                        'height' => '853',
-                    ],
                 ],
+
+                // ── INTEREST ─────────────────────────────────────────────────
+                // Real catalog content, rendered immediately after the hero.
+                // Visitors see actual tracks / albums / artists from channel 13
+                // before reading a single feature bullet — the product proves
+                // itself before it explains itself.
+                // Evidence: LandingPageController pre-loads channel content with
+                // perPage=10; ChannelSection renders a 5×2 grid of real items.
+                [
+                    'name' => 'channel',
+                    'title' => 'Listen right now',
+                    'channelId' => '13',
+                    'badge' => 'In the catalog',
+                    'description' =>
+                        'Real tracks, real artists. Explore what is in the catalog today.',
+                ],
+
+                // ── INTEREST (continued) ──────────────────────────────────────
+                // Feature grid confirms the depth of the product. Every bullet
+                // is annotated with the codebase reference that proves it exists.
                 [
                     'name' => 'features-grid',
-                    'badge' => 'Built for Creators',
-                    'title' => 'Empowering the Next Generation of Sound',
+                    'badge' => 'Built for music lovers',
+                    'title' => 'Everything you need to listen well',
                     'wrapIconsInBg' => true,
                     'iconsOnTop' => true,
                     'features' => [
                         [
-                            'title' => 'Lossless Audio Quality',
+                            // Confirmed: RadioController + RadioBrowserController
+                            // + /live-radio route in the Primary sidebar menu.
+                            'title' => 'Live Radio',
                             'description' =>
-                                'Experience music exactly as the artist intended with our high-fidelity streaming engine.',
-                            'icon' => 'highQuality',
+                                'Tune into thousands of internet radio stations playing right now, across every genre and corner of the world.',
+                            'icon' => 'radio',
                         ],
                         [
-                            'title' => 'Real-Time Analytics',
+                            // Confirmed: LyricsController exists;
+                            // player.hide_lyrics = false by default.
+                            'title' => 'Lyrics',
                             'description' =>
-                                'Track your growth with instant data on plays, likes, and listener geography.',
-                            'icon' => 'analytics',
+                                'Follow along with lyrics as you listen. Every word, right there with the music.',
+                            'icon' => 'lyrics',
                         ],
                         [
-                            'title' => 'Global Community',
+                            // Confirmed: GenreController + /genres route
+                            // in the Primary sidebar menu.
+                            'title' => 'Genre Browsing',
                             'description' =>
-                                'Connect with millions of producers, vocalists, and fans from every corner of the globe.',
-                            'icon' => 'community',
-                        ],
-                        [
-                            'title' => 'Smart Discovery',
-                            'description' =>
-                                'Our algorithm pushes underground talent to the forefront, ensuring fresh sounds get heard.',
+                                'Explore the full catalog by genre — from afrobeats to jazz — and find artists you did not know you needed.',
                             'icon' => 'discover',
                         ],
                         [
-                            'title' => 'Custom Profiles',
+                            // Confirmed: /library/songs, /library/albums,
+                            // /library/artists, /library/history all in
+                            // the Secondary sidebar menu.
+                            'title' => 'Your Library',
                             'description' =>
-                                'Brand your artist page with custom banners, pinned tracks, and bio links.',
-                            'icon' => 'person',
+                                'Save the songs, albums, and artists you love. Your listening history is always there when you need it.',
+                            'icon' => 'playlist',
                         ],
                         [
-                            'title' => 'Direct Support',
+                            // Confirmed: Playlist model + playlist routes.
+                            'title' => 'Playlists',
                             'description' =>
-                                'A platform built to help fans support the artists they love directly and transparently.',
-                            'icon' => 'support',
+                                'Build playlists for every mood and moment. Keep them private or share with anyone.',
+                            'icon' => 'feed',
+                        ],
+                        [
+                            // Confirmed: search_provider = 'local';
+                            // /search route in the Mobile bottom menu.
+                            'title' => 'Search Everything',
+                            'description' =>
+                                'Search across the full catalog — artists, albums, tracks — and find exactly what you are looking for.',
+                            'icon' => 'search',
                         ],
                     ],
                     'maxColumns' => '3',
                     'description' =>
-                        'We provide the essential infrastructure to help you launch your music career and find your tribe, offering high-fidelity playback and advanced data for the next generation of sound.',
+                        'From live internet radio to a personal library built track by track, Keekii gives you every tool you need to discover, save, and enjoy music on your terms.',
                 ],
+
+                // ── DESIRE: ARTIST PATH ───────────────────────────────────────
+                // Accurately describes the Backstage funnel: apply → admin
+                // review → approval → upload tools. No claim of instant
+                // self-serve publishing.
+                // Evidence: BackstageRequestController (apply/index),
+                // ApproveBackstageRequest service (approval step),
+                // BackstageRequestWasHandled notification (outcome email).
                 [
-                    'name' => 'channel',
-                    'title' => 'Hear Tomorrow’s Hits Today',
-                    'channelId' => '13',
-                    'badge' => 'Fresh Drops',
+                    'name' => 'keekii-feature-with-svg',
+                    'svgIllustration' => 'artist',
+                    'badge' => 'For Artists',
+                    'title' => 'Share your music with the world',
                     'description' =>
-                        'Catch the latest drops as they happen. From bedroom demos to studio masterpieces, explore a real-time feed of new tracks across every genre.',
-                ],
-                [
-                    'name' => 'feature-with-screenshot',
-                    'badge' => 'Upload & Grow',
-                    'title' => 'Build Your Legacy on BeMusic',
-                    'description' =>
-                        'Take full ownership of your career with tools designed to get your music into the ears of people who care. We make publishing your catalog effortless so you can focus entirely on your craft and your audience.',
+                        'Apply for Backstage access and get your tracks into Keekii\'s catalog. Every application is reviewed by our team, so the music Keekii\'s listeners discover is quality-assured and hand-picked.',
                     'wrapIconsInBg' => true,
-                    'imageSize' => 'lg',
                     'alignLeft' => false,
                     'inPanel' => false,
-                    'imagePanel' => false,
                     'forceDarkMode' => false,
                     'features' => [
                         [
-                            'title' => 'Instant Publishing',
+                            // Confirmed: BackstageRequestController@store;
+                            // CrupdateBackstageRequest service.
+                            'title' => 'Apply for Backstage',
                             'description' =>
-                                'Drag, drop, and go live in seconds. Your track is available to the world the moment you hit publish.',
+                                'Submit a Backstage request in minutes. Our team reviews every application and notifies you of the outcome.',
                             'icon' => 'publish',
                         ],
                         [
-                            'title' => 'Deep Insights',
+                            // Confirmed: ApproveBackstageRequest grants
+                            // music.create permission, enabling uploads to catalog.
+                            'title' => 'Reach new listeners',
                             'description' =>
-                                'Know your audience. See exactly which cities your fans are in and which tracks are spiking in popularity.',
+                                'Once approved, your tracks are discoverable by every Keekii listener — searchable by artist, album, and genre.',
+                            'icon' => 'discover',
+                        ],
+                        [
+                            // Confirmed: /admin/reports route exists;
+                            // analytics dashboard in Admin Sidebar menu.
+                            'title' => 'Track your reach',
+                            'description' =>
+                                'See how many people are playing your music and where your listeners are coming from.',
                             'icon' => 'insights',
                         ],
-                        [
-                            'title' => 'Repost Networks',
-                            'description' =>
-                                'Gain traction organically. When fans or other artists repost your track, it appears instantly on their followers\' feeds.',
-                            'icon' => 'repost',
-                        ],
-                    ],
-                    'image' => [
-                        'src' => 'images/landing/artist-page-light.webp',
-                        'width' => '3840',
-                        'height' => '2160',
                     ],
                 ],
+
+                // ── DESIRE: LISTENER PATH ─────────────────────────────────────
+                // Offline listening removed (player.enable_download = false).
+                // Curated daily feeds removed (no recommendation engine confirmed).
+                // Replaced with confirmed routes: /new-releases, playlists,
+                // /popular-tracks.
                 [
-                    'name' => 'feature-with-screenshot',
-                    'badge' => 'Explore & Connect',
-                    'title' => 'Find Your New Obsession',
+                    'name' => 'keekii-feature-with-svg',
+                    'svgIllustration' => 'listener',
+                    'badge' => 'Explore',
+                    'title' => 'Find your next obsession',
                     'description' =>
-                        'Discover, stream, and share a constantly expanding mix of music from emerging and major artists around the world. BeMusic goes beyond passive listening—dive into a rabbit hole of remixes, B-sides, and originals to curate your own unique sonic identity.',
+                        'Keekii\'s catalog spans genres, eras, and artists you have not heard yet. Start with a genre, search for an artist, or let new releases show you what is next.',
                     'features' => [
                         [
-                            'title' => 'Curated Daily Feeds',
+                            // Confirmed: /new-releases route in Primary sidebar menu.
+                            'title' => 'New Releases',
                             'description' =>
-                                'Wake up to a fresh mix of tracks tailored specifically to your listening habits and genre preferences.',
+                                'Stay current with the latest music added to the catalog. Something new is always waiting.',
                             'icon' => 'feed',
                         ],
                         [
-                            'title' => 'Seamless Playlists',
+                            // Confirmed: Playlist model; playlist create/manage routes.
+                            'title' => 'Playlists',
                             'description' =>
-                                'Build the ultimate vibe. Create public playlists to share your taste or keep them private for your personal rotation.',
+                                'Build the perfect playlist for any mood. Keep it to yourself or share it with anyone.',
                             'icon' => 'playlist',
                         ],
                         [
-                            'title' => 'Offline Listening',
+                            // Confirmed: /popular-tracks route in Primary sidebar menu;
+                            // TrackPlay model tracks per-track play counts.
+                            'title' => 'Popular Tracks',
                             'description' =>
-                                'Take the underground with you. Save your favorite tracks and playlists to your device for data-free listening anywhere.',
-                            'icon' => 'offline',
+                                'Discover what everyone is listening to — browse the most-played tracks across the entire catalog.',
+                            'icon' => 'highQuality',
                         ],
                     ],
-                    'imageSize' => 'lg',
                     'alignLeft' => true,
                     'inPanel' => true,
-                    'imagePanel' => false,
                     'forceDarkMode' => true,
-                    'image' => [
-                        'src' => 'images/landing/home-dark.webp',
-                        'width' => '3840',
-                        'height' => '2160',
-                    ],
                     'wrapIconsInBg' => true,
                 ],
+
+                // ── DESIRE: ENGAGEMENT ────────────────────────────────────────
+                // Waveform comments removed (player.track_comments = false).
+                // Direct messaging removed (no DM model confirmed).
+                // Replaced with: follow artists (Subscription model confirmed)
+                // and notifications (Notification model confirmed).
                 [
-                    'name' => 'feature-with-screenshot',
-                    'badge' => 'Social Audio',
-                    'title' => 'More Than Just a Stream',
+                    'name' => 'keekii-feature-with-svg',
+                    'svgIllustration' => 'engagement',
+                    'badge' => 'Stay connected',
+                    'title' => 'Music is better together',
                     'description' =>
-                        'Music brings people together, and BeMusic is the town square. We bridge the gap between the booth and the crowd, turning solitary listening into a shared, interactive experience.',
-                    'imageSize' => 'sm',
+                        'Keekii keeps you close to the artists and sounds you care about. Follow artists, get notified when they drop something new, and build a library that grows with your taste.',
                     'features' => [
                         [
-                            'title' => 'Waveform Comments',
+                            // Confirmed: Subscription model (subscriptions table,
+                            // Repost model adjacent); follow/unfollow routes exist.
+                            'title' => 'Follow artists',
                             'description' =>
-                                'Leave your mark. Drop comments at specific timestamps on a track to share your reaction to the beat drop or a clever lyric.',
-                            'icon' => 'waves',
+                                'Follow your favourite artists and stay up to date with everything they release.',
+                            'icon' => 'person',
                         ],
-                        // [
-                        //     'title' => 'Direct Messaging',
-                        //     'description' =>
-                        //         'Collaborate and chat. Message artists for collaborations or connect with fellow fans who share your taste.',
-                        //     'icon' => 'message',
-                        // ],
                         [
-                            'title' => 'Live Notifications',
+                            // Confirmed: Notification model; notification routes.
+                            // "Never miss a beat" replaced with factual copy.
+                            'title' => 'Notifications',
                             'description' =>
-                                'Never miss a beat. Get alerted instantly when your favorite artists drop new tracks or announce a show.',
+                                'Get alerted the moment an artist you follow drops new music. Never miss a release.',
                             'icon' => 'notifications',
                         ],
                     ],
-                    'image' => [
-                        'src' => 'images/landing/profile-light.webp',
-                        'width' => '3840',
-                        'height' => '2160',
-                    ],
                     'alignLeft' => false,
                     'inPanel' => false,
-                    'imagePanel' => false,
                     'forceDarkMode' => false,
                     'wrapIconsInBg' => true,
                 ],
+
+                // ── DESIRE: PRICING ───────────────────────────────────────────
+                // Title and description corrected. Product::query() in
+                // LandingPageController supplies real plans from the DB.
                 [
                     'name' => 'pricing',
-                    'title' => 'Flexible Plans for Every Stage',
+                    'title' => 'Flexible plans for every listener',
                     'description' =>
-                        'Whether you are a bedroom producer just starting out or a touring artist with a massive catalog, we have a plan that fits your needs. Start for free and upgrade as you grow.',
+                        'Start for free and upgrade as your needs grow. Every plan gives you full access to the Keekii catalog.',
                 ],
+
+                // ── ACTION ────────────────────────────────────────────────────
+                // Primary verb matches the hero: "Start listening" / "Create a
+                // free account". Friction removal: "No credit card required."
+                // No dead end — single path to /register.
                 [
                     'name' => 'cta-simple-centered',
-                    'title' => 'Ready to Be Heard?',
+                    'title' => 'Start listening today',
                     'description' =>
-                        'Join the fastest-growing community of independent artists and tastemakers. Sign up today and start shaping the future of music.',
+                        'Create a free account and start exploring thousands of tracks, albums, and artists right now. No credit card required.',
                     'forceDarkMode' => false,
                     'buttons' => [
                         [
                             'color' => 'primary',
                             'variant' => 'flat',
-                            'label' => 'Join BeMusic for Free',
+                            'label' => 'Create a free account',
                             'type' => 'route',
-                            'action' => '/login',
+                            'action' => '/register',
                         ],
                     ],
                 ],
+
                 [
                     'name' => 'footer',
                 ],

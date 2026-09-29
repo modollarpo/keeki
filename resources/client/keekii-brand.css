@@ -207,6 +207,15 @@
   }
 
   /* ---------------------------------------------------------------------
+   * 4c. Text Selection
+   * Overrides the default OS blue text selection with the Keekii brand ink.
+   * ------------------------------------------------------------------- */
+  ::selection {
+    background-color: color-mix(in oklab, var(--be-brand-ink, var(--be-primary)) 30%, transparent);
+    color: inherit;
+  }
+
+  /* ---------------------------------------------------------------------
    * 5. Brand surfaces
    * ------------------------------------------------------------------- */
 
@@ -257,7 +266,109 @@
   }
 
   /* ---------------------------------------------------------------------
-   * 7. Accessibility
+   * 7. Loading Indicators
+   *
+   * Upgrades the generic vendor <ProgressCircle> to match Keekii's enterprise
+   * identity. We inject the brand ink tokens natively, add an emissive glow, 
+   * and elegantly scale up indeterminate loaders so they feel more premium.
+   * ------------------------------------------------------------------- */
+  :root {
+    --progress-circle-fill-color: var(--be-brand-ink, var(--be-primary));
+    --progress-circle-track-color: color-mix(in oklab, var(--be-brand-ink, var(--be-primary)) 15%, transparent);
+  }
+
+  .progress-circle-fill {
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 6px color-mix(in oklab, var(--be-brand-ink, var(--be-primary)) 60%, transparent));
+  }
+
+  .progress-circle.indeterminate {
+    transform: scale(1.2);
+    /* Smoother, slightly relaxed easing curve for the spin */
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1) !important;
+  }
+
+  /* ---------------------------------------------------------------------
+   * 8. Focus Rings (Keyboard Navigation)
+   *
+   * The browser default (Chromium: solid blue 3px) is visually inconsistent
+   * with Keekii's palette and fails contrast against dark surfaces. Replaced
+   * globally with the brand ink token so keyboard users get the same warmth
+   * as pointer users.
+   *
+   * :focus-visible only — mouse/touch clicks never show a ring.
+   * 2px offset — ring floats outside the element, never clipped by overflow.
+   * border-radius inherits so pill buttons stay pill-shaped.
+   * ------------------------------------------------------------------- */
+  :focus-visible {
+    outline: 2px solid var(--be-brand-ink, var(--be-primary));
+    outline-offset: 2px;
+    border-radius: inherit;
+  }
+
+  /* Elements that carry their own box-shadow ring (e.g. inputs) use the glow
+     variant so a hard outline and a shadow ring never double-stack. */
+  [data-focus-ring="glow"]:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--be-background, #09090b),
+      0 0 0 4px var(--be-brand-ink, var(--be-primary)),
+      0 0 12px 2px color-mix(in oklab, var(--be-brand-ink, var(--be-primary)) 40%, transparent);
+  }
+
+  /* ---------------------------------------------------------------------
+   * 9. Custom Scrollbars
+   *
+   * Replaces the thick grey Windows/Chrome system scrollbar with a thin,
+   * translucent overlay scrollbar — matching the macOS/iOS model and
+   * eliminating Windows layout-shift jank where the scrollbar occupies
+   * document width.
+   *
+   * scrollbar-width: thin  →  Firefox and future standards
+   * ::-webkit-scrollbar    →  Chromium / WebKit (majority of users)
+   * Brand ink at 25% opacity — subtle but consistently on-brand.
+   * ------------------------------------------------------------------- */
+  :root {
+    scrollbar-color:
+      color-mix(in oklab, var(--be-brand-ink, var(--be-primary)) 25%, transparent)
+      transparent;
+    scrollbar-width: thin;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: color-mix(
+      in oklab,
+      var(--be-brand-ink, var(--be-primary)) 25%,
+      transparent
+    );
+    border-radius: 999px;
+    border: none;
+    transition: background-color 140ms ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(
+      in oklab,
+      var(--be-brand-ink, var(--be-primary)) 50%,
+      transparent
+    );
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* ---------------------------------------------------------------------
+   * 10. Accessibility
    * ------------------------------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     :root {
@@ -271,6 +382,12 @@
 
     .keekii-interactive {
       transition-duration: 1ms;
+    }
+
+    /* Focus rings are always shown at full opacity under reduce-motion:
+       if animations are suppressed the ring is the only affordance left. */
+    :focus-visible {
+      outline-width: 3px;
     }
   }
 }

@@ -26,7 +26,7 @@ import {ComponentProps, ReactElement} from 'react';
 
 export function MobilePlayerControls() {
   return (
-    <div className="rounded-card border-border/80 dark:border-border bg-card m-1 border shadow-sm">
+    <div className="bg-background/85 dark:bg-card/85 backdrop-blur-3xl border-t border-border/50 shadow-[0_-4px_32px_rgba(0,0,0,0.1)] w-full pb-[env(safe-area-inset-bottom)]">
       <PlayerControls />
       <MobileNavbar />
     </div>
@@ -39,7 +39,7 @@ function PlayerControls() {
 
   return (
     <div
-      className="relative flex items-center justify-between gap-6 px-2.5 py-2"
+      className="relative flex items-center justify-between gap-6 px-3 py-2 transition-colors active:bg-foreground/5"
       onClick={() => {
         playerOverlayState.toggle();
       }}
@@ -93,8 +93,9 @@ function PlayerProgressBar() {
     <ProgressBar
       size="xs"
       className="absolute right-0 bottom-0 left-0"
-      trackColor="bg-border"
-      trackHeight="h-0.5"
+      trackColor="bg-border/30"
+      fillColor="bg-[var(--be-brand-ink,var(--be-primary))]"
+      trackHeight="h-[2px]"
       radius="rounded-none"
       minValue={0}
       maxValue={duration}
@@ -108,7 +109,7 @@ function MobileNavbar() {
   if (!menu) return null;
 
   return (
-    <div className="my-3 flex items-center justify-between gap-7.5 px-[max(10%,34px)]">
+    <div className="flex items-center justify-between gap-6 px-[max(8%,20px)] pt-3 pb-3">
       {menu.items.map(item => (
         <UnstyledCustomMenuItem
           key={item.id}
@@ -116,8 +117,10 @@ function MobileNavbar() {
           defaultIcons={webPlayerSidebarIcons}
           className={({isActive}) =>
             cn(
-              "flex flex-col items-center gap-1.5 overflow-hidden text-xs whitespace-nowrap [&_svg:not([class*='size-'])]:size-5",
-              isActive && 'font-bold',
+              "flex flex-col items-center gap-1 overflow-hidden text-[11px] whitespace-nowrap transition-colors duration-200 [&_svg:not([class*='size-'])]:size-[22px]",
+              isActive 
+                ? 'text-[var(--be-brand-ink,var(--be-primary))] font-bold scale-[1.02]' 
+                : 'text-muted-foreground font-medium',
             )
           }
         />
@@ -162,14 +165,18 @@ function AccountButton() {
   }
 
   const trigger = (
-    <Dropdown.Trigger className="relative text-xs">
-      <CircleUser className="mx-auto mb-1.5 block size-5" />
+    <Dropdown.Trigger className="relative text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors outline-none">
+      {user ? (
+        <UserImage user={user} className="mx-auto mb-1 block size-[22px] rounded-full object-cover shadow-sm border border-border/50" />
+      ) : (
+        <CircleUser className="mx-auto mb-1 block size-[22px] opacity-80" strokeWidth={1.5} />
+      )}
       {hasUnreadNotif ? (
-        <Badge className="-top-1.5" right="right-1">
+        <Badge className="absolute -top-1.5 -right-2 min-w-4 h-4 px-1 flex items-center justify-center text-[9px] bg-red-500 text-white border border-background shadow-sm" radius="rounded-full">
           {user?.unread_notifications_count}
         </Badge>
       ) : null}
-      <div className="text-xs">
+      <div className="mt-0.5">
         <Trans message="Account" />
       </div>
     </Dropdown.Trigger>
