@@ -16,6 +16,28 @@
  * decision that has not been made: which vendor, and what consent UI and legal
  * copy go with it. Do not add a tracking vendor here, and do not register a
  * provider that bypasses `hasAnalyticsConsent`.
+ *
+ * ── gtag.js loading, audited 2026-09-29 ───────────────────────────────────
+ * There is no duplicate loader. `framework.blade.php:124-142` is the only
+ * place `googletagmanager.com/gtag/js` is referenced in the repository, it is
+ * behind `settings('analytics.tracking_code')`, and nothing in the JavaScript
+ * bundle loads or calls `gtag` — it is not referenced from any `.ts`/`.tsx`
+ * file. The one Blade include runs on a full document load, so it cannot fire
+ * twice.
+ *
+ * The real hazard for whoever implements this facade is the opposite one, and
+ * it is worth knowing before writing the provider rather than after:
+ *
+ *   `gtag('config', ID)` sends an automatic `page_view` on load. This app is
+ *   client-routed with react-router, so a route change does not reload the
+ *   document and fires no pageview at all — SPA navigation is currently
+ *   invisible to GA. The obvious fix, sending a pageview per route, will
+ *   therefore double-count the first view unless the initial config is changed
+ *   to `gtag('config', ID, {send_page_view: false})` and the first route is
+ *   counted explicitly.
+ *
+ * That is a note, not a task. Changing it alters reported analytics numbers,
+ * so it belongs with the vendor decision above rather than in a side commit.
  */
 
 /**
