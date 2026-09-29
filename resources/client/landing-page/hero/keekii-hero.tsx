@@ -41,7 +41,7 @@ export function KeekiiHero({config}: Props) {
       )}
     >
       <SectionNav mode="floating" isDarkMode={isDarkMode} />
-      <div className="relative isolate overflow-hidden">
+      <div className="relative isolate overflow-visible">
         {heroConfig.image ? (
           <>
             <img
@@ -119,8 +119,8 @@ export function KeekiiHero({config}: Props) {
           />
         ) : null}
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl pt-28 pb-20 sm:pt-40 sm:pb-32 text-center keekii-enter">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16 sm:pb-24">
+          <div className="mx-auto max-w-3xl pt-28 pb-10 sm:pt-40 sm:pb-12 text-center keekii-enter">
             {heroConfig.badge ? (
               <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs sm:text-sm/6 text-white backdrop-blur-md shadow-2xl transition-transform hover:scale-105">
                 <span className="w-2 h-2 rounded-full bg-[var(--be-brand-ink)] mr-2 animate-pulse" />
@@ -148,8 +148,9 @@ export function KeekiiHero({config}: Props) {
                 className="mt-6 sm:mt-10 justify-center gap-x-4 gap-y-4 flex-col sm:flex-row"
               />
             ) : null}
-            <KeekiiInteractiveHeroGraphic />
           </div>
+          {/* Interactive graphic — full-width so it isn't clipped by the text column */}
+          <KeekiiInteractiveHeroGraphic />
         </div>
       </div>
     </div>
