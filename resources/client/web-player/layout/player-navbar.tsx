@@ -76,7 +76,7 @@ function ActionButtons() {
     <Fragment>
       {showTryProButton ? (
         <LinkButton variant="outline" size="sm" color="primary" to="/pricing">
-          <Trans message="Try Pro" />
+          <Trans message="Upgrade" />
         </LinkButton>
       ) : null}
       {showUploadButton ? (

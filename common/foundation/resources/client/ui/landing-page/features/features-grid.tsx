@@ -40,8 +40,9 @@ export default function FeaturesGrid({config}: FeaturesGridProps) {
         className={cn(
           'mx-auto mt-16 grid grid-cols-1 sm:grid-cols-2 lg:max-w-none',
           getColumnsClassName(config.maxColumns),
-          !isTiles &&
-            (String(config.maxColumns) === '3' ? 'gap-8' : 'gap-10'),
+          isTiles
+            ? 'gap-6 lg:gap-8'
+            : (String(config.maxColumns) === '3' ? 'gap-8' : 'gap-10'),
         )}
       >
         {config.features?.map(feature => (

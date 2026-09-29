@@ -295,25 +295,7 @@
              The wordmark below is still text driven by the branding setting, so
              the lockup stays renameable. /images/logo-{dark,light}.svg carries
              the full mark-plus-word artwork for the places that want it baked in. --}}
-        <img
-            class="keekii-loader__mark keekii-loader__mark--light"
-            src="/icons/keekii-mark-animated-light.svg"
-            alt=""
-            width="74"
-            height="74"
-            decoding="sync"
-            fetchpriority="high"
-        >
-        <img
-            class="keekii-loader__mark keekii-loader__mark--dark"
-            src="/icons/keekii-mark-animated-dark.svg"
-            alt=""
-            width="74"
-            height="74"
-            decoding="sync"
-        >
-
-        <span class="keekii-loader__word">{{ $keekiiLoaderName }}</span>
+        <span class="keekii-loader__word">Keekii</span>
 
         <div class="keekii-loader__eq" aria-hidden="true">
             @foreach ($keekiiLoaderBars as $keekiiBarIndex => $keekiiBarHeight)
@@ -328,7 +310,7 @@
             Tuning the strings&hellip;
         </p>
 
-        <span class="keekii-loader__sr">Loading {{ $keekiiLoaderName }}&hellip;</span>
+        <span class="keekii-loader__sr">Loading Keekii&hellip;</span>
     </div>
 </div>
 
@@ -420,3 +402,4 @@
         });
     })();
 </script>
+

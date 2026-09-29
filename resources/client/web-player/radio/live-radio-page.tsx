@@ -114,7 +114,7 @@ function stationToTrackMeta(s: Station): Track {
       
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3">
+          <h1 className="text-3xl keekii-display font-bold flex items-center gap-3">
             <RadioIcon className="w-8 h-8 text-primary animate-pulse" />
             <Trans message="Live Radio Stations" />
           </h1>
