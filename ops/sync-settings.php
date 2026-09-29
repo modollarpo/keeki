@@ -57,6 +57,8 @@ $updates = [
     // art, not what ships. See ops/logo-assets/supplied/NOTES.md.
     'branding.logo_dark' => 'images/logo-dark.svg',
     'branding.logo_light' => 'images/logo-light.svg',
+    'branding.logo_dark_mobile' => 'images/logo-dark.svg',
+    'branding.logo_light_mobile' => 'images/logo-light.svg',
     // Direct-stream fallback: absolute yt-dlp binary path
     'youtube.yt_dlp_binary' => '/usr/local/bin/yt-dlp',
     // YouTube embed origin rotation via Piped instances

@@ -10,6 +10,14 @@ return [
         'name' => 'branding.logo_light',
         'value' => 'images/logo-light.svg',
     ],
+    [
+        'name' => 'branding.logo_dark_mobile',
+        'value' => 'images/logo-dark.svg',
+    ],
+    [
+        'name' => 'branding.logo_light_mobile',
+        'value' => 'images/logo-light.svg',
+    ],
 
     //homepage
     ['name' => 'homepage.type', 'value' => 'channel'],
@@ -436,7 +444,7 @@ return [
                             'color' => 'white',
                             'label' => 'Browse music',
                             'type' => 'route',
-                            'action' => '/',
+                            'action' => '/discover',
                         ],
                     ],
                     'forceDarkMode' => true,
