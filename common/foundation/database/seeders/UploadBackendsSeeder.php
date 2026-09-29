@@ -5,11 +5,12 @@ namespace Common\Database\Seeders;
 use Common\Settings\Models\Setting;
 use Exception;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class UploadBackendsSeeder
+class UploadBackendsSeeder extends Seeder
 {
     public function run()
     {

@@ -25,7 +25,7 @@ class SeedCommand extends Command
             ->each(function ($path) {
                 Model::unguarded(function () use ($path) {
                     $namespace =
-                        'Common\Database\Seeds\\' . basename($path, '.php');
+                        'Common\Database\Seeders\\' . basename($path, '.php');
                     $this->getSeeder($namespace)->__invoke();
                 });
             });
