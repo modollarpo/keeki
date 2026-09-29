@@ -89,30 +89,23 @@ export function MobileNavbar() {
       {/* ── Persistent header bar ────────────────────────────────────────────── */}
       <Navbar.Root className="h-14 shrink-0 border-b bg-background px-3 gap-2">
 
-        {/* Brand mark ─ 48 px, bold orange ring, animated "i" dots */}
+        {/* Brand mark — animated "i" dots, no border ring */}
         <a
           href="/"
           aria-label="Keekii — go to home"
-          className="flex items-center justify-center shrink-0 rounded-2xl overflow-hidden
+          className="flex items-center justify-center shrink-0
                      transition-transform active:scale-90
                      focus-visible:outline-2 focus-visible:outline-offset-2
                      focus-visible:outline-[var(--be-brand-ink,#e8611f)]"
-          style={{
-            width: 48,
-            height: 48,
-            padding: 2,
-            background:
-              'linear-gradient(135deg, var(--be-brand-ink,#e8611f), var(--be-brand-ink-alt,#f0864a))',
-            boxShadow: '0 2px 12px rgba(232,97,31,0.40)',
-          }}
+          style={{width: 52, height: 52}}
         >
           <img
             src={faviconSrc}
             alt=""
             aria-hidden="true"
-            width={44}
-            height={44}
-            className="rounded-xl object-contain w-full h-full"
+            width={52}
+            height={52}
+            className="object-contain w-full h-full"
             onError={e => {
               (e.currentTarget as HTMLImageElement).src = '/favicon.svg';
             }}
