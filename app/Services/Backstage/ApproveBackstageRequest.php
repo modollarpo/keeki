@@ -4,7 +4,7 @@ namespace App\Services\Backstage;
 
 use App\Models\BackstageRequest;
 use App\Notifications\BackstageRequestWasHandled;
-use Common\Auth\Roles\Role;
+use Common\Roles\Models\Role;
 use Exception;
 
 class ApproveBackstageRequest

@@ -13,7 +13,7 @@ use App\Models\ProfileDetails;
 use App\Services\Providers\UpsertsDataIntoDB;
 use Carbon\Carbon;
 use Common\Permissions\Models\Permission;
-use Common\Auth\Roles\Role;
+use Common\Roles\Models\Role;
 use Common\Channels\UpdateAllChannelsContent;
 use Common\Comments\Comment;
 use Common\Core\Install\UpdateActions;
@@ -330,32 +330,26 @@ class SeedSampleData extends Command
         DB::table('reposts')->insert($reposts->toArray());
     }
 
+    protected function loadDemoLines(string $filename): array
+    {
+        $contents = file_get_contents(
+            resource_path("defaults/demo/$filename"),
+        );
+
+        // The demo files are stored with LF endings, so they cannot be split on
+        // PHP_EOL, which is CRLF on Windows. That left each file as one huge
+        // string and produced inserts too large for max_allowed_packet.
+        return preg_split('/\R/u', $contents, -1, PREG_SPLIT_NO_EMPTY);
+    }
+
     protected function loadSampleData()
     {
-        $this->trackNames = explode(
-            PHP_EOL,
-            file_get_contents(resource_path('defaults/demo/track-names.txt')),
-        );
-        $this->albumNames = explode(
-            PHP_EOL,
-            file_get_contents(resource_path('defaults/demo/album-names.txt')),
-        );
-        $this->artistNames = explode(
-            PHP_EOL,
-            file_get_contents(resource_path('defaults/demo/artist-names.txt')),
-        );
-        $this->albumImages = explode(
-            PHP_EOL,
-            file_get_contents(resource_path('defaults/demo/album-images.txt')),
-        );
-        $this->artistImages = explode(
-            PHP_EOL,
-            file_get_contents(resource_path('defaults/demo/artist-images.txt')),
-        );
-        $this->comments = explode(
-            PHP_EOL,
-            file_get_contents(resource_path('defaults/demo/comments.txt')),
-        );
+        $this->trackNames = $this->loadDemoLines('track-names.txt');
+        $this->albumNames = $this->loadDemoLines('album-names.txt');
+        $this->artistNames = $this->loadDemoLines('artist-names.txt');
+        $this->albumImages = $this->loadDemoLines('album-images.txt');
+        $this->artistImages = $this->loadDemoLines('artist-images.txt');
+        $this->comments = $this->loadDemoLines('comments.txt');
 
         $genres = collect([
             'blues',
