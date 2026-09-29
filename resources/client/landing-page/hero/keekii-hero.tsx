@@ -12,6 +12,7 @@ import {useIsDarkMode} from '@ui/themes/use-is-dark-mode';
 import clsx from 'clsx';
 import {useContext} from 'react';
 import {AppSectionConfig} from '@common/ui/landing-page/landing-page-config';
+import {KeekiiInteractiveHeroGraphic} from './keekii-interactive-hero-graphic';
 
 export type KeekiiHeroConfig = BaseHeroConfig & {
   name: 'hero-with-background-image';
@@ -147,6 +148,7 @@ export function KeekiiHero({config}: Props) {
                 className="mt-6 sm:mt-10 justify-center gap-x-4 gap-y-4 flex-col sm:flex-row"
               />
             ) : null}
+            <KeekiiInteractiveHeroGraphic />
           </div>
         </div>
       </div>
