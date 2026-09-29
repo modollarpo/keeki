@@ -11,26 +11,39 @@
     Derived by scripts/build-favicon-from-wordmark.ps1; edit that, not this.
   -->
   <style>
-    /* Only the "i" pair moves. The "k" is the identity; the "i"s are the pulse. */
-    @keyframes keekii-pulse-stem {
+    /* Only the "i" pair moves. The "k" is the identity; the "i"s are the pulse.
+
+       Each stem is pinned to the baseline with transform-box: fill-box, so it
+       compresses downward like a bar in an equaliser instead of sliding off the
+       baseline, and its dot drops by the same 6 units. Moving both by
+       the same distance is what holds the gap between them constant.
+
+       The dots travel in user units, so this reads at whatever size the file is
+       rendered: a 1024 favicon and a 30px navbar both get the same proportion. */
+    @keyframes keekii-pulse-stem-lead {
       0%, 100% { transform: scaleY(1); }
-      50% { transform: scaleY(0.52); }
+      50% { transform: scaleY(0.72727); }
+    }
+    @keyframes keekii-pulse-stem-trail {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY(0.82353); }
     }
     @keyframes keekii-pulse-dot {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(30px); }
+      50% { transform: translateY(6px); }
     }
 
     .keekii-stem, .keekii-dot { transform-box: fill-box; }
     .keekii-stem { transform-origin: 50% 100%; }
     .keekii-dot { transform-origin: 50% 50%; }
 
-    .keekii-lead-stem { animation: keekii-pulse-stem 1050ms ease-in-out infinite; }
+    .keekii-lead-stem { animation: keekii-pulse-stem-lead 1050ms ease-in-out infinite; }
     .keekii-lead-dot { animation: keekii-pulse-dot 1050ms ease-in-out infinite; }
-    .keekii-trail-stem { animation: keekii-pulse-stem 1050ms ease-in-out 160ms infinite; }
+    .keekii-trail-stem { animation: keekii-pulse-stem-trail 1050ms ease-in-out 160ms infinite; }
     .keekii-trail-dot { animation: keekii-pulse-dot 1050ms ease-in-out 160ms infinite; }
 
-    /* A beat travelling left to right across the two "i"s. */
+    /* A beat travelling left to right across the two "i"s, falling back to the
+       static drawing. */
     @media (prefers-reduced-motion: reduce) {
       .keekii-lead-stem, .keekii-lead-dot,
       .keekii-trail-stem, .keekii-trail-dot { animation: none; }

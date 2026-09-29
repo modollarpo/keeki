@@ -1,9 +1,13 @@
-@inject('settings', 'Common\Settings\Settings')
 @component('mail::layout')
 {{-- Header --}}
 @slot('header')
 @component('mail::header', ['url' => config('app.url')])
-    <img width="200px" height="auto" src="{{ url($settings->get('branding.logo_dark')) }}">
+    {{-- Deliberately the static logo, not the branding setting. The wordmark's
+         twin-pulse "i"s are CSS inside the SVG, and mail clients either strip the
+         style block or refuse the SVG outright, so the animated file is a coin
+         flip between a still logo and no logo. A still logo always renders.
+         Generated alongside logo-dark.svg by scripts/build-wordmark-logo.ps1. --}}
+    <img width="200px" height="auto" src="{{ url('images/logo-dark-static.svg') }}">
 @endcomponent
 @endslot
 

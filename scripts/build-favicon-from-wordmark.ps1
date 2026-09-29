@@ -188,6 +188,28 @@ foreach ($need in @($leadStem, $trailStem, $leadDot, $trailDot)) {
   if (-not $need) { throw 'could not pair the twin-pulse shapes' }
 }
 
+# --- geometry: the pulse -----------------------------------------------------
+# The "i"s pulse as a pair. Each stem compresses toward the baseline while its
+# dot drops by the same distance, so the gap the drawing put between them is
+# preserved at every point in the cycle and neither dot can sink into its stem.
+#
+# The two stems are different heights, so one shared scaleY would send their tops
+# different distances and the pair would drift out of step. Each gets its own
+# factor, derived so that both tops descend by exactly $pulseDrop.
+$pulseDrop = 6
+
+# The dot must stay above the baseline at the bottom of its travel, otherwise it
+# reads as falling out of the letter. The leading "i" is the tighter of the two.
+$leadHeadroom = ($leadStem.Y + $leadStem.H) - ($leadDot.Cy + $leadDot.R)
+$trailHeadroom = ($trailStem.Y + $trailStem.H) - ($trailDot.Cy + $trailDot.R)
+$headroom = [Math]::Min($leadHeadroom, $trailHeadroom)
+if ($pulseDrop -gt $headroom) {
+  throw ("pulse drop {0} exceeds the {1} units of headroom before the dot crosses the baseline" -f $pulseDrop, $headroom)
+}
+$leadScale = [Math]::Round(($leadStem.H - $pulseDrop) / $leadStem.H, 5)
+$trailScale = [Math]::Round(($trailStem.H - $pulseDrop) / $trailStem.H, 5)
+Write-Host ("pulse: drop {0} units, stem scaleY {1} / {2}, headroom {3}" -f $pulseDrop, $leadScale, $trailScale, $headroom)
+
 function New-Plate {
   param([string]$Plate, [string]$PlateStroke)
   if ($PlateStroke) {
@@ -232,32 +254,45 @@ $i  </g>
 "@
 }
 
-$pulseCss = @'
-    /* Only the "i" pair moves. The "k" is the identity; the "i"s are the pulse. */
-    @keyframes keekii-pulse-stem {
+$pulseCss = @"
+    /* Only the "i" pair moves. The "k" is the identity; the "i"s are the pulse.
+
+       Each stem is pinned to the baseline with transform-box: fill-box, so it
+       compresses downward like a bar in an equaliser instead of sliding off the
+       baseline, and its dot drops by the same $($pulseDrop) units. Moving both by
+       the same distance is what holds the gap between them constant.
+
+       The dots travel in user units, so this reads at whatever size the file is
+       rendered: a 1024 favicon and a 30px navbar both get the same proportion. */
+    @keyframes keekii-pulse-stem-lead {
       0%, 100% { transform: scaleY(1); }
-      50% { transform: scaleY(0.52); }
+      50% { transform: scaleY($leadScale); }
+    }
+    @keyframes keekii-pulse-stem-trail {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY($trailScale); }
     }
     @keyframes keekii-pulse-dot {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(30px); }
+      50% { transform: translateY($($pulseDrop)px); }
     }
 
     .keekii-stem, .keekii-dot { transform-box: fill-box; }
     .keekii-stem { transform-origin: 50% 100%; }
     .keekii-dot { transform-origin: 50% 50%; }
 
-    .keekii-lead-stem { animation: keekii-pulse-stem 1050ms ease-in-out infinite; }
+    .keekii-lead-stem { animation: keekii-pulse-stem-lead 1050ms ease-in-out infinite; }
     .keekii-lead-dot { animation: keekii-pulse-dot 1050ms ease-in-out infinite; }
-    .keekii-trail-stem { animation: keekii-pulse-stem 1050ms ease-in-out 160ms infinite; }
+    .keekii-trail-stem { animation: keekii-pulse-stem-trail 1050ms ease-in-out 160ms infinite; }
     .keekii-trail-dot { animation: keekii-pulse-dot 1050ms ease-in-out 160ms infinite; }
 
-    /* A beat travelling left to right across the two "i"s. */
+    /* A beat travelling left to right across the two "i"s, falling back to the
+       static drawing. */
     @media (prefers-reduced-motion: reduce) {
       .keekii-lead-stem, .keekii-lead-dot,
       .keekii-trail-stem, .keekii-trail-dot { animation: none; }
     }
-'@
+"@
 
 function New-Animated {
   param([string]$Plate, [string]$PlateStroke, [string]$Ink, [string]$Title)
