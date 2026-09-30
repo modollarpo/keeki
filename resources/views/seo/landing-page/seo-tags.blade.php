@@ -26,7 +26,7 @@
 
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
+  "{{ '@context' }}": "https://schema.org",
   "@type": "WebSite",
   "name": "{{ settings('branding.site_name') }}",
   "url": "{{ urls()->home() }}",
@@ -42,7 +42,7 @@
 </script>
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
+  "{{ '@context' }}": "https://schema.org",
   "@type": "Organization",
   "name": "{{ settings('branding.site_name') }}",
   "url": "{{ urls()->home() }}",

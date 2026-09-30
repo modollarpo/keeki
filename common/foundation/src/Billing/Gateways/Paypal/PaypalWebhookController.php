@@ -2,12 +2,12 @@
 
 namespace Common\Billing\Gateways\Paypal;
 
-use Common\Billing\GatewayException;
 use Common\Billing\Notifications\PaymentFailed;
 use Common\Billing\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class PaypalWebhookController extends Controller
@@ -91,9 +91,10 @@ class PaypalWebhookController extends Controller
         );
 
         if (!$response->successful()) {
-            throw new GatewayException(
-                "Could not validate paypal webhook: {$response->body()}",
-            );
+            Log::error('Could not validate paypal webhook', [
+                'response' => $response->body(),
+            ]);
+            return false;
         }
 
         return $response['verification_status'] === 'SUCCESS';
