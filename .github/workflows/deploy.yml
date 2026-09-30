@@ -100,6 +100,16 @@ jobs:
             sudo mkdir -p /var/www/bemusic/storage/app/public/branding-images
             sudo cp -f /var/www/bemusic/ops/logo-assets/keekii-logo-*.png /var/www/bemusic/storage/app/public/branding-images/ || echo 'branding logo copy skipped'
             sudo chown www-data:www-data /var/www/bemusic/storage/app/public/branding-images/keekii-logo-*.png 2>/dev/null || echo 'branding logo chown skipped'
+            # GeoIP: refresh the real GeoLite2-City database so geo detection resolves visitor countries
+            if ! grep -q '^MAXMIND_ACCOUNT_ID=' /var/www/bemusic/.env; then
+              sudo bash -c "echo 'MAXMIND_ACCOUNT_ID=${{ secrets.MAXMIND_ACCOUNT_ID }}' >> /var/www/bemusic/.env"
+            fi
+            if ! grep -q '^MAXMIND_LICENSE_KEY=' /var/www/bemusic/.env; then
+              sudo bash -c "echo 'MAXMIND_LICENSE_KEY=${{ secrets.MAXMIND_LICENSE_KEY }}' >> /var/www/bemusic/.env"
+            fi
+            sudo -u www-data -H php /var/www/bemusic/artisan geoip:update || echo 'geoip:update skipped (creds missing or no network)'
+            # Country channels + geo homepage mapping (idempotent: updateOrCreate by slug, merges existing map)
+            sudo -u www-data -H php /var/www/bemusic/artisan channels:country || echo 'channels:country skipped'
             sudo -u www-data -H php /var/www/bemusic/ops/sync-settings.php || echo 'settings sync skipped'
             sudo -u www-data php artisan cache:clear 2>/dev/null || echo 'cache:clear skipped'
             sudo systemctl restart php8.3-fpm
