@@ -1,5 +1,5 @@
-<meta property="og:site_name" content="{{ settings('branding.site_name') }}" />
-<meta property="twitter:card" content="summary" />
+﻿<meta property="og:site_name" content="{{ settings('branding.site_name') }}" />
+<meta property="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
 <title>
     {{ settings('branding.site_name') }} - Every song, every artist, one place.
@@ -8,6 +8,7 @@
     property="og:title"
     content="{{ settings('branding.site_name') }} - Every song, every artist, one place."
 />
+<meta name="twitter:title" content="{{ settings('branding.site_name') }} - Every song, every artist, one place." />
 <meta property="og:url" content="{{ urls()->home() }}" />
 <link rel="canonical" href="{{ urls()->home() }}" />
 
@@ -16,12 +17,16 @@
     content="Keekii brings the music you love — and sounds you have not found yet — into one beautifully curated listening experience. Listen completely free."
 />
 <meta
+    name="twitter:description"
+    content="Keekii brings the music you love — and sounds you have not found yet — into one beautifully curated listening experience. Listen completely free."
+/>
+<meta
     name="description"
     content="Keekii brings the music you love — and sounds you have not found yet — into one beautifully curated listening experience. Listen completely free."
 />
 <meta
-    property="keywords"
-    content="music, online, listen, streaming, play, digital, album, artist, playlist, radio"
+    name="keywords"
+    content="music, online, listen, streaming, play, digital, album, artist, playlist, radio, free music"
 />
 
 <script type="application/ld+json">
