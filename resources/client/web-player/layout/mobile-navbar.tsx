@@ -14,9 +14,9 @@
  *
  * Design decisions
  * ────────────────
- * • Full animated wordmark logo (mark + "Keekii") used as the brand anchor,
- *   matching the desktop Navbar.Logo and branding.logo_* artwork so the brand
- *   registers identically on every breakpoint.
+ * • Favicon mark (not wordmark) used as the brand anchor.  On a narrow screen
+ *   a wordmark wastes ~120 px; the 40 × 40 mark icon is instantly recognisable
+ *   and leaves room for the action icons.
  * • Voice-search shortcut on the navbar means one tap starts dictating — no
  *   need to open the overlay first.  The overlay opens automatically when the
  *   transcript arrives.
@@ -76,11 +76,8 @@ export function MobileNavbar() {
     onError: handleVoiceError,
   });
 
-  // Full animated wordmark logo — mirrors Navbar.Logo theming: light artwork on
-  // dark backgrounds, dark artwork on light backgrounds.
-  const logoSrc = isDark
-    ? '/images/logo-light.svg'
-    : '/images/logo-dark.svg';
+  // Favicon mark (not wordmark) used as the brand anchor — original size.
+  const faviconSrc = isDark ? '/favicon-dark.svg' : '/favicon.svg';
 
   return (
     <>
@@ -90,27 +87,24 @@ export function MobileNavbar() {
       {/* ── Persistent header bar ────────────────────────────────────────────── */}
       <Navbar.Root className="h-14 shrink-0 border-b bg-background px-3 gap-2">
 
-        {/* Brand logo — full animated wordmark, no border ring */}
+        {/* Brand mark ─ original size: 40 × 40 favicon mark */}
         <a
           href="/"
           aria-label="Keekii — go to home"
-          className="flex items-center justify-center shrink-0
-                     transition-transform active:scale-90
-                     focus-visible:outline-2 focus-visible:outline-offset-2
-                     focus-visible:outline-[var(--be-brand-ink,#e8611f)]"
-          style={{height: 52}}
+          className="flex items-center justify-center shrink-0 rounded-xl overflow-hidden
+                     transition-transform active:scale-95 focus-visible:outline-2
+                     focus-visible:outline-offset-2 focus-visible:outline-[var(--be-brand-ink,#e8611f)]"
+          style={{width: 40, height: 40}}
         >
           <img
-            src={logoSrc}
+            src={faviconSrc}
             alt=""
             aria-hidden="true"
-            width={130}
-            height={50}
-            className="block h-[44px] w-auto object-contain"
+            width={40}
+            height={40}
+            className="w-10 h-10 object-contain"
             onError={e => {
-              (e.currentTarget as HTMLImageElement).src = isDark
-                ? '/icons/keekii-mark-animated-dark.svg'
-                : '/icons/keekii-mark-animated-light.svg';
+              (e.currentTarget as HTMLImageElement).src = '/favicon.svg';
             }}
           />
         </a>

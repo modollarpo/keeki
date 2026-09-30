@@ -35,7 +35,7 @@ function Root({children, className, ...props}: ComponentProps<'div'>) {
 function NavbarLogo({className, ...props}: ComponentProps<typeof Logo>) {
   return (
     <Logo
-      className={cn('h-full max-h-8 md:max-h-12', className)}
+      className={cn('h-full max-h-6.5 md:max-h-9.5', className)}
       {...props}
     />
   );
