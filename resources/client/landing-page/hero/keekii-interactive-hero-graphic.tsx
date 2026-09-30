@@ -15,7 +15,7 @@ export function KeekiiInteractiveHeroGraphic() {
 
   return (
     <div
-      className="w-full max-w-sm cursor-pointer select-none rounded-3xl"
+      className="cursor-pointer select-none rounded-3xl"
       role="button"
       tabIndex={0}
       aria-label={playing ? 'Pause preview' : 'Play preview'}
@@ -27,6 +27,8 @@ export function KeekiiInteractiveHeroGraphic() {
         }
       }}
       style={{
+        width: '100%',
+        maxWidth: '384px',
         background: 'linear-gradient(145deg, #1c110a 0%, #110a04 55%, #1e120c 100%)',
         boxShadow:
           '0 0 0 1.5px rgba(232,97,31,0.30),' +
