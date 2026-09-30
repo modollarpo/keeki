@@ -6,3 +6,15 @@
 /bootstrap/cache/
 .env
 
+# Stray build artifacts accidentally written to the repo root
+/*.js
+/*.css
+!/postcss.config.js
+/live_index.html
+/latest_live.html
+/live_main.css
+/manifest.json
+/hero_changes.patch
+/patch.txt
+
+
