@@ -28,8 +28,15 @@ use Dedoc\Scramble\Scramble;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/api-docs', function () {
+    $exportedSpec = public_path('swagger.yaml');
+    $trackedSpec = resource_path('client/api-public.json');
+
+    $spec = is_file($exportedSpec) ? $exportedSpec : $trackedSpec;
+
+    abort_unless(is_file($spec), 404);
+
     return view('scramble::docs', [
-        'spec' => file_get_contents(public_path('swagger.yaml')),
+        'spec' => file_get_contents($spec),
         'config' => Scramble::getGeneratorConfig('public'),
     ]);
 })->middleware(CanViewPublicApiDocs::class);
@@ -54,6 +61,24 @@ Route::get('search/{query}', [SearchController::class, 'index']);
 Route::get('search/{query}/{tab}', [SearchController::class, 'index']);
 Route::get('channels/{channel}', [ChannelController::class, 'show']);
 Route::get('channel/{channel}', [ChannelController::class, 'show']);
+
+// PUBLIC MARKETING, PLAN AND LEGAL PAGES
+//
+// Registered from one list so the server, the crawler prerender and the React
+// router in resources/client/company/company-routes.tsx cannot drift apart.
+// This has to stay above the fallback route, otherwise a request such as
+// /artists is swallowed by the channel resolver and loses its SEO tags.
+//
+// The slug is bound per route rather than passed in, because these are static
+// paths, so Laravel dispatches the callable with no route parameters.
+foreach (\App\Support\CompanyPageSeo::slugs() as $companyPageSlug) {
+    Route::get($companyPageSlug, function () use ($companyPageSlug) {
+        return app(\App\Http\Controllers\CompanyPageController::class)(
+            request(),
+            $companyPageSlug,
+        );
+    });
+}
 
 Route::get('contact', [HomeController::class, 'render']);
 Route::get('login', [HomeController::class, 'render'])->name('login');

@@ -15,7 +15,7 @@ class PreviewStreamController extends BaseController
     {
         if ($track->deezer_id) {
             $preview = Http::timeout(8)
-                ->withHeaders(['User-Agent' => 'BeMusic/1.0'])
+                ->withHeaders(['User-Agent' => 'Keekii/1.0'])
                 ->get("https://api.deezer.com/track/{$track->deezer_id}")
                 ->json('preview');
 

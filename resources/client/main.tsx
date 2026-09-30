@@ -108,6 +108,19 @@ declare module '@ui/bootstrap-data/bootstrap-data' {
       searchPage?: SearchResponse;
       search?: SearchResponse;
       customPage?: {data: CustomPage};
+      /** SEO title/description for the public company pages, rendered by
+       *  `App\Http\Controllers\CompanyPageController`. */
+      companyPage?: {
+        page: {
+          path: string;
+          slug: string;
+          group: string;
+          label: string;
+          title: string;
+          description: string;
+        };
+        seoTags?: string;
+      };
       landingPage?: {
         products: ListProducts200;
         channels?: Channel[];

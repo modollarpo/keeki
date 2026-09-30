@@ -28,7 +28,7 @@ export const adminRoutes: RouteObject[] = [
       },
       {
         path: 'reports',
-        lazy: () => import('@app/admin/reports/bemusic-admin-report-page'),
+        lazy: () => import('@app/admin/reports/keekii-admin-report-page'),
         children: [
           {
             index: true,

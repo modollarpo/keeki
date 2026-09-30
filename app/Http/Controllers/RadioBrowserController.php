@@ -36,7 +36,7 @@ class RadioBrowserController extends BaseController
                 : self::RADIO_API . '/stations/topclick/30';
 
             $response = Http::timeout(8)
-                ->withHeaders(['User-Agent' => 'BeMusic/1.0'])
+                ->withHeaders(['User-Agent' => 'Keekii/1.0'])
                 ->get($endpoint, $params);
 
             if ($response->successful()) {

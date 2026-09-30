@@ -209,6 +209,55 @@ return [
                 ],
                 'positions' => ['auth-dropdown'],
             ],
+
+            // Entry points only. The shared app footer is a single horizontal
+            // row, so linking all 28 public pages from it would be noise. The
+            // full Company / Useful links / Legal column layout is rendered
+            // from resources/client/company/company-site-map.ts at the bottom
+            // of every public page instead.
+            [
+                'name' => 'Footer',
+                'id' => 'kEEkii',
+                'items' => [
+                    [
+                        'type' => 'route',
+                        'label' => 'About',
+                        'action' => '/about',
+                        'id' => 'ftr-about',
+                    ],
+                    [
+                        'type' => 'route',
+                        'label' => 'For Artists',
+                        'action' => '/artists',
+                        'id' => 'ftr-artists',
+                    ],
+                    [
+                        'type' => 'route',
+                        'label' => 'Plans',
+                        'action' => '/plans',
+                        'id' => 'ftr-plans',
+                    ],
+                    [
+                        'type' => 'route',
+                        'label' => 'Developers',
+                        'action' => '/developers',
+                        'id' => 'ftr-developers',
+                    ],
+                    [
+                        'type' => 'route',
+                        'label' => 'Support',
+                        'action' => '/support',
+                        'id' => 'ftr-support',
+                    ],
+                    [
+                        'type' => 'route',
+                        'label' => 'Privacy',
+                        'action' => '/privacy-policy',
+                        'id' => 'ftr-privacy',
+                    ],
+                ],
+                'positions' => ['footer'],
+            ],
             [
                 'name' => 'Admin Sidebar',
                 'id' => '2d43u1',
@@ -385,10 +434,10 @@ return [
     //
     // Phase 1 correctness pass — 2026-09-29
     //
-    // Changes from the BeMusic-era seed:
-    //   • All five "BeMusic" brand strings replaced with Keekii.
-    //   • bgColors.color2 corrected from #527e2c (leftover green) to #e8611f
-    //     (brand ember, matches --be-brand-ink / --be-brand-ink-alt tokens).
+    // Changes from the pre-Keekii seed:
+    //   • All five legacy brand strings replaced with Keekii.
+    //   • bgColors.color2 corrected from #527e2c (leftover legacy green) to
+    //     #e8611f (brand ember, the brand ink used by the Keekii theme tokens).
     //   • Hero CTA changed from generic "Get Started" / "Explore" to
     //     "Start listening" / "Browse music" — one clear primary verb,
     //     consistent with the CTA section below.
@@ -427,9 +476,9 @@ return [
                     'bgColors' => [
                         'opacity' => 0.8,
                         'color1' => '#000000',
-                        // Brand ember — matches --be-brand-ink (#e8611f) and
-                        // --be-brand-ink-alt (#f0864a) CSS tokens in themes.php.
-                        // The previous value (#527e2c) was a leftover BeMusic green.
+                        // Brand ember — matches the Keekii brand ink (#e8611f) and
+                        // brand ink alt (#f0864a) CSS tokens in themes.php.
+                        // The previous value (#527e2c) was a leftover legacy green.
                         'color2' => '#e8611f',
                     ],
                     'buttons' => [

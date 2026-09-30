@@ -73,7 +73,7 @@ class YoutubeStreamController extends BaseController
         foreach ($instances as $instance) {
             try {
                 $streams = Http::timeout(8)
-                    ->withHeaders(['User-Agent' => 'BeMusic/1.0'])
+                    ->withHeaders(['User-Agent' => 'Keekii/1.0'])
                     ->get(rtrim($instance, '/') . '/streams/' . $videoId)
                     ->json('audioStreams');
 

@@ -18,7 +18,7 @@ class AudiusStreamController extends BaseController
 
         try {
             $response = Http::timeout(8)
-                ->withHeaders(['User-Agent' => 'BeMusic/1.0'])
+                ->withHeaders(['User-Agent' => 'Keekii/1.0'])
                 ->get(self::DISCOVERY_NODE . '/v1/tracks/search', [
                     'query' => $query,
                 ]);

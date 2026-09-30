@@ -22,7 +22,7 @@ class JamendoStreamController extends BaseController
 
         try {
             $response = Http::timeout(20)
-                ->withHeaders(['User-Agent' => 'BeMusic/1.0'])
+                ->withHeaders(['User-Agent' => 'Keekii/1.0'])
                 ->get('https://api.jamendo.com/v3.0/tracks/', [
                     'client_id' => $this->getClientId(),
                     'format' => 'json',
@@ -70,7 +70,7 @@ class JamendoStreamController extends BaseController
 
         try {
             $response = Http::timeout(20)
-                ->withHeaders(['User-Agent' => 'BeMusic/1.0'])
+                ->withHeaders(['User-Agent' => 'Keekii/1.0'])
                 ->get('https://api.jamendo.com/v3.0/tracks/', [
                     'client_id' => $this->getClientId(),
                     'format' => 'json',

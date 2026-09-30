@@ -11,6 +11,7 @@ import {
 } from '@common/core/common-provider';
 import {commonRoutes} from '@common/core/common-routes';
 import {notificationRoutes} from '@common/notifications/notification-routes';
+import {companyRoutes} from '@app/company/company-routes';
 import {getBootstrapData} from '@ui/bootstrap-data/bootstrap-data-store';
 import {FullPageLoader} from '@ui/progress/full-page-loader';
 import {createBrowserRouter} from 'react-router';
@@ -30,6 +31,9 @@ export const appRouter = createBrowserRouter(
         ...checkoutRoutes,
         ...billingPageRoutes,
         ...commonRoutes,
+        // Static public pages ahead of the web player so no dynamic route can
+        // shadow them. See resources/client/company/company-routes.tsx.
+        ...companyRoutes,
         ...webPlayerRoutes,
         ...backstageRoutes,
       ],
