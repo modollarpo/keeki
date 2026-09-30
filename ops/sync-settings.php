@@ -169,6 +169,60 @@ if ($landingPageConfig) {
 
 /*
  * ---------------------------------------------------------------------------
+ * Footer Menu (public company / plan / legal links)
+ * ---------------------------------------------------------------------------
+ * Every menu in the app -- sidebar, mobile, auth dropdown, footer -- is stored
+ * inside a SINGLE `menus` row as one JSON blob. That is the trap here: a plain
+ * Setting::updateOrCreate on 'menus' would silently discard every menu an
+ * admin has ever arranged. So this does not write the `menus` row wholesale.
+ *
+ * It only ever APPENDS the default footer menu, and only when no menu already
+ * claims the 'footer' position. Once an admin edits the footer at
+ * /admin/settings/menus this block becomes a no-op, so their arrangement is
+ * never reverted by a later deploy.
+ *
+ * Why this is needed at all: the 'menus' row is created once, on first
+ * install. CreateDefaultMenus() in the common package returns early when the
+ * row already exists, and the footer seed lives in
+ * resources/defaults/default-settings.php -- which therefore has no path to an
+ * existing database. Production had Primary/Secondary/Mobile and no 'footer'
+ * position, so the seeded links never appeared.
+ *
+ * The three-column Company / Useful links / Legal nav at the bottom of each
+ * public page is NOT handled here. That is hardcoded in
+ * resources/client/company/company-site-map.ts and always renders.
+ */
+$footerMenu = null;
+foreach ($defaultSettings as $setting) {
+    if ($setting['name'] === 'menus') {
+        $footerMenu = collect(json_decode($setting['value'], true))
+            ->first(fn ($menu) => in_array('footer', $menu['positions'] ?? [], true));
+        break;
+    }
+}
+
+if (! $footerMenu) {
+    echo "[skipped] no default menu declares the 'footer' position\n";
+} else {
+    $menusRow = Setting::where('name', 'menus')->first();
+    $menus = $menusRow ? json_decode($menusRow->value, true) : [];
+
+    if (! is_array($menus)) {
+        // Refuse to guess: overwriting a row we failed to parse could destroy
+        // every menu in the app. Leave it for a human to inspect.
+        echo "[error] 'menus' row is not valid JSON; refusing to modify it\n";
+    } elseif (collect($menus)->contains(fn ($m) => in_array('footer', $m['positions'] ?? [], true))) {
+        echo "[skipped] a 'footer' menu already exists; leaving admin edits intact\n";
+    } else {
+        $menus[] = $footerMenu;
+        Setting::updateOrCreate(['name' => 'menus'], ['value' => json_encode($menus)]);
+        echo '[updated] appended default Footer menu ('
+            . count($footerMenu['items'] ?? []) . " items) to 'menus'\n";
+    }
+}
+
+/*
+ * ---------------------------------------------------------------------------
  * Geo Homepage Enabler
  * ---------------------------------------------------------------------------
  * The per-country homepage swap (ResolveGeoHomepage) only engages when the

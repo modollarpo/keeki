@@ -43,5 +43,38 @@ return [
         '/admin/backstage-requests',
         '/admin/comments',
         '/backstage/requests',
+        // Public company, plans and legal pages. These are React routes rather
+        // than admin destinations, but the menu editor can only offer a path
+        // that appears here, so without this list the new pages cannot be
+        // linked from any DB-driven menu. Keep in sync with the canonical
+        // source of truth in resources/client/company/company-site-map.ts.
+        '/about',
+        '/advertising',
+        '/artists',
+        '/authors',
+        '/communities',
+        '/creators',
+        '/developers',
+        '/for-the-record',
+        '/investors',
+        '/jobs',
+        '/vendors',
+        '/free-mobile-app',
+        '/import-your-music',
+        '/popular-by-country',
+        '/support',
+        '/top-song-lyrics',
+        '/plans',
+        '/plans/keekii-free',
+        '/plans/premium-duo',
+        '/plans/premium-family',
+        '/plans/premium-individual',
+        '/plans/premium-student',
+        '/legal',
+        '/privacy-policy',
+        '/cookies',
+        '/about-ads',
+        '/accessibility',
+        '/gdpr',
     ],
 ];
