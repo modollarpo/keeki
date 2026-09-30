@@ -415,6 +415,9 @@ class SeedSampleData extends Command
         $artistProfiles = $artists->map(function (Artist $artist) {
             $profile = ProfileDetails::factory()->make();
             $profile['artist_id'] = $artist->id;
+            // distribute sample artists across the geo markets so the
+            // per-country channels (channels:country) have content to show
+            $profile['country'] = Arr::random($this->geoMarketCountryNames());
             return $profile;
         });
         DB::table('profile_details')->insert($artistProfiles->toArray());
@@ -445,6 +448,24 @@ class SeedSampleData extends Command
             ->flatten(1);
         ProfileLink::insert($userLinks->toArray());
         return $artists;
+    }
+
+    /**
+     * Country names for the configured per-country geo markets
+     * (resources/defaults/channels/country-channels.json), so sample artists
+     * actually populate the country channels.
+     */
+    protected function geoMarketCountryNames(): array
+    {
+        $path = resource_path('defaults/channels/country-channels.json');
+        $configs = json_decode(file_get_contents($path), true);
+        if (!is_array($configs) || !$configs) {
+            return [];
+        }
+        return array_values(array_unique(array_map(
+            fn($config) => $config['config']['countryName'] ?? $config['config']['contentCountry'],
+            $configs,
+        )));
     }
 
     protected function createUsers()

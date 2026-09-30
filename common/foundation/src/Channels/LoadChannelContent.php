@@ -84,16 +84,19 @@ class LoadChannelContent
             unset($params['order']);
         }
 
+        $namespace = modelTypeToNamespace($contentModel);
+        $baseQuery = $this->applyCountryFilter(app($namespace)::query(), $channel);
+
         // if channel specifies a method to load this model, use that
         if (method_exists($channel, $methodName)) {
-            return $channel->{$methodName}($params, null, $parent);
+            return $channel->{$methodName}(
+                $params,
+                Arr::get($channel->config, 'contentCountry') ? $baseQuery : null,
+                $parent,
+            );
             // otherwise do a basic pagination for the model
         } else {
-            $namespace = modelTypeToNamespace($contentModel);
-            $datasource = new Datasource(
-                $this->applyCountryFilter(app($namespace)::query(), $channel),
-                $params,
-            );
+            $datasource = new Datasource($baseQuery, $params);
             return $datasource->paginate();
         }
     }

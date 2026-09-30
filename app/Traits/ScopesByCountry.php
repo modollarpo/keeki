@@ -29,14 +29,20 @@ trait ScopesByCountry
             return $query;
         }
 
+        // profile_details.country may store either the ISO-2 code or the
+        // human-readable country name (eg "GB" or "United Kingdom"). Match both.
+        $values = array_values(
+            array_unique(array_merge([$iso2], static::countryNamesFor($iso2))),
+        );
+
         $owner = $this->countryOwnerRelation();
 
         if ($owner === null) {
             // model owns its own profile (Artist)
-            return $this->whereProfileIsIn($query, 'profile', $iso2);
+            return $this->whereProfileIsIn($query, 'profile', $values);
         }
 
-        return $this->whereProfileIsIn($query, $owner, $iso2, true);
+        return $this->whereProfileIsIn($query, $owner, $values, true);
     }
 
     /**
@@ -53,13 +59,13 @@ trait ScopesByCountry
      * deeper, for models whose country comes from their artists rather than
      * from a profile of their own.
      */
-    private function whereProfileIsIn(Builder $query, string $relation, string $iso2, bool $viaArtists = false): Builder
+    private function whereProfileIsIn(Builder $query, string $relation, array $values, bool $viaArtists = false): Builder
     {
         if (!method_exists($this, $relation)) {
             return $query;
         }
 
-        $isCountry = fn (Builder $profile) => $profile->where('country', $iso2);
+        $isCountry = fn (Builder $profile) => $profile->whereIn('country', $values);
 
         if ($viaArtists) {
             return $query->whereHas(
@@ -69,6 +75,38 @@ trait ScopesByCountry
         }
 
         return $query->whereHas($relation, $isCountry);
+    }
+
+    /**
+     * Full country names for an ISO code, from the app's country list
+     * (eg code "GB" -> ["United Kingdom"]). Empty when the code is unknown.
+     *
+     * @return string[]
+     */
+    private static function countryNamesFor(string $iso2): array
+    {
+        $list = json_decode(
+            \Illuminate\Support\Facades\File::get(
+                app('path.common') . '/resources/lists/countries.json',
+            ),
+            true,
+        );
+
+        if (!is_array($list)) {
+            return [];
+        }
+
+        $code = strtolower($iso2);
+
+        $names = array_map(
+            fn($country) => $country['name'],
+            array_filter(
+                $list,
+                fn($country) => strtolower($country['code']) === $code,
+            ),
+        );
+
+        return is_array($names) ? $names : [];
     }
 
     /**
