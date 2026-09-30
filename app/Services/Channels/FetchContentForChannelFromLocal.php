@@ -145,10 +145,15 @@ class FetchContentForChannelFromLocal
     protected function nonEmptyGenres()
     {
         // get genres that has at least one record attached in genreables table, order by number of attachments in genreables table
+        // scalar subquery avoids GROUP BY so ONLY_FULL_GROUP_BY servers don't reject the query
+        $countSub = DB::table('genreables')
+            ->selectRaw('COUNT(*)')
+            ->whereColumn('genreables.genre_id', 'genres.id');
+
         return Genre::select('genres.*')
-            ->join('genreables', 'genres.id', '=', 'genreables.genre_id')
-            ->groupBy('genres.id')
-            ->orderBy(DB::raw('COUNT(genreables.genre_id)'), 'desc')
+            ->selectSub($countSub, 'genres_count')
+            ->whereRaw('(' . $countSub->toSql() . ') > 0')
+            ->orderBy('genres_count', 'desc')
             ->orderBy('popularity', 'desc')
             ->limit(20)
             ->get();
