@@ -126,17 +126,22 @@ export function KeekiiHero({config}: Props) {
         ) : null}
 
         {/* ── Two-column content layout ────────────────────────────────────── */}
-        {/*                                                                    */}
-        {/* lg+  : [text 55%] | [graphic 45%]  — side by side, both visible   */}
-        {/* <lg  : text → graphic, stacked vertically                          */}
-        {/*                                                                    */}
-        {/* IMPORTANT: the graphic lives in the SAME row as the headline text  */}
-        {/* so it is always above the fold, regardless of viewport height.     */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:gap-16 pt-24 sm:pt-32 lg:pt-36 pb-16 sm:pb-20">
-
+          <div 
+            className="pt-24 sm:pt-32 lg:pt-36 pb-16 sm:pb-20"
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              gap: '4rem'
+            }}
+          >
             {/* ── Left: text content ──────────────────────────────────────── */}
-            <div className="flex-1 min-w-0 text-center lg:text-left max-w-2xl mx-auto lg:mx-0 keekii-enter">
+            <div 
+              className="flex-1 min-w-0 text-center lg:text-left mx-auto lg:mx-0 keekii-enter"
+              style={{ flexBasis: '50%', minWidth: '320px' }}
+            >
               {heroConfig.badge ? (
                 <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs sm:text-sm/6 text-white backdrop-blur-md shadow-2xl transition-transform hover:scale-105">
                   <span className="w-2 h-2 rounded-full bg-[var(--be-brand-ink)] mr-2 animate-pulse" />
@@ -171,9 +176,16 @@ export function KeekiiHero({config}: Props) {
             </div>
 
             {/* ── Right: interactive graphic ───────────────────────────────── */}
-            {/* The graphic is always in the same visual viewport row as the   */}
-            {/* headline — no scrolling required on any screen size.           */}
-            <div className="w-full sm:max-w-sm lg:w-[420px] shrink-0 mt-12 lg:mt-0 flex justify-center lg:justify-end mx-auto lg:mx-0">
+            <div 
+              style={{
+                flexShrink: 0,
+                width: '100%',
+                maxWidth: '420px',
+                display: 'flex',
+                justifyContent: 'center',
+                margin: '3rem auto 0 auto'
+              }}
+            >
               <KeekiiInteractiveHeroGraphic />
             </div>
 
