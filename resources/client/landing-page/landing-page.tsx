@@ -100,7 +100,10 @@ const sectionRenderers: Record<
   ComponentType<{config: AppSectionConfig; index: number}>
 > = {
   channel: ChannelSection,
-  'hero-with-background-image': KeekiiHero,
+  // `keekii-hero`, not `hero-with-background-image`: names present in the
+  // shared registry are dispatched to the shared component before this map is
+  // ever consulted, so registering under the shared name is silently dead code.
+  'keekii-hero': KeekiiHero,
   'keekii-feature-with-svg': KeekiiFeatureWithSvg,
 };
 

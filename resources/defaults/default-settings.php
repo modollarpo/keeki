@@ -469,7 +469,12 @@ return [
                 // a visitor can actually do on day one. Search bar is rendered
                 // via heroSearchBarSlot so the visitor can act immediately.
                 [
-                    'name' => 'hero-with-background-image',
+                    // 'keekii-hero', not 'hero-with-background-image'. The
+                    // common landing-page dispatcher checks the shared section
+                    // registry first and renders the shared component for any
+                    // name in it, so a config using the shared hero name can
+                    // never reach KeekiiHero even though it is registered.
+                    'name' => 'keekii-hero',
                     'title' => 'Every song, every artist, one place.',
                     'description' =>
                         'Keekii brings the music you love — and sounds you have not found yet — into one beautifully curated listening experience. Search, explore by genre, tune into live radio, and build the library that defines your taste.',

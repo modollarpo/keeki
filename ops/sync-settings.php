@@ -205,7 +205,8 @@ if (! $footerMenu) {
     echo "[skipped] no default menu declares the 'footer' position\n";
 } else {
     $menusRow = Setting::where('name', 'menus')->first();
-    $menus = $menusRow ? json_decode($menusRow->value, true) : [];
+    $menus = $menusRow ? ($menusRow->value ?? []) : [];
+    $menus = is_array($menus) ? $menus : (json_decode($menus, true) ?: []);
 
     if (! is_array($menus)) {
         // Refuse to guess: overwriting a row we failed to parse could destroy

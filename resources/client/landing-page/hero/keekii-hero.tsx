@@ -15,7 +15,12 @@ import {AppSectionConfig} from '@common/ui/landing-page/landing-page-config';
 import {KeekiiInteractiveHeroGraphic} from './keekii-interactive-hero-graphic';
 
 export type KeekiiHeroConfig = BaseHeroConfig & {
-  name: 'hero-with-background-image';
+  // Must NOT be 'hero-with-background-image'. That name is in the shared
+  // registry (common section-defs.tsx), and the dispatcher in the common
+  // landing-page checks that registry first, so the shared HeroWithBackgroundImage
+  // would always win and this renderer would never be reached. App-registered
+  // sections are only dispatched when their name is absent from the registry.
+  name: 'keekii-hero';
 };
 
 type Props = {
