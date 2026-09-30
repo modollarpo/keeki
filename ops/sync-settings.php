@@ -166,3 +166,47 @@ if ($landingPageConfig) {
     Setting::updateOrCreate(['name' => 'landingPage'], ['value' => $landingPageConfig]);
     echo "[updated] landingPage JSON config applied from default-settings.php\n";
 }
+
+/*
+ * ---------------------------------------------------------------------------
+ * Geo Homepage Enabler
+ * ---------------------------------------------------------------------------
+ * The per-country homepage swap (ResolveGeoHomepage) only engages when the
+ * site homepage is a channel and homepage.geo_countries maps ISO2 -> channel
+ * id. `artisan channels:country` creates the country channels and writes that
+ * map on every deploy, so by the time this script runs the map is present and
+ * we can safely switch the homepage type to "channel".
+ *
+ * The default value is resolved against the DB (preferring the seeded
+ * discovery/homepage channel) rather than hardcoded, because channel ids are
+ * not stable across environments. If no suitable channel exists the homepage
+ * is left untouched and an admin can pick one in Settings > General.
+ */
+use App\Models\Channel;
+
+$geoMapRaw = settings('homepage.geo_countries');
+$geoMap = $geoMapRaw ? json_decode($geoMapRaw, true) : [];
+
+if (!is_array($geoMap) || $geoMap === []) {
+    echo "[skipped] geo homepage not enabled: homepage.geo_countries is empty\n";
+} else {
+    $defaultChannel = Channel::whereIn('slug', ['discover', 'homepage'])
+        ->orderBy('id')
+        ->first()
+        ?: Channel::where('type', 'channel')
+            ->where('public', true)
+            ->orderBy('id')
+            ->first();
+
+    if (!$defaultChannel) {
+        echo "[error] geo homepage enabled but no default channel exists; leave homepage as-is\n";
+    } else {
+        Setting::updateOrCreate(['name' => 'homepage.type'], ['value' => 'channel']);
+        Setting::updateOrCreate(
+            ['name' => 'homepage.value'],
+            ['value' => (int) $defaultChannel->id],
+        );
+        echo '[updated] homepage.type=channel, homepage.value=' . $defaultChannel->id
+            . ' (' . $defaultChannel->slug . ') [' . count($geoMap) . " countries mapped]\n";
+    }
+}
