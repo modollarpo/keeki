@@ -1,0 +1,62 @@
+[
+    { "country": "NG", "countryName": "Nigeria", "artists": [
+        { "name": "Demo — Naija Groove", "city": "Lagos" },
+        { "name": "Demo — Lagos Vibes", "city": "Lagos" }
+    ] },
+    { "country": "US", "countryName": "United States", "artists": [
+        { "name": "Demo — American Beats", "city": "New York" },
+        { "name": "Demo — Sunset Pop", "city": "Los Angeles" }
+    ] },
+    { "country": "GB", "countryName": "United Kingdom", "artists": [
+        { "name": "Demo — London Sound", "city": "London" },
+        { "name": "Demo — Manchester Nights", "city": "Manchester" }
+    ] },
+    { "country": "IE", "countryName": "Ireland", "artists": [
+        { "name": "Demo — Dublin Folk", "city": "Dublin" },
+        { "name": "Demo — Emerald Wave", "city": "Cork" }
+    ] },
+    { "country": "CA", "countryName": "Canada", "artists": [
+        { "name": "Demo — Toronto Tracks", "city": "Toronto" },
+        { "name": "Demo — Maple Melodies", "city": "Vancouver" }
+    ] },
+    { "country": "AU", "countryName": "Australia", "artists": [
+        { "name": "Demo — Sydney Sessions", "city": "Sydney" },
+        { "name": "Demo — Melbourne Mix", "city": "Melbourne" }
+    ] },
+    { "country": "ZA", "countryName": "South Africa", "artists": [
+        { "name": "Demo — Cape Rhythms", "city": "Cape Town" },
+        { "name": "Demo — Jozi Beats", "city": "Johannesburg" }
+    ] },
+    { "country": "GH", "countryName": "Ghana", "artists": [
+        { "name": "Demo — Accra Groove", "city": "Accra" },
+        { "name": "Demo — Gold Coast Sound", "city": "Kumasi" }
+    ] },
+    { "country": "IN", "countryName": "India", "artists": [
+        { "name": "Demo — Bombay Bhangra", "city": "Mumbai" },
+        { "name": "Demo — Delhi Desi Beats", "city": "New Delhi" }
+    ] },
+    { "country": "BR", "countryName": "Brazil", "artists": [
+        { "name": "Demo — Rio Samba", "city": "Rio de Janeiro" },
+        { "name": "Demo — São Paulo Pop", "city": "São Paulo" }
+    ] },
+    { "country": "DE", "countryName": "Germany", "artists": [
+        { "name": "Demo — Berlin Elektro", "city": "Berlin" },
+        { "name": "Demo — Munich Melancholy", "city": "Munich" }
+    ] },
+    { "country": "FR", "countryName": "France", "artists": [
+        { "name": "Demo — Paris Chanson", "city": "Paris" },
+        { "name": "Demo — Lyon Electro", "city": "Lyon" }
+    ] },
+    { "country": "ES", "countryName": "Spain", "artists": [
+        { "name": "Demo — Madrid Flamenco", "city": "Madrid" },
+        { "name": "Demo — Barcelona Beats", "city": "Barcelona" }
+    ] },
+    { "country": "JP", "countryName": "Japan", "artists": [
+        { "name": "Demo — Tokyo J-Pop", "city": "Tokyo" },
+        { "name": "Demo — Osaka Rock", "city": "Osaka" }
+    ] },
+    { "country": "KR", "countryName": "South Korea", "artists": [
+        { "name": "Demo — Seoul K-Pop", "city": "Seoul" },
+        { "name": "Demo — Busan Ballad", "city": "Busan" }
+    ] }
+]

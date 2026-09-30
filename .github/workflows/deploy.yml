@@ -108,6 +108,9 @@ jobs:
               sudo bash -c "echo 'MAXMIND_LICENSE_KEY=${{ secrets.MAXMIND_LICENSE_KEY }}' >> /var/www/bemusic/.env"
             fi
             sudo -u www-data -H php /var/www/bemusic/artisan geoip:update || echo 'geoip:update skipped (creds missing or no network)'
+            # Seed clearly-labelled demo artists so per-country channels have content,
+            # then map them to the geo homepage (idempotent: only seeds empty markets).
+            sudo -u www-data -H php /var/www/bemusic/artisan channels:country:seed-demo || echo 'channels:country:seed-demo skipped'
             # Country channels + geo homepage mapping (idempotent: updateOrCreate by slug, merges existing map)
             sudo -u www-data -H php /var/www/bemusic/artisan channels:country || echo 'channels:country skipped'
             sudo -u www-data -H php /var/www/bemusic/ops/sync-settings.php || echo 'settings sync skipped'
