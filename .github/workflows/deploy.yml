@@ -116,5 +116,4 @@ jobs:
             sudo -u www-data -H php /var/www/bemusic/ops/sync-settings.php || echo 'settings sync skipped'
             sudo -u www-data php artisan cache:clear 2>/dev/null || echo 'cache:clear skipped'
             sudo systemctl restart php8.3-fpm
-            echo "APP_URL=$(grep -E '^APP_URL=' /var/www/bemusic/.env | head -1)"
             echo 'Deploy complete'
