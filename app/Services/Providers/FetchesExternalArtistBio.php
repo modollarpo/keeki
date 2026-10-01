@@ -64,6 +64,22 @@ trait FetchesExternalArtistBio
             return null;
         }
 
+        // A disambiguation page is not a biography. "IU" resolves to a page
+        // whose lead is "IU may refer to:", which is a list of meanings and no
+        // nationality at all. Left in, it both hides the real article and gets
+        // stored as if it were the artist's description.
+        $response = array_filter(
+            $response,
+            fn ($page) => ! str_contains(
+                mb_strtolower((string) ($page['extract'] ?? '')),
+                'may refer to',
+            ),
+        );
+
+        if ($response === []) {
+            return null;
+        }
+
         foreach ($response as $page) {
             if (
                 Str::contains($page['title'], 'singer') &&
@@ -115,11 +131,19 @@ trait FetchesExternalArtistBio
 
         $normalized = str_replace(' ', '_', ucwords(strtolower($name)));
 
+        // strtolower/ucwords only fold ASCII, so a name that arrives in caps
+        // with an accent - "ROSALIA" from Deezer - never becomes the real title
+        // "Rosalia". Uppercase only the first character, which fixes those
+        // without mangling names like "A.R. Rahman" where the rest of the
+        // capitalisation is deliberate.
+        $firstLetterUpper = mb_strtoupper(mb_substr($name, 0, 1)).mb_substr($name, 1);
+
         // The raw name first, so an exactly-matching article wins before any
         // disambiguation guess is tried. "(singer)", "(musician)" and friends
         // catch the common "Artist (band)" / "Artist (rapper)" article titles.
         $titles = array_unique([
             str_replace(' ', '_', $name),
+            str_replace(' ', '_', $firstLetterUpper),
             $normalized,
             $normalized.'_(singer)',
             $normalized.'_(rapper)',
@@ -127,6 +151,9 @@ trait FetchesExternalArtistBio
             $normalized.'_(musician)',
             $normalized.'_(singer-songwriter)',
             $normalized.'_(recording_artist)',
+            // K-pop and J-pop articles usually sit under these two
+            $normalized.'_(entertainer)',
+            $normalized.'_(songwriter)',
         ]);
 
         // each title is encoded individually so that "&", "#", "?" and other
@@ -134,6 +161,6 @@ trait FetchesExternalArtistBio
         $encoded = implode('|', array_map('rawurlencode', $titles));
 
         // exlimit must cover every title, otherwise extracts are truncated
-        return "https://$lang.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=$encoded&redirects=1&exlimit=10";
+        return "https://$lang.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=$encoded&redirects=1&exlimit=20";
     }
 }
