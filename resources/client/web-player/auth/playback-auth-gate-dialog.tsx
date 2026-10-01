@@ -74,11 +74,22 @@ export function PlaybackAuthGateDialog() {
               )}
             </Dialog.Title>
             <Dialog.Description>
+              {/* Mode-aware: the description previously always said "Sign in"
+                  even while the Sign up tab was selected. */}
               {trackName ? (
-                <Trans
-                  message="Sign in to keep listening to :track and millions of other songs."
-                  values={{track: trackName}}
-                />
+                activeMode === 'register' ? (
+                  <Trans
+                    message="Create a free account to keep listening to :track and millions of other songs."
+                    values={{track: trackName}}
+                  />
+                ) : (
+                  <Trans
+                    message="Sign in to keep listening to :track and millions of other songs."
+                    values={{track: trackName}}
+                  />
+                )
+              ) : activeMode === 'register' ? (
+                <Trans message="Create a free account to start listening to millions of songs, free." />
               ) : (
                 <Trans message="Sign in to start listening to millions of songs, free." />
               )}

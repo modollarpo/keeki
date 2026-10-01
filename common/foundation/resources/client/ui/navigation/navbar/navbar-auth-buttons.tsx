@@ -27,7 +27,13 @@ interface DesktopButtonsProps {
 function DesktopButtons({primaryButtonColor}: DesktopButtonsProps) {
   const {registration} = useSettings();
   return (
-    <div className="text-sm max-md:hidden">
+    // Switches at `lg` (1024px) to match the web player's layout breakpoint
+    // (`useIsTabletMediaQuery` -> `(max-width: 1024px)`). These used to switch
+    // at `md` (768px) while the mobile navbar kept rendering up to 1024px,
+    // which left signed-out visitors on tablet widths with no account control
+    // at all: the mobile trigger was already `md:hidden` and the desktop
+    // buttons were `max-md:hidden`.
+    <div className="text-sm max-lg:hidden">
       {!registration?.disable && (
         <LinkButton to="/register" variant="ghost" className="mr-2.5">
           <Trans message="Register" />
@@ -51,12 +57,15 @@ function MobileButtons() {
     <MenuTrigger>
       {/* Sized to match the surrounding header controls: 40px box with a 20px
           glyph. It used to be 48px/28px, which made the account control read as
-          oversized next to a 40px search pill. */}
+          oversized next to a 40px search pill.
+
+          Visibility is `lg:hidden`, not `md:hidden`, so the trigger survives the
+          whole range in which the mobile navbar is the one being rendered. */}
       <Button
         variant="ghost"
         size="icon"
         type="button"
-        className="md:hidden !size-10 text-foreground"
+        className="lg:hidden !size-10 text-foreground"
       >
         <UserRoundIcon className="!size-5" />
       </Button>

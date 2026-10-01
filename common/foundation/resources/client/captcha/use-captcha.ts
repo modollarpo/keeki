@@ -49,12 +49,35 @@ export function useCaptcha(action: CaptchaAction, disabled = false) {
         }
       };
 
-      if (window.turnstile || window.grecaptcha) {
-        setTimeout(() => renderCaptcha());
+      // The provider script publishes its global before the API surface is
+      // populated, so the mere presence of `window.grecaptcha`/`window.turnstile`
+      // is not proof that `render()` exists. Rendering eagerly on that signal
+      // throws "window.grecaptcha.render is not a function" and leaves the
+      // widget empty, which blocks registration on the captcha-guard check.
+      const isProviderReady = () =>
+        provider === 'recaptcha'
+          ? typeof window.grecaptcha?.render === 'function'
+          : typeof window.turnstile?.render === 'function';
+
+      if (isProviderReady()) {
+        setTimeout(renderCaptcha);
       } else {
         window.captchaOnloadCallback = function () {
           renderCaptcha();
         };
+
+        // The script may already be loaded and may already have fired its
+        // onload callback, in which case waiting on the callback would never
+        // resolve. Poll as well so a late-arriving API is still picked up.
+        const startedAt = Date.now();
+        const interval = setInterval(() => {
+          if (isProviderReady() || Date.now() - startedAt > 15000) {
+            clearInterval(interval);
+            if (isProviderReady()) {
+              renderCaptcha();
+            }
+          }
+        }, 250);
       }
 
       loadCaptchaScript();
