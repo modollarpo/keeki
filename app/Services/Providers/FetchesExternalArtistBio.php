@@ -107,17 +107,33 @@ trait FetchesExternalArtistBio
         string $name,
         string $lang = 'en',
     ): string {
-        $name = str_replace(' ', '_', ucwords(strtolower($name)));
+        $name = trim($name);
 
-        $titles =
-            "$name|" .
-            $name .
-            '_(rapper)|' .
-            $name .
-            '_(band)|' .
-            $name .
-            '_(singer)';
+        if ($name === '') {
+            return "https://$lang.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&redirects=1";
+        }
 
-        return "https://$lang.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=$titles&redirects=1&exlimit=4";
+        $normalized = str_replace(' ', '_', ucwords(strtolower($name)));
+
+        // The raw name first, so an exactly-matching article wins before any
+        // disambiguation guess is tried. "(singer)", "(musician)" and friends
+        // catch the common "Artist (band)" / "Artist (rapper)" article titles.
+        $titles = array_unique([
+            str_replace(' ', '_', $name),
+            $normalized,
+            $normalized.'_(singer)',
+            $normalized.'_(rapper)',
+            $normalized.'_(band)',
+            $normalized.'_(musician)',
+            $normalized.'_(singer-songwriter)',
+            $normalized.'_(recording_artist)',
+        ]);
+
+        // each title is encoded individually so that "&", "#", "?" and other
+        // characters in an artist name cannot break the query string
+        $encoded = implode('|', array_map('rawurlencode', $titles));
+
+        // exlimit must cover every title, otherwise extracts are truncated
+        return "https://$lang.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=$encoded&redirects=1&exlimit=10";
     }
 }

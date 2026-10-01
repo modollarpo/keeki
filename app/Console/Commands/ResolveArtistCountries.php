@@ -26,7 +26,8 @@ class ResolveArtistCountries extends Command
 {
     protected $signature = 'music:resolve-artist-countries
         {--limit=400 : Maximum artists to fetch bios for in this run}
-        {--batch=20 : Wikipedia requests per pool}
+        {--batch=25 : Artists per progress report}
+        {--pause=0.6 : Seconds between Wikipedia requests}
         {--min-confidence=0.8 : Only apply a country at or above this confidence}
         {--country=* : Restrict to these ISO-2 markets (default: all configured countries)}
         {--target-per-market=10 : Stop early once every market has this many real artists}
@@ -42,6 +43,7 @@ class ResolveArtistCountries extends Command
         $dryRun = (bool) $this->option('dry-run');
         $limit = max(0, (int) $this->option('limit'));
         $batchSize = max(1, (int) $this->option('batch'));
+        $pause = max(0, (int) $this->option('pause'));
         $minConfidence = (float) $this->option('min-confidence');
         $target = max(0, (int) $this->option('target-per-market'));
 
@@ -72,7 +74,8 @@ class ResolveArtistCountries extends Command
         $mapped = 0;
         $biosStored = 0;
         $needsReview = [];
-        $noSignal = 0;
+        $reasons = [];
+        $noBioSamples = [];
         $samples = [];
 
         while ($remaining > 0) {
@@ -83,13 +86,23 @@ class ResolveArtistCountries extends Command
                 break;
             }
 
-            $bios = $fetcher->fetchMany($candidates);
+            $bios = $fetcher->fetchMany($candidates, $pause);
 
             foreach ($candidates as $artist) {
-                $bio = $bios[$artist->id] ?? null;
+                $fetch = $bios[$artist->id] ?? ['bio' => null, 'reason' => 'no-response'];
+                $bio = $fetch['bio'];
 
                 if (!$bio) {
-                    $noSignal++;
+                    $reasons[$fetch['reason']] = ($reasons[$fetch['reason']] ?? 0) + 1;
+
+                    if (count($noBioSamples) < 12) {
+                        $noBioSamples[] = sprintf(
+                            '  %-34s %s',
+                            Str::limit($artist->name, 34),
+                            $fetch['reason'],
+                        );
+                    }
+
                     continue;
                 }
 
@@ -136,6 +149,11 @@ class ResolveArtistCountries extends Command
 
             $this->line("processed {$candidates->count()}, mapped $mapped, remaining $remaining");
 
+            if ($reasons['rate-limited'] ?? 0) {
+                $this->line('<comment>rate limited by Wikipedia - rerun later to continue from where this stopped</comment>');
+                break;
+            }
+
             if ($target > 0 && $this->allSatisfied($counts, $markets, $target)) {
                 $this->line("<info>target of $target real artists per market reached</info>");
                 break;
@@ -154,8 +172,22 @@ class ResolveArtistCountries extends Command
         $this->line("  bios fetched:   $biosFetched");
         $this->line($dryRun ? '  bios stored:    0 (dry run)' : "  bios stored:    $biosStored");
         $this->line("  countries set:  $mapped");
-        $this->line("  no bio found:   $noSignal");
         $this->line("  needs review:   ".count($needsReview));
+
+        if ($reasons) {
+            arsort($reasons);
+            $this->line("  no bio:         ".implode(' ', array_map(
+                fn($reason, $count) => "$reason=$count",
+                array_keys($reasons),
+                $reasons,
+            )));
+        }
+
+        if ($noBioSamples) {
+            $this->newLine();
+            $this->line('<comment>sample of artists with no bio:</comment>');
+            $this->line(implode(PHP_EOL, $noBioSamples));
+        }
 
         if ($needsReview) {
             $this->newLine();
