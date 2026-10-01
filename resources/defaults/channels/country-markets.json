@@ -37,6 +37,19 @@
                 "order": "fresh",
                 "size": 25
             }
+        ,
+            {
+                "name": "Highlife & Amapiano Gold",
+                "description": "Highlife, hiplife and amapiano cuts the country is actually proud of.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "Afro Wave Discovery",
+                "description": "A rotating mix of the Nigerian records moving fastest right now.",
+                "order": "shuffle",
+                "size": 25
+            }
         ]
     },
     {
@@ -75,6 +88,19 @@
                 "name": "American Country Roads",
                 "description": "Country, Americana and the songs made for a truck bed.",
                 "order": "fresh",
+                "size": 25
+            }
+        ,
+            {
+                "name": "American Hip-Hop",
+                "description": "East to west: the hip-hop records defining the United States right now.",
+                "order": "popular",
+                "size": 25
+            },
+            {
+                "name": "USA Discovery",
+                "description": "Something different every time - new and unsorted American releases.",
+                "order": "shuffle",
                 "size": 25
             }
         ]
@@ -117,6 +143,25 @@
                 "order": "fresh",
                 "size": 25
             }
+        ,
+            {
+                "name": "UK Rock & Alternative",
+                "description": "British guitar bands and the alternative scene around them.",
+                "order": "popular",
+                "size": 25
+            },
+            {
+                "name": "British Soul & R&B",
+                "description": "Home-grown R&B and soul from across the UK.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "UK Discovery",
+                "description": "A rotating pick of British releases across every genre.",
+                "order": "shuffle",
+                "size": 25
+            }
         ]
     },
     {
@@ -155,6 +200,19 @@
                 "name": "Irish Folk & Trad",
                 "description": "Traditional and modern folk, sessions and slow airs.",
                 "order": "fresh",
+                "size": 20
+            }
+        ,
+            {
+                "name": "Irish Rock",
+                "description": "Bands from Dublin, Cork and Belfast keeping the guitar loud.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "Celtic Sessions",
+                "description": "Trad and folk sessions from the island of Ireland.",
+                "order": "shuffle",
                 "size": 20
             }
         ]
@@ -197,6 +255,19 @@
                 "order": "fresh",
                 "size": 20
             }
+        ,
+            {
+                "name": "Canadian Hip-Hop",
+                "description": "Drake generation and everything coming up behind it.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "Maple Indie Discovery",
+                "description": "Canadian indie and alternative, shuffled on every refresh.",
+                "order": "shuffle",
+                "size": 20
+            }
         ]
     },
     {
@@ -235,6 +306,19 @@
                 "name": "Australian Indie",
                 "description": "Bedroom pop and shoegaze from Melbourne, Sydney and beyond.",
                 "order": "fresh",
+                "size": 20
+            }
+        ,
+            {
+                "name": "Australian Rock",
+                "description": "AC/DC to the garage bands - Australian guitar music.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "Aussie Discovery",
+                "description": "A rotating mix of Australian artists outside the mainstream.",
+                "order": "shuffle",
                 "size": 20
             }
         ]
@@ -277,6 +361,19 @@
                 "order": "fresh",
                 "size": 25
             }
+        ,
+            {
+                "name": "Kwaito & Gqom Classics",
+                "description": "The Johannesburg sound that the rest of the world keeps rediscovering.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "Mzansi Discovery",
+                "description": "A shuffled run through South African pop, house and amapiano.",
+                "order": "shuffle",
+                "size": 25
+            }
         ]
     },
     {
@@ -315,6 +412,19 @@
                 "name": "Highlife Revival",
                 "description": "Classic Highlife rhythms rebuilt for a new generation.",
                 "order": "fresh",
+                "size": 20
+            }
+        ,
+            {
+                "name": "Highlife & Hiplife Gold",
+                "description": "The Ghanaian highlife and hiplife records everyone streams.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "Ghanaian Discovery",
+                "description": "A rotating mix of Ghanaian artists across every style.",
+                "order": "shuffle",
                 "size": 20
             }
         ]
@@ -357,6 +467,19 @@
                 "order": "fresh",
                 "size": 25
             }
+        ,
+            {
+                "name": "Tamil & Telugu Hits",
+                "description": "South Indian cinema, on playlists and streaming alike.",
+                "order": "popular",
+                "size": 25
+            },
+            {
+                "name": "Indian Lo-Fi & Chill",
+                "description": "Softer, slower Indian records for late nights.",
+                "order": "shuffle",
+                "size": 20
+            }
         ]
     },
     {
@@ -395,6 +518,19 @@
                 "name": "Brazilian Funk & Sertanejo",
                 "description": "Baile funk and sertanejo for a long night out.",
                 "order": "fresh",
+                "size": 25
+            }
+        ,
+            {
+                "name": "Samba & Bossa Classics",
+                "description": "The Brazilian canon, from the carnival floor to the coffee house.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "Brazilian Discovery",
+                "description": "A shuffled tour of what Brazil is listening to now.",
+                "order": "shuffle",
                 "size": 25
             }
         ]
@@ -437,6 +573,19 @@
                 "order": "fresh",
                 "size": 25
             }
+        ,
+            {
+                "name": "Deutsche Rock",
+                "description": "Krautrock to modern German guitar bands.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "Berlin & Underground",
+                "description": "Berlin clubs and the German underground, unshuffled order.",
+                "order": "shuffle",
+                "size": 25
+            }
         ]
     },
     {
@@ -475,6 +624,19 @@
                 "name": "Chanson & Pop",
                 "description": "Classic chanson and modern French pop, in French.",
                 "order": "fresh",
+                "size": 25
+            }
+        ,
+            {
+                "name": "French Electronic",
+                "description": "French house, techno and the Paris club lineage.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "Francophone Discovery",
+                "description": "French and francophone artists across every genre.",
+                "order": "shuffle",
                 "size": 25
             }
         ]
@@ -517,6 +679,19 @@
                 "order": "fresh",
                 "size": 25
             }
+        ,
+            {
+                "name": "Latin Pop Fusion",
+                "description": "Spanish acts crossing over into Latin pop worldwide.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "Spain Discovery",
+                "description": "A rotating mix of Spanish releases, flamenco to indie.",
+                "order": "shuffle",
+                "size": 25
+            }
         ]
     },
     {
@@ -557,6 +732,19 @@
                 "order": "fresh",
                 "size": 25
             }
+        ,
+            {
+                "name": "J-Rock & Indie",
+                "description": "Japanese rock and the indie scene around Tokyo and Osaka.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "Japan Discovery",
+                "description": "A shuffled mix across genres, from city pop to enka.",
+                "order": "shuffle",
+                "size": 25
+            }
         ]
     },
     {
@@ -595,6 +783,25 @@
                 "name": "K-Indie & Trot",
                 "description": "Underground Seoul indie and the revival of Korean Trot.",
                 "order": "fresh",
+                "size": 25
+            }
+        ,
+            {
+                "name": "K-Pop Ballads",
+                "description": "The slow, vocal-heavy side of Korean pop.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "K-R&B & Hip-Hop",
+                "description": "Korean R&B and hip-hop beyond the idol machine.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "Korea Discovery",
+                "description": "A rotating mix of Korean artists outside the major agencies.",
+                "order": "shuffle",
                 "size": 25
             }
         ]

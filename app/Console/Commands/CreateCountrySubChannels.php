@@ -6,6 +6,7 @@ use App\Models\Artist;
 use App\Models\Channel;
 use App\Models\Genre;
 use App\Models\Playlist;
+use App\Services\Playlists\PlaylistCoverFactory;
 use App\Models\Track;
 use App\Models\User;
 use App\Traits\ScopesByCountry;
@@ -416,6 +417,11 @@ class CreateCountrySubChannels extends Command
 
             $playlist->fill([
                 'description' => $definition['description'] ?? null,
+                'image' => app(PlaylistCoverFactory::class)->ensure(
+                    $code,
+                    $definition['name'],
+                    (string) ($market['name'] ?? $code),
+                ) ?: $playlist->image,
                 'public' => true,
                 'collaborative' => false,
             ])->save();
