@@ -200,7 +200,9 @@ class CreateCountrySubChannels extends Command
                 'genre-'.slugify($genreSlug),
                 $order++,
                 [
-                    'name' => $genre->display_name.' in '.($market['name'] ?? $code),
+                    'name' => trim(
+                        ($market['adjective'] ?? $market['name'] ?? $code).' '.$genre->display_name,
+                    ),
                     'config' => $this->manualConfig('artist', 'grid'),
                 ],
                 $dryRun,
