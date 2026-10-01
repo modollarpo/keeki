@@ -60,6 +60,14 @@ return [
     ['name' => 'billing.paypal.enable', 'value' => false],
 
     // GDPR
-    ['name' => 'cookie_notice.enable', 'value' => false],
+    ['name' => 'cookie_notice.enable', 'value' => true],
     ['name' => 'cookie_notice.position', 'value' => 'bottom'],
+    // json_encode'd, not a raw array: InsertDefaultSettings casts every value
+    // to (string), which would turn an array into the literal "Array".
+    ['name' => 'cookie_notice.button', 'value' => json_encode([
+        'type' => 'route',
+        'label' => 'Learn more',
+        'action' => '/cookies',
+        'id' => 'cookie-notice-info',
+    ])],
 ];

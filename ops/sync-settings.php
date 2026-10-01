@@ -224,6 +224,52 @@ if (! $footerMenu) {
 
 /*
  * ---------------------------------------------------------------------------
+ * Cookie Notice (GDPR)
+ * ---------------------------------------------------------------------------
+ * Same trap as the footer menu above, for the same reason: default-settings.php
+ * only reaches a database on first install, because InsertDefaultSettings()
+ * skips every setting name that already exists. Production was installed long
+ * before the cookie notice was switched on, so 'cookie_notice.enable' already
+ * exists there as 'false' and editing the default would have no effect.
+ *
+ * Unlike the footer menu this DOES overwrite an existing value, because the
+ * notice is a legal control: an admin who has toggled it is either mid-testing
+ * or has deliberately opted out, and a deploy silently reversing that would be
+ * worse than a stale default. To opt out for good, set COOKIE_NOTICE_ENABLE=0
+ * in the deploy environment.
+ *
+ * The information button is only written when it is missing entirely, so an
+ * admin's chosen label and destination are never overwritten.
+ */
+$cookieNoticeEnabled = getenv('COOKIE_NOTICE_ENABLE') !== '0';
+
+Setting::updateOrCreate(['name' => 'cookie_notice.enable'], ['value' => $cookieNoticeEnabled]);
+Setting::updateOrCreate(['name' => 'cookie_notice.position'], ['value' => 'bottom']);
+
+if (! Setting::where('name', 'cookie_notice.button')->exists()) {
+    foreach ($defaultSettings as $setting) {
+        if ($setting['name'] !== 'cookie_notice.button') {
+            continue;
+        }
+
+        // Passed through as an array on purpose: 'cookie_notice.button' is in
+        // Settings::$jsonKeys, so the model encodes it and decodes it back to
+        // an array for the client.
+        $button = is_string($setting['value'])
+            ? json_decode($setting['value'], true)
+            : $setting['value'];
+
+        Setting::updateOrCreate(['name' => 'cookie_notice.button'], ['value' => $button]);
+        echo "[updated] cookie notice info button seeded (points to /cookies)\n";
+        break;
+    }
+}
+
+echo '[updated] cookie_notice.enable=' . var_export($cookieNoticeEnabled, true)
+    . ", position=bottom\n";
+
+/*
+ * ---------------------------------------------------------------------------
  * Geo Homepage Enabler
  * ---------------------------------------------------------------------------
  * The per-country homepage swap (ResolveGeoHomepage) only engages when the

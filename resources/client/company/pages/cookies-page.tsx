@@ -81,7 +81,7 @@ export function Component() {
           <Trans message="Keekii uses first-party analytics to find out which features work, where the service is slow and what breaks. We measure in aggregate, we do not build advertising profiles, and we do not use cross-site tracking to follow you around the web." />
         </p>
         <p>
-          <Trans message="Where analytics is optional rather than necessary for security, you can decline it without losing any functionality. Declining it does mean we have less evidence about whether a page is working, which is a real cost to us and no cost to you." />
+          <Trans message="We do not use analytics cookies to build an advertising profile, and blocking them in your browser does not stop you using any part of Keekii. Declining them does mean we have less evidence about whether a page is working, which is a real cost to us and no cost to you." />
         </p>
       </LegalSection>
 
@@ -116,12 +116,12 @@ export function Component() {
         </LegalSubSection>
         <LegalSubSection title="In Keekii">
           <p>
-            <Trans message="You can withdraw consent for non-essential cookies from the privacy settings in your account, or from the cookie notice on your first visit. Withdrawing consent does not delete your account or affect your subscription." />
+            <Trans message="The cookie notice shown to visitors in the UK and the European Economic Area stores your acknowledgement for 30 days, after which we ask again. You can clear that cookie at any time in your browser, and doing so simply brings the notice back on your next visit." />
           </p>
         </LegalSubSection>
         <LegalSubSection title="Do Not Track and Global Privacy Control">
           <p>
-            <Trans message="Where your browser sends a Do Not Track or Global Privacy Control signal, we honour it for advertising and optional analytics. We do not treat it as a request to break the service, because that would be a strange way to honour privacy." />
+            <Trans message="Where your browser sends a Do Not Track or Global Privacy Control signal, we honour it for advertising and optional analytics." />
           </p>
         </LegalSubSection>
       </LegalSection>
