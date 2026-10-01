@@ -2,10 +2,22 @@
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
 
-@if (isset($channel['config']['seoTitle']))
-    <title>{{ $channel['config']['seoTitle'] }} | {{ settings('branding.site_name') }}</title>
-    <meta property="og:title" content="{{ $channel['config']['seoTitle'] }} | {{ settings('branding.site_name') }}" />
-    <meta name="twitter:title" content="{{ $channel['config']['seoTitle'] }} | {{ settings('branding.site_name') }}" />
+{{-- A channel may already name the site in its own title (the country pages do,
+     via a {{site_name}} placeholder), and some already end in the site name.
+     Appending "| <site>" to those produced "Nigerian Music - Keekii Music |
+     Keekii Music". Only add the suffix when it is not already there. --}}
+@php
+    $channelTitle = isset($channel['config']['seoTitle']) ? trim((string) $channel['config']['seoTitle']) : null;
+    $siteName = trim((string) settings('branding.site_name'));
+    $pageTitle = $channelTitle === null || $channelTitle === ''
+        ? null
+        : (stripos($channelTitle, $siteName) !== false ? $channelTitle : $channelTitle . ' | ' . $siteName);
+@endphp
+
+@if ($pageTitle)
+    <title>{{ $pageTitle }}</title>
+    <meta property="og:title" content="{{ $pageTitle }}" />
+    <meta name="twitter:title" content="{{ $pageTitle }}" />
 @else
     <title>Explore Music & Discover New Artists | {{ settings('branding.site_name') }}</title>
     <meta property="og:title" content="Explore Music & Discover New Artists | {{ settings('branding.site_name') }}" />
