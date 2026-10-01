@@ -27,6 +27,7 @@ export function InterfaceSettings({tabs, title}: Props) {
           enable_download: data.client.player?.enable_download ?? false,
           hide_video_button: data.client.player?.hide_video_button ?? false,
           hide_video: data.client.player?.hide_video ?? false,
+          require_auth: data.client.player?.require_auth ?? false,
           mobile: {
             auto_open_overlay:
               data.client.player?.mobile?.auto_open_overlay ?? false,
@@ -38,6 +39,7 @@ export function InterfaceSettings({tabs, title}: Props) {
   return (
     <AdminSettingsLayout form={form} title={title} tabs={tabs}>
       <div className="flex flex-col gap-6">
+        <AccessSettingsPanel />
         <LyricsSettingsPanel />
         <RadioSettingsPanel />
         <QueueSettingsPanel />
@@ -46,6 +48,27 @@ export function InterfaceSettings({tabs, title}: Props) {
         <MobileSettingsPanel />
       </div>
     </AdminSettingsLayout>
+  );
+}
+
+function AccessSettingsPanel() {
+  return (
+    <SettingsPanel
+      title={<Trans message="Playback access" />}
+      description={
+        <Trans message="Control who is allowed to start playback." />
+      }
+    >
+      <HookForm.Field name="client.player.require_auth">
+        <Field.Label>
+          <Switch />
+          <Trans message="Require an account to play music" />
+        </Field.Label>
+        <Field.Description>
+          <Trans message="Signed-out visitors who try to play a track will see a sign-up or sign-in dialog instead. Browsing, searching and building playlists stay open to everyone." />
+        </Field.Description>
+      </HookForm.Field>
+    </SettingsPanel>
   );
 }
 

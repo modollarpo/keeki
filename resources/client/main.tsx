@@ -49,6 +49,7 @@ declare module '@ui/settings/settings' {
       enable_download?: boolean;
       enable_offlining?: boolean;
       show_become_artist_btn?: boolean;
+      require_auth?: boolean;
       mobile?: {
         auto_open_overlay?: boolean;
       };

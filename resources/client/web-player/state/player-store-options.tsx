@@ -1,4 +1,8 @@
 import {loadMediaItemTracks} from '@app/web-player/requests/load-media-item-tracks';
+import {
+  playbackAuthGateState,
+  shouldGatePlayback,
+} from '@app/web-player/auth/playback-auth-gate-store';
 import {playerOverlayState} from '@app/web-player/state/player-overlay-store';
 import {findAudiusStream} from '@app/web-player/tracks/requests/find-audius-stream';
 import {findJamendoStream} from '@app/web-player/tracks/requests/find-jamendo-stream';
@@ -151,6 +155,9 @@ export const playerStoreOptions: Partial<PlayerStoreOptions> = {
     },
   },
   onBeforePlay: () => {
+    // don't open the fullscreen overlay for guests who are about to see the
+    // sign-in dialog; the "play" listener below handles gating.
+    if (shouldGatePlayback()) return;
     const player = getBootstrapData().settings.player;
     // on mobile, YouTube embed playback needs to be started via user gesture
     // on YouTube embed itself, starting it with custom play button will not work
@@ -201,7 +208,17 @@ export const playerStoreOptions: Partial<PlayerStoreOptions> = {
         }
       }
     },
-    play: ({state: {cuedMedia, pause}}) => {
+    play: ({state: {cuedMedia, pause, play}}) => {
+      // signed-out visitors must register or sign in before playback starts;
+      // keep the track cued so it can resume after a successful auth.
+      if (shouldGatePlayback()) {
+        pause();
+        playbackAuthGateState.open({
+          trackName: cuedMedia?.meta?.name ?? null,
+          resume: () => void play(),
+        });
+        return;
+      }
       // prevent playback if user does not have permission to play music
       const hasPermission = userHasPlayPermission();
       if (!hasPermission) {

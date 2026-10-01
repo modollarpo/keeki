@@ -17,7 +17,23 @@ export interface RegisterPayload {
   registration_data?: any;
 }
 
-export function useRegister(form: UseFormReturn<RegisterPayload>) {
+export interface RegisterResponse {
+  bootstrapData: string;
+  message?: string;
+  status: 'success' | 'needs_email_verification';
+}
+
+interface UseRegisterOptions {
+  // skip the automatic redirect after registering, so the mutation can be used
+  // from a modal that resumes the action the visitor was trying to do
+  redirect?: boolean;
+  onSuccess?: (response: RegisterResponse) => void;
+}
+
+export function useRegister(
+  form: UseFormReturn<RegisterPayload>,
+  options?: UseRegisterOptions,
+) {
   const navigate = useNavigate();
   const {getRedirectUri} = useAuth();
   const {inviteId} = useParams();
@@ -25,22 +41,21 @@ export function useRegister(form: UseFormReturn<RegisterPayload>) {
   return useMutation({
     mutationFn: (payload: RegisterPayload) =>
       apiClient
-        .post<{
-          bootstrapData: string;
-          message?: string;
-          status: 'success' | 'needs_email_verification';
-        }>('/auth/register', {
+        .post<RegisterResponse>('/auth/register', {
           ...payload,
           invite_id: inviteId,
         })
         .then(response => response.data),
     onSuccess: response => {
       setBootstrapData(response.bootstrapData!);
-      if (response.status === 'needs_email_verification') {
-        navigate('/');
-      } else {
-        navigate(getRedirectUri(), {replace: true});
+      if (options?.redirect !== false) {
+        if (response.status === 'needs_email_verification') {
+          navigate('/');
+        } else {
+          navigate(getRedirectUri(), {replace: true});
+        }
       }
+      options?.onSuccess?.(response);
     },
     onError: r => onFormQueryError(r, form),
   });

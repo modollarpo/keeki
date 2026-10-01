@@ -150,7 +150,7 @@ export function RegisterPage({inviteType, fields, children}: Props) {
   );
 }
 
-function PolicyCheckboxes() {
+export function PolicyCheckboxes() {
   const {registration} = useSettings();
 
   if (!registration?.policies) return null;

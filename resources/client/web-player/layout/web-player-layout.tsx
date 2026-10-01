@@ -1,5 +1,6 @@
 import {useOfflineEntitiesStore} from '@app/offline/offline-entities-store';
 import {OfflineQueueToast} from '@app/offline/offline-queue-toast';
+import {PlaybackAuthGateDialog} from '@app/web-player/auth/playback-auth-gate-dialog';
 import {MobileNavbar} from '@app/web-player/layout/mobile-navbar';
 import {PlayerNavbar} from '@app/web-player/layout/player-navbar';
 import {QueueSidenav} from '@app/web-player/layout/queue/queue-sidenav';
@@ -53,6 +54,7 @@ export function WebPlayerLayout() {
     <PlayerContext id="web-player" options={playerStoreOptions}>
       {content}
       <PlayerOverlay />
+      <PlaybackAuthGateDialog />
       <OfflineQueueToastWrapper />
     </PlayerContext>
   );

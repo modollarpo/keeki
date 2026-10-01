@@ -63,6 +63,9 @@ return [
     ['name' => 'player.seekbar_type', 'value' => 'line'],
     ['name' => 'player.track_comments', 'value' => false],
     ['name' => 'player.show_upload_btn', 'value' => false],
+    // require a signed-in account before playback can start. Guests who try to
+    // play a track are shown a register/sign-in dialog instead of streaming.
+    ['name' => 'player.require_auth', 'value' => true],
     ['name' => 'uploads.autoMatch', 'value' => true],
     ['name' => 'player.enable_repost', 'value' => false],
     [
