@@ -371,6 +371,41 @@ class CreateCountrySubChannels extends Command
     }
 
     /**
+     * The user that owns the country playlists, shown as the "by" credit.
+     *
+     * This used to be the admin account, which put a literal "By Admin" under
+     * every curated playlist. That is both wrong on a public page - these are
+     * editorial selections, not something a person logged in and made - and it
+     * would also change whenever the site's admin account is renamed.
+     *
+     * So the credit is its own account. It is looked up by username and reused,
+     * so re-running the sync does not accumulate accounts, and it carries no
+     * permissions, so it cannot be logged into and used to change anything.
+     */
+    private function editorialOwnerId(): int
+    {
+        $username = 'keekii-editorial';
+
+        $owner = User::firstWhere('username', $username);
+
+        if (! $owner) {
+            $owner = new User();
+
+            $owner->username = $username;
+            $owner->name = 'Keekii';
+            $owner->email = $username.'@localhost';
+            $owner->save();
+
+            $this->line("  created editorial owner '{$owner->name}'");
+        } elseif ($owner->name !== 'Keekii') {
+            $owner->name = 'Keekii';
+            $owner->save();
+        }
+
+        return (int) $owner->id;
+    }
+
+    /**
      * Curated, localized playlists. A playlist carries no country data of its
      * own, so each one is built from the market's own tracks and then attached
      * to the market's playlist section.
@@ -389,7 +424,7 @@ class CreateCountrySubChannels extends Command
             return collect($definitions)->pluck('name');
         }
 
-        $ownerId = app(User::class)->findAdmin()?->id ?? 1;
+        $ownerId = $this->editorialOwnerId();
         $ids = collect();
 
         foreach ($definitions as $definition) {
@@ -410,10 +445,13 @@ class CreateCountrySubChannels extends Command
                 continue;
             }
 
-            $playlist = Playlist::firstOrNew([
-                'name' => $definition['name'],
-                'owner_id' => $ownerId,
-            ]);
+            // match on name alone: the previous owner was the admin account, so
+            // scoping by owner_id would orphan the existing playlists and
+            // create a second copy of every one of them under the new credit
+            $playlist = Playlist::firstWhere('name', $definition['name'])
+                ?? new Playlist(['name' => $definition['name']]);
+
+            $playlist->owner_id = $ownerId;
 
             // artwork is nice-to-have: a cover must never be able to take the
             // whole market's expansion down with it
