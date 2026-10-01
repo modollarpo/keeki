@@ -204,6 +204,12 @@ export const companySiteMap: CompanySiteGroup[] = [
         description:
           'Your rights to access, correct, export and erase personal data under the GDPR.',
       },
+      {
+        label: 'Terms of Use',
+        to: '/terms',
+        description:
+          'The agreement between you and Keekii: the service, acceptable use, liability and how to end it.',
+      },
     ],
   },
 ];

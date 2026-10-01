@@ -26,6 +26,13 @@ export function Component() {
       <LegalSection id="documents" title="The documents">
         <ul>
           <li>
+            <Link to="/terms">
+              <Trans message="Terms of Use" />
+            </Link>{' '}
+            &mdash;{' '}
+            <Trans message="what the service provides, what you agree not to do, and how either side can end the agreement." />
+          </li>
+          <li>
             <Link to="/privacy-policy">
               <Trans message="Privacy Policy" />
             </Link>{' '}
@@ -72,13 +79,13 @@ export function Component() {
             <strong>
               <Trans message="Export your data." />
             </strong>{' '}
-            <Trans message="Request a machine-readable copy of your account and listening data at any time, from account settings or by writing to us. We do not charge for it and we do not make you ask twice." />
+            <Trans message="Request a machine-readable copy of your account and listening data at any time by writing to us. We do not charge for it and we do not make you ask twice." />
           </li>
           <li>
             <strong>
               <Trans message="Delete your account." />
             </strong>{' '}
-            <Trans message="You can close your account from settings. Deletion propagates to backups on a defined schedule, and we tell you the schedule rather than claiming it is instant." />
+            <Trans message="You can close your account from settings, and that deletes your data permanently. There is no recovery window, so ask for an export first if you want to keep anything." />
           </li>
           <li>
             <strong>

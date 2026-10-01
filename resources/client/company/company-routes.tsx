@@ -85,6 +85,7 @@ const pageRoutes: CompanyPageRoute[] = [
   {path: '/about-ads', load: () => import('./pages/about-ads-page')},
   {path: '/accessibility', load: () => import('./pages/accessibility-page')},
   {path: '/gdpr', load: () => import('./pages/gdpr-page')},
+  {path: '/terms', load: () => import('./pages/terms-page')},
 ];
 
 function assertRoutesMatchSiteMap() {

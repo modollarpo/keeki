@@ -76,5 +76,6 @@ return [
         '/about-ads',
         '/accessibility',
         '/gdpr',
+  '/terms',
     ],
 ];

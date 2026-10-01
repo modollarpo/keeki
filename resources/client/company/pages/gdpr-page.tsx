@@ -41,19 +41,14 @@ export function Component() {
           </li>
           <li>
             <strong>
-              <Trans message="Automated and fast." />
-            </strong>{' '}
-            <Trans message="Export and deletion can be started from your own account settings without contacting us at all." />
+            <Trans message="Automated and fast." />
+          </strong>{' '}
+          <Trans message="Some rights can be handled by email. Self-serve export/deletion is not yet fully automated at the time of writing, but if you want it we will process it for you as quickly as possible." />
           </li>
         </ul>
       </LegalSection>
 
       <LegalSection id="how-to-ask" title="How to make a request">
-        <LegalSubSection title="Do it yourself first">
-          <p>
-            <Trans message="Export and deletion are available from account settings. If you can do it there, you will get the result faster than a request by email, and it goes straight into the right queue." />
-          </p>
-        </LegalSubSection>
         <LegalSubSection title="By email">
           <p>
             <Trans message="Write to" />{' '}
@@ -84,10 +79,10 @@ export function Component() {
         </LegalSubSection>
         <LegalSubSection title="Erasure -- Article 17">
           <p>
-            <Trans message="Deletion where we have no overriding reason to keep the data. Closing your account deletes your account data within 30 days, and removes your personal data from backups within 35 days." />
+            <Trans message="Deletion where we have no overriding reason to keep the data. Deleting your account removes your account data, sessions, playlists, custom pages and uploaded files immediately and permanently. Contact us directly if you want your data erased without closing your account." />
           </p>
           <p>
-            <Trans message="We do not erase data we are legally required to retain, and we do not delete the aggregated statistics that can no longer be traced to you. Where retention is required, we restrict the data rather than pretend to delete it." />
+            <Trans message="We do not erase data we are legally required to retain, and we do not delete the aggregated statistics that can no longer be traced to you. Where retention is required, we restrict the data rather than pretend to delete it. Our hosting provider's encrypted backups age out on a fixed schedule, so recently deleted data may persist there until the next backup is replaced; ask us if you need it gone sooner." />
           </p>
         </LegalSubSection>
         <LegalSubSection title="Restriction -- Article 18">

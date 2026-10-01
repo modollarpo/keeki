@@ -147,39 +147,39 @@ export function Component() {
       <LegalSection id="retention" title="6. How long we keep it">
         <LegalSubSection title="Account data">
           <p>
-            <Trans message="For as long as your account is open, and for 30 days after you close it, after which we delete it. A short window exists so a mistaken deletion can be undone." />
+            <Trans message="For as long as your account is open. When you close it, your account data is deleted immediately and permanently, along with your sessions, playlists, custom pages and uploaded files. There is no undo window, so please read what you are about to lose before you confirm." />
           </p>
         </LegalSubSection>
         <LegalSubSection title="Listening data">
           <p>
-            <Trans message="While your account is open, and in aggregated form for up to 24 months afterwards for chart and trend calculation. Aggregated statistics cannot be traced back to you." />
+            <Trans message="While your account is open, and in aggregated form afterwards for chart and trend calculation. Aggregated statistics are not traced back to you. We review how long we keep aggregates and shorten the period as we can." />
           </p>
         </LegalSubSection>
         <LegalSubSection title="Billing records">
           <p>
-            <Trans message="Seven years, because tax law requires it. This is a legal obligation, not a choice." />
+            <Trans message="We keep the transaction records tax law requires us to retain, even after you close your account. This is a legal obligation, not a choice." />
           </p>
         </LegalSubSection>
         <LegalSubSection title="Technical and security logs">
           <p>
-            <Trans message="Up to 12 months, or longer where a specific incident is under investigation." />
+            <Trans message="We keep operational logs only as long as they are useful for diagnosing faults and investigating abuse. We do not use them to build a profile of you." />
           </p>
         </LegalSubSection>
         <LegalSubSection title="Backups">
           <p>
-            <Trans message="Deleted data is removed from encrypted backups within 35 days, after which it can no longer be restored from them." />
+            <Trans message="Our hosting provider keeps encrypted backups for disaster recovery on a fixed schedule. Data you have deleted may persist in a backup until that backup ages out and is replaced, so a restore can bring back recently deleted data. Contact us if you need something removed sooner and we will ask our provider." />
           </p>
         </LegalSubSection>
         <LegalSubSection title="Support correspondence">
           <p>
-            <Trans message="24 months from the last contact, unless the message is part of a rights, billing or safety dispute, in which case we keep it until that matter is closed." />
+            <Trans message="Until the matter is closed, and for a period afterwards so we have context if you come back to it. If a message is part of a rights, billing or safety dispute, we keep it until that is resolved." />
           </p>
         </LegalSubSection>
       </LegalSection>
 
       <LegalSection id="security" title="7. Security">
         <p>
-          <Trans message="Data is encrypted in transit and at rest, passwords are stored as salted adaptive hashes rather than reversibly, administrative access is limited and logged, and access to production data for support is logged and time-bound. No system is perfectly secure, which is why we publish rather than imply." />
+          <Trans message="Connections to Keekii are encrypted in transit using HTTPS. Passwords are stored as salted adaptive hashes rather than reversibly, and two-factor authentication is available on every account. Access to production data is restricted to the engineers who need it. No system is perfectly secure, which is why we publish rather than imply." />
         </p>
         <p>
           <Trans message="We do not require you to give us your password, your full card number or your identity documents in order to help you. If we need to verify something, we will send you to a channel that can carry it safely." />

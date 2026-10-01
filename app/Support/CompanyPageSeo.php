@@ -206,6 +206,12 @@ class CompanyPageSeo
                 'title' => 'Your GDPR Rights',
                 'description' => 'Access, correct, export, restrict or erase your personal data under the GDPR, and how to exercise each right.',
             ],
+            '/terms' => [
+                'group' => 'Legal',
+                'label' => 'Terms of Use',
+                'title' => 'Terms of Use',
+                'description' => 'The agreement between you and Keekii: what the service provides, acceptable use, liability, and how either side can end it.',
+            ],
         ];
     }
 
