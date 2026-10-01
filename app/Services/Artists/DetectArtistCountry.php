@@ -26,7 +26,13 @@ class DetectArtistCountry
     /**
      * Music roles that identify the sentence as a nationality statement.
      */
-    private const ROLE_WORDS = 'singer|singers|singer-songwriter|songwriter|rapper|rapper-songwriter|artist|artists|musician|musicians|band|bandleader|composer|producer|record producer|dj|disc jockey|performer|vocalist|guitarist|drummer|beatmaker|multi-instrumentalist|instrumentalist|recordings? artist|recording artist|emcee|mc';
+    private const ROLE_WORDS = 'singer|singers|singer-songwriter|songwriter|rapper|rapper-songwriter|artist|artists|musician|musicians|band|bandleader|group|groups|duo|trio|quartet|composer|producer|record producer|dj|disc jockey|performer|vocalist|guitarist|drummer|beatmaker|multi-instrumentalist|instrumentalist|recordings? artist|recording artist|emcee|mc';
+
+    /**
+     * Optional qualifier between a demonym and the role, so that group leads
+     * read as nationality: "a South Korean girl group" is still South Korean.
+     */
+    private const ROLE_FILLER = '(?:\s+(?:girl|boy|female|male|all-female|all-boy|pop|rock|rap|jazz|folk|traditional|electronic))?';
 
     /**
      * Words that turn a country mention into "they went there" instead of
@@ -299,7 +305,7 @@ class DetectArtistCountry
         $isSuppressed = fn(string $demonym): bool => isset($suppressed[$this->codeForDemonym($demonym)]);
 
         // "a Nigerian singer", "an English rapper" - the canonical lead.
-        $pattern = '/\b('.$this->demonymPattern().')\b\s+(?:'.self::ROLE_WORDS.')\b/iu';
+        $pattern = '/\b('.$this->demonymPattern().')\b'.self::ROLE_FILLER.'\s+(?:'.self::ROLE_WORDS.')\b/iu';
 
         if (preg_match_all($pattern, $lead, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
@@ -330,7 +336,7 @@ class DetectArtistCountry
      */
     private function scoreNationalityLead(string $lead, array &$scores): void
     {
-        $pattern = '/\b(?:is|was|are|were)\s+(?:a|an)\s+([A-Z][a-z]+(?:[- ][A-Z][a-z]+)?)\s+(?:'
+        $pattern = '/\b(?:is|was|are|were)\s+(?:a|an)\s+([A-Z][a-z]+(?:[- ][A-Z][a-z]+)?)'.self::ROLE_FILLER.'\s+(?:'
             .self::ROLE_WORDS.')/u';
 
         if (preg_match_all($pattern, $lead, $matches, PREG_SET_ORDER)) {

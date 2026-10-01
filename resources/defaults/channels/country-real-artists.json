@@ -1,0 +1,77 @@
+[
+    {
+        "country": "NG",
+        "countryName": "Nigeria",
+        "artists": ["Burna Boy", "Wizkid", "Davido", "Tiwa Savage", "Asake", "Olamide", "Fireboy DML", "Bella Shmurda"]
+    },
+    {
+        "country": "US",
+        "countryName": "United States",
+        "artists": ["Taylor Swift", "Beyonce", "Ariana Grande", "Billie Eilish", "Kanye West", "Snoop Dogg", "Eminem", "Usher"]
+    },
+    {
+        "country": "GB",
+        "countryName": "United Kingdom",
+        "artists": ["Ed Sheeran", "Adele", "Stormzy", "Skepta", "Dave", "Sam Smith", "Amy Winehouse", "Harry Styles"]
+    },
+    {
+        "country": "IE",
+        "countryName": "Ireland",
+        "artists": ["Hozier", "Dermot Kennedy", "Niall Horne", "Sinéad O'Connor", "The Cranberries", "Glen Hansard", "Imelda May", "Lisa McHugh"]
+    },
+    {
+        "country": "CA",
+        "countryName": "Canada",
+        "artists": ["Drake", "The Weeknd", "Celine Dion", "Shania Twain", "Neil Young", "Justin Bieber", "Michael Buble", "Avril Lavigne"]
+    },
+    {
+        "country": "AU",
+        "countryName": "Australia",
+        "artists": ["Kylie Minogue", "Sia", "Nick Cave", "INXS", "Tones and I", "Vance Joy", "Gotye", "Troye Sivan"]
+    },
+    {
+        "country": "ZA",
+        "countryName": "South Africa",
+        "artists": ["Miriam Makeba", "Hugh Masekela", "Yvonne Chaka Chaka", "Black Coffee", "Tyla", "Lucky Dube", "Oliver Mtukudzi", "Brenda Fassie"]
+    },
+    {
+        "country": "GH",
+        "countryName": "Ghana",
+        "artists": ["Stonebwoy", "Shatta Wale", "Sarkodie", "Black Sherif", "King Promise", "Fuse ODG", "M.anifest"]
+    },
+    {
+        "country": "IN",
+        "countryName": "India",
+        "artists": ["A.R. Rahman", "Lata Mangeshkar", "Asha Bhosle", "Badshah", "Diljit Dosanjh", "Yo Yo Honey Singh", "Neha Kakkar", "R.D. Burman"]
+    },
+    {
+        "country": "BR",
+        "countryName": "Brazil",
+        "artists": ["Roberto Carlos", "Caetano Veloso", "Gilberto Gil", "Jorge Ben Jor", "Seu Jorge", "Anitta", "Ludmilla", "Marisa Monte"]
+    },
+    {
+        "country": "DE",
+        "countryName": "Germany",
+        "artists": ["Kraftwerk", "Scorpions", "Alice Merton", "Seeed", "Mark Forster", "Nina Hagen", "Unheilig"]
+    },
+    {
+        "country": "FR",
+        "countryName": "France",
+        "artists": ["Daft Punk", "David Hallyday", "Indochine", "Air", "Maitre Gims", "Christophe", "Jean-Jacques Goldman"]
+    },
+    {
+        "country": "ES",
+        "countryName": "Spain",
+        "artists": ["Rosalia", "Alejandro Sanz", "Paco de Lucia", "Quevedo", "Aitana", "Joaquin Sabina"]
+    },
+    {
+        "country": "JP",
+        "countryName": "Japan",
+        "artists": ["Ryuichi Sakamoto", "Utada Hikaru", "YOASOBI", "Southern All Stars", "ZARD", "B'z", "X Japan", "Kyary Pamyu Pamyu"]
+    },
+    {
+        "country": "KR",
+        "countryName": "South Korea",
+        "artists": ["BTS", "BLACKPINK", "Twice", "IU", "PSY", "Taeyang", "SEVENTEEN"]
+    }
+]

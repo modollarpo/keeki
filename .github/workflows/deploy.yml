@@ -123,6 +123,14 @@ jobs:
             # and only results at or above --min-confidence are written.
             echo '--- music:resolve-artist-countries ---'
             sudo -u www-data -H php /var/www/bemusic/artisan music:resolve-artist-countries --limit=200 --batch=20 --pause=0.8 --min-confidence=0.8 || echo 'music:resolve-artist-countries skipped'
+            # Backfill the markets the existing catalogue cannot cover (GH, IN, JP and
+            # friends) by importing curated real artists from Deezer, then verifying each
+            # one's country against its own Wikipedia bio. The bio gets a veto: an artist
+            # whose lead resolves to a different country is reported, never tagged. Idempotent
+            # and resumable: already-mapped artists are skipped without touching the network,
+            # and --limit bounds each deploy.
+            echo '--- channels:country:import-real ---'
+            sudo -u www-data -H php /var/www/bemusic/artisan channels:country:import-real --limit=40 --pause=0.8 --min-confidence=0.8 || echo 'channels:country:import-real skipped'
             # Country channels + geo homepage mapping (idempotent: updateOrCreate by slug, merges existing map)
             sudo -u www-data -H php /var/www/bemusic/artisan channels:country || echo 'channels:country skipped'
             # Expand each country channel into a hub of sub-channels + localized playlists.

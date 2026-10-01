@@ -85,6 +85,15 @@ class TestCountryDetection extends Command
             'Takuya Kimura is a Japanese singer and actor. He was born in Tokyo.',
             'JP',
         ],
+        // group leads put a qualifier between the demonym and the role
+        'BTS' => [
+            'Bang Si-hyuk, known professionally as Hitman Bang, is a South Korean lyricist, record producer and entrepreneur. BTS is a South Korean boy band formed in Seoul.',
+            'KR',
+        ],
+        'BLACKPINK' => [
+            'Blackpink is a South Korean girl group formed in Seoul, South Korea in 2016.',
+            'KR',
+        ],
         // no usable nationality -> must stay unresolved
         'no-signal' => [
             'John Example is a musician and record producer active since the 1990s. He has released records in Germany, France and Japan.',
