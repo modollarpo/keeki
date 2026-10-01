@@ -172,8 +172,11 @@ class ImportCountryArtists extends Command
             }
         }
 
-        $withBio = $artists->filter(fn (Artist $a) => filled($a->profile?->description));
-        $needsBio = $artists->reject(fn (Artist $a) => filled($a->profile?->description));
+        $withBio = $artists->filter(
+            fn (Artist $a) => filled($a->profile?->description)
+                && ! $this->isDisambiguation((string) $a->profile?->description),
+        );
+        $needsBio = $artists->reject(fn (Artist $a) => $withBio->contains($a));
 
         $bios = $needsBio->isNotEmpty()
             ? $fetcher->fetchMany($needsBio, $pause)
@@ -346,6 +349,19 @@ class ImportCountryArtists extends Command
             ->first();
 
         return ['id' => null, 'matched' => $nearest['name'] ?? null];
+    }
+
+    /**
+ * A stored description that is really a disambiguation page.
+ *
+ * Reusing stored biographies is what keeps this command cheap, but it also makes
+ * a bad value permanent: an earlier run saved "IU may refer to:" before the
+ * fetcher learned to reject those pages, and every run since would have reused
+ * it forever. Treat it as absent so the corrected fetcher gets a chance.
+ */
+private function isDisambiguation(string $bio): bool
+    {
+        return str_contains(mb_strtolower($bio), 'may refer to');
     }
 
     /**
