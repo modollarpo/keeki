@@ -11,7 +11,7 @@
       "contentOrder": "channelables.order:asc",
       "layout": "list",
       "nestedLayout": "list",
-      "seoTitle": "{{site_name}} - Listen to music for free",
+      "seoTitle": "{{site_name}} - Stream. Discover. Vibe",
       "seoDescription": "Find and listen to millions of songs, albums and artists, all completely free on {{SITE_NAME}}.",
       "presetId": "homepage"
     },
