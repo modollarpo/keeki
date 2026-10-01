@@ -21,6 +21,19 @@ trait ProxiesImages
             return $value;
         }
 
+        // Only a *remote* URL should be proxied. The proxy exists to pull a
+        // remote image in and cache it; handing it a local path produces
+        // /api/v1/img-proxy?url=storage/... which the controller rejects as an
+        // invalid url (422), so the image never rendered.
+        //
+        // A local path is already served by this app. Anchor it to the site root
+        // so it cannot resolve against whatever page the browser is on -
+        // on /playlist/5/foo a bare "storage/..." would look for
+        // "/playlist/5/storage/...".
+        if (! preg_match('#^https?://#i', $value)) {
+            return '/'.ltrim($value, '/');
+        }
+
         $base = rtrim((string) config('app.url'), '/');
         if (str_starts_with($value, $base)) {
             return $value;
