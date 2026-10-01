@@ -168,17 +168,17 @@ class RemoveCountryDemoContent extends Command
         $albumIds = array_column($report['albums'], 'id');
 
         // pivots first: they are plain rows and would otherwise be orphaned
-        foreach (['artist_track', 'playlist_track', 'track_topic'] as $table) {
+        foreach (['artist_track', 'playlist_track'] as $table) {
             if (Schema::hasTable($table) && Schema::hasColumn($table, 'track_id')) {
                 DB::table($table)->whereIn('track_id', $trackIds)->delete();
             }
         }
 
-        if (Schema::hasTable('album_artist')) {
-            DB::table('album_artist')->whereIn('album_id', $albumIds)->delete();
+        if (Schema::hasTable('artist_album')) {
+            DB::table('artist_album')->whereIn('album_id', $albumIds)->delete();
         }
 
-        foreach (['album_topic', 'artist_topic', 'artist_genre', 'album_genre', 'track_genre'] as $table) {
+        foreach (['artist_bios', 'artist_genre', 'genre_artist', 'album_genre', 'track_genre'] as $table) {
             if (! Schema::hasTable($table)) {
                 continue;
             }
@@ -202,7 +202,7 @@ class RemoveCountryDemoContent extends Command
 
             // anything still attached to a demo artist goes with it
             DB::table('artist_track')->where('artist_id', $model->id)->delete();
-            DB::table('album_artist')->where('artist_id', $model->id)->delete();
+            DB::table('artist_album')->where('artist_id', $model->id)->delete();
             DB::table('profile_details')->where('artist_id', $model->id)->delete();
             $model->delete();
         }
