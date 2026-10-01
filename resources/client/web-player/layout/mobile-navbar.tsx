@@ -5,76 +5,40 @@
  *
  * Layout (collapsed):
  *   ┌──────────────────────────────────────────────────────┐
- *   │  [favicon-mark]  ·········  [🔍] [🎤?]  [avatar]   │
+ *   │  [favicon-mark]  ·········  [🔍]  [avatar]           │
  *   └──────────────────────────────────────────────────────┘
  *
- * Tapping 🔍 or 🎤 opens the `MobileSearchOverlay` — a full-screen
- * portal-based takeover with its own input, voice session, and live results.
- * The navbar itself stays clean and uncluttered at all times.
+ * Tapping 🔍 opens the `MobileSearchOverlay` — a full-screen portal-based
+ * takeover with its own input, voice session, and live results. The navbar
+ * itself stays clean and uncluttered at all times.
  *
  * Design decisions
  * ────────────────
  * • Favicon mark (not wordmark) used as the brand anchor.  On a narrow screen
  *   a wordmark wastes ~120 px; the 40 × 40 mark icon is instantly recognisable
  *   and leaves room for the action icons.
- * • Voice-search shortcut on the navbar means one tap starts dictating — no
- *   need to open the overlay first.  The overlay opens automatically when the
- *   transcript arrives.
+ * • Voice search deliberately has *no* navbar shortcut.  The overlay already
+ *   exposes it twice — inline in the search field and as a labelled button in
+ *   the empty state — so a third microphone glyph in the header was pure
+ *   duplication and made the bar look like a toolbar of unrelated buttons
+ *   rather than a considered header.  The overlay's mic sits next to the thing
+ *   it dictates into, which is also where it belongs contextually.
  * • Auth content (avatar / login) stays on the far right, consistent with the
  *   desktop layout so muscle memory transfers.
  */
 
 import {MobileSearchOverlay} from '@app/web-player/search/mobile-search-overlay';
-import {useVoiceSearch} from '@app/web-player/search/use-voice-search';
-import {useNavigate} from '@common/ui/navigation/use-navigate';
 import {Navbar} from '@common/ui/navigation/navbar/navbar';
 import {useIsDarkMode} from '@ui/themes/use-is-dark-mode';
-import {message} from '@ui/i18n/message';
-import {toast} from '@ui/toast/toast';
-import {LoaderCircleIcon, MicIcon, SearchIcon} from 'lucide-react';
+import {SearchIcon} from 'lucide-react';
 import {useCallback, useState} from 'react';
 
 export function MobileNavbar() {
   const [overlayOpen, setOverlayOpen] = useState(false);
   const isDark = useIsDarkMode();
-  const navigate = useNavigate();
 
   const openOverlay = useCallback(() => setOverlayOpen(true), []);
   const closeOverlay = useCallback(() => setOverlayOpen(false), []);
-
-  // ── Voice search: shortcut from the navbar icon ─────────────────────────────
-  // When a transcript arrives we open the overlay so the user can see their
-  // query and live results.  We do NOT navigate immediately from here — that
-  // responsibility belongs to the overlay, which the user can confirm or edit.
-  const handleTranscript = useCallback(
-    (transcript: string) => {
-      // Open the overlay pre-populated with the transcript.  The overlay will
-      // navigate when the user submits or selects a result.
-      openOverlay();
-      // Small delay to let the overlay mount before we'd want to navigate.
-      setTimeout(() => {
-        navigate(`/search/${encodeURIComponent(transcript.trim())}`);
-        closeOverlay();
-      }, 300);
-    },
-    [navigate, openOverlay, closeOverlay],
-  );
-
-  const handleVoiceError = useCallback((error: string) => {
-    const msgs: Record<string, string> = {
-      unsupported: 'Voice search is not supported in this browser.',
-      'not-allowed': 'Microphone access was denied.',
-      'service-not-allowed': 'Microphone access was denied.',
-      'audio-capture': 'No microphone was found.',
-      network: 'Voice search needs a network connection.',
-    };
-    toast.danger(message(msgs[error] ?? 'Voice search failed. Please try again.'));
-  }, []);
-
-  const voiceSearch = useVoiceSearch({
-    onTranscript: handleTranscript,
-    onError: handleVoiceError,
-  });
 
   // Favicon mark (not wordmark) used as the brand anchor — original size.
   const faviconSrc = isDark ? '/favicon-dark.svg' : '/favicon.svg';
@@ -120,22 +84,6 @@ export function MobileNavbar() {
           <SearchIcon className="size-[22px]" />
         </NavIconButton>
 
-        {/* Voice-search shortcut (only when browser supports it) */}
-        {voiceSearch.isSupported && (
-          <NavIconButton
-            aria-label={voiceSearch.isListening ? 'Stop voice search' : 'Start voice search'}
-            aria-pressed={voiceSearch.isListening}
-            onClick={voiceSearch.isListening ? voiceSearch.stop : voiceSearch.toggle}
-            active={voiceSearch.isListening}
-          >
-            {voiceSearch.isListening ? (
-              <LoaderCircleIcon className="size-[22px] animate-spin text-destructive" />
-            ) : (
-              <MicIcon className="size-[22px]" />
-            )}
-          </NavIconButton>
-        )}
-
         {/* Auth avatar / login ─ consistent with desktop far-right placement */}
         <Navbar.Content className="ml-0 shrink-0 pl-1">
           <Navbar.AuthContent />
@@ -147,22 +95,16 @@ export function MobileNavbar() {
 
 // ─── Shared icon-button primitive ────────────────────────────────────────────
 
-interface NavIconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  active?: boolean;
-}
-
-function NavIconButton({children, active, className, ...props}: NavIconButtonProps) {
+function NavIconButton({children, className, ...props}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       type="button"
       className={[
         'flex items-center justify-center w-10 h-10 rounded-xl shrink-0',
-        'transition-all duration-150 active:scale-90',
+        'text-foreground hover:bg-muted',
+        'transition-colors duration-150 active:scale-90',
         'focus-visible:outline-2 focus-visible:outline-offset-2',
         'focus-visible:outline-[var(--be-brand-ink,#e8611f)]',
-        active
-          ? 'bg-destructive/10 text-destructive'
-          : 'text-foreground hover:bg-muted',
         className ?? '',
       ]
         .join(' ')
