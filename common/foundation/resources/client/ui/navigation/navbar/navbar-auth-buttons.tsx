@@ -49,8 +49,16 @@ function MobileButtons() {
   const navigate = useNavigate();
   return (
     <MenuTrigger>
-      <Button variant="ghost" size="icon" type="button" className="md:hidden !w-12 !h-12 text-foreground">
-        <UserRoundIcon className="!size-7" />
+      {/* Sized to match the surrounding header controls: 40px box with a 20px
+          glyph. It used to be 48px/28px, which made the account control read as
+          oversized next to a 40px search pill. */}
+      <Button
+        variant="ghost"
+        size="icon"
+        type="button"
+        className="md:hidden !size-10 text-foreground"
+      >
+        <UserRoundIcon className="!size-5" />
       </Button>
       <Menu>
         <Item value="login" onSelected={() => navigate('/login')}>

@@ -30,7 +30,9 @@ export function NavbarAuthUser({
     <Dropdown.Trigger
       className="relative"
       aria-label="toggle authentication menu"
-      render={<Button variant="ghost" color="default" size="icon" />}
+      // size="icon" resolves to 36px; the surrounding header controls are 40px,
+      // so match them rather than letting the avatar sit a step smaller.
+      render={<Button variant="ghost" color="default" size="icon" className="size-10" />}
     >
       {avatar}
       <NotificationsTriggerBadge />
