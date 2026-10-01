@@ -111,8 +111,15 @@ jobs:
             # Seed clearly-labelled demo artists so per-country channels have content,
             # then map them to the geo homepage (idempotent: only seeds empty markets).
             sudo -u www-data -H php /var/www/bemusic/artisan channels:country:seed-demo || echo 'channels:country:seed-demo skipped'
+            # Give those artists demo albums/tracks + the localized genres the genre
+            # sub-channels look for (idempotent: tops each artist up to the target).
+            sudo -u www-data -H php /var/www/bemusic/artisan channels:country:seed-content || echo 'channels:country:seed-content skipped'
             # Country channels + geo homepage mapping (idempotent: updateOrCreate by slug, merges existing map)
             sudo -u www-data -H php /var/www/bemusic/artisan channels:country || echo 'channels:country skipped'
+            # Expand each country channel into a hub of sub-channels + localized playlists.
+            # Runs after channels:country, and falls back to a plain artist grid per market
+            # on error so a country page can never end up empty.
+            sudo -u www-data -H php /var/www/bemusic/artisan channels:country:expand || echo 'channels:country:expand skipped'
             sudo -u www-data -H php /var/www/bemusic/ops/sync-settings.php || echo 'settings sync skipped'
             sudo -u www-data php artisan cache:clear 2>/dev/null || echo 'cache:clear skipped'
             sudo systemctl restart php8.3-fpm

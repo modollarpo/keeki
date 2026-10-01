@@ -1,0 +1,602 @@
+[
+    {
+        "code": "NG",
+        "name": "Nigeria",
+        "flag": "🇳🇬",
+        "adjective": "Nigerian",
+        "genres": ["afrobeat", "amapiano", "highlife", "hip-hop", "r-and-b"],
+        "featureGenres": ["afrobeat", "amapiano"],
+        "albumTitle": "Lagos After Dark",
+        "trackTitles": [
+            "Owo Ile",
+            "Shayo Loko",
+            "Vibe Lagos",
+            "Ginger Swagger",
+            "Amapiano Sunrise",
+            "No Wahala",
+            "Soweto Riddim",
+            "Highlife Revival",
+            "Lagos to London",
+            "Jollof Smell",
+            "Burna Boy Type Beat",
+            "Ouidah Bounce",
+            "Naija Nights",
+            "Afro Heat 101",
+            "Talk to Me"
+        ],
+        "playlists": [
+            {
+                "name": "Afrobeats Heat",
+                "description": "The Afrobeats and Amapiano records taking over Nigeria right now.",
+                "order": "popular",
+                "size": 25
+            },
+            {
+                "name": "Naija Nights",
+                "description": "Late-night Lagos energy: Highlife, R&B and street anthems.",
+                "order": "fresh",
+                "size": 25
+            }
+        ]
+    },
+    {
+        "code": "US",
+        "name": "United States",
+        "flag": "🇺🇸",
+        "adjective": "American",
+        "genres": ["hip-hop", "pop", "country", "r-and-b", "rock", "electronic"],
+        "featureGenres": ["hip-hop", "country"],
+        "albumTitle": "Stateside Volume One",
+        "trackTitles": [
+            "Midnight in Atlanta",
+            "Coastline Hype",
+            "Gold Teeth Groove",
+            "Backroad Gospel",
+            "Trap House Blues",
+            "Sunset Boulevard Drive",
+            "Dust Bowl Anthem",
+            "Velvet Rope Radio",
+            "Bay Area Nights",
+            "Sweet Southern Tea",
+            "Brooklyn Basement",
+            "Neon Heartland",
+            "Raise the Roof",
+            "Cactus Moon",
+            "Empire State Anthem"
+        ],
+        "playlists": [
+            {
+                "name": "Today's Top Hits US",
+                "description": "The most-played tracks in the United States, updated constantly.",
+                "order": "popular",
+                "size": 25
+            },
+            {
+                "name": "American Country Roads",
+                "description": "Country, Americana and the songs made for a truck bed.",
+                "order": "fresh",
+                "size": 25
+            }
+        ]
+    },
+    {
+        "code": "GB",
+        "name": "United Kingdom",
+        "flag": "🇬🇧",
+        "adjective": "British",
+        "genres": ["grime", "drum-and-bass", "indie", "pop", "rock", "electronic"],
+        "featureGenres": ["grime", "indie"],
+        "albumTitle": "Across The M25",
+        "trackTitles": [
+            "East End Bounce",
+            "Tie It Up",
+            "Peckham Riddim",
+            "Motorway Rain",
+            "Jungle Pressure",
+            "Brick Lane Wave",
+            "Festival Hands",
+            "Postcode Poetry",
+            "Northern Soul Night",
+            "River Thames Flow",
+            "Rooftop Fete",
+            "Dubplate UK",
+            "Grey London Sky",
+            "Angel Round",
+            "Bassline Britannia"
+        ],
+        "playlists": [
+            {
+                "name": "UK Chart Beats",
+                "description": "The biggest tracks across the United Kingdom today.",
+                "order": "popular",
+                "size": 25
+            },
+            {
+                "name": "Grime & Bass",
+                "description": "Grime, UK FOMO, jungle and drum and bass in one place.",
+                "order": "fresh",
+                "size": 25
+            }
+        ]
+    },
+    {
+        "code": "IE",
+        "name": "Ireland",
+        "flag": "🇮🇪",
+        "adjective": "Irish",
+        "genres": ["folk", "indie-pop", "rock", "pop", "electronic"],
+        "featureGenres": ["folk", "indie-pop"],
+        "albumTitle": "The Long Road Home",
+        "trackTitles": [
+            "Craic in the Rain",
+            "Green Fields Slow",
+            "Session Whistle",
+            "Galway Bay Reimagined",
+            "Thin Air Reel",
+            "Bodhrán Breakdown",
+            "Dublin Bus Home",
+            "Wandering Eye",
+            "Shebeen Anthem",
+            "Crooked Road",
+            "Mountain Dew Mix",
+            "Sligo Reel Rework",
+            "Old Stone House",
+            "Atlantic Drift",
+            "Lantern Light"
+        ],
+        "playlists": [
+            {
+                "name": "Indie Ireland",
+                "description": "Homegrown indie pop and alternative from across the island.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "Irish Folk & Trad",
+                "description": "Traditional and modern folk, sessions and slow airs.",
+                "order": "fresh",
+                "size": 20
+            }
+        ]
+    },
+    {
+        "code": "CA",
+        "name": "Canada",
+        "flag": "🇨🇦",
+        "adjective": "Canadian",
+        "genres": ["indie", "pop", "electronic", "country", "folk", "piano"],
+        "featureGenres": ["indie", "electronic"],
+        "albumTitle": "True North Sessions",
+        "trackTitles": [
+            "Maple Static",
+            "Winter Parking Lot",
+            "Ottawa Underground",
+            "Hockey Night Reimagined",
+            "Northern Lights Loop",
+            "Coffee Run Montreal",
+            "Rocky Mountain Air",
+            "Paper Moon Prairie",
+            "Francophone Fade",
+            "Glacier Radio",
+            "Prairie Wind Piano",
+            "Vancouver Fog",
+            "Rush Hour Toronto",
+            "Boreal Beat",
+            "Home by the Lakeshore"
+        ],
+        "playlists": [
+            {
+                "name": "Canada's Indie Wave",
+                "description": "Canadian indie and alternative breaking through right now.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "French & Pop Hits",
+                "description": "Quebec French pop alongside Canada's biggest mainstream tracks.",
+                "order": "fresh",
+                "size": 20
+            }
+        ]
+    },
+    {
+        "code": "AU",
+        "name": "Australia",
+        "flag": "🇦🇺",
+        "adjective": "Australian",
+        "genres": ["indie", "rock", "pop", "electronic", "folk"],
+        "featureGenres": ["indie", "rock"],
+        "albumTitle": "Outback Frequencies",
+        "trackTitles": [
+            "Bondi Sand Drift",
+            "Red Dust Radio",
+            "Melbourne Basement Show",
+            "Sundown Surf",
+            "Perth Static",
+            "Great Barrier Chill",
+            "Bushranger Beat",
+            "Adelaide Air",
+            "Gold Coast Hum",
+            "Darwin Monsoon",
+            "Outback Echo",
+            "Kings Cross Late",
+            "Tasman Swell",
+            "Barrier Reef Blue",
+            "Southern Skyline"
+        ],
+        "playlists": [
+            {
+                "name": "Aussie Anthems",
+                "description": "The songs that sound like Australia, from surf rock to indie.",
+                "order": "popular",
+                "size": 20
+            },
+            {
+                "name": "Australian Indie",
+                "description": "Bedroom pop and shoegaze from Melbourne, Sydney and beyond.",
+                "order": "fresh",
+                "size": 20
+            }
+        ]
+    },
+    {
+        "code": "ZA",
+        "name": "South Africa",
+        "flag": "🇿🇦",
+        "adjective": "South African",
+        "genres": ["amapiano", "gqom", "kwaito", "afropop", "jazz", "electronic"],
+        "featureGenres": ["amapiano", "gqom"],
+        "albumTitle": "Mzansi Frequencies",
+        "trackTitles": [
+            "Log Drum Longitude",
+            "Kasi Groove",
+            "Table Mountain Bass",
+            "Vuvuela Mix",
+            "Deep House Durban",
+            "Thobela Steps",
+            "Soweto Sunrise",
+            "Cape Town Cruise",
+            "Tavern Lights",
+            "Skoro Undani",
+            "Township Radio",
+            "Gqeberha Tide",
+            "Braai Sounds",
+            "Amapiano Lento",
+            "Mzansi Anthem"
+        ],
+        "playlists": [
+            {
+                "name": "Amapiano Ascend",
+                "description": "Log drum heat: the fastest-growing sound out of South Africa.",
+                "order": "popular",
+                "size": 25
+            },
+            {
+                "name": "Mzansi Pop",
+                "description": "Afropop, Kwaito and Gqom for the long drive home.",
+                "order": "fresh",
+                "size": 25
+            }
+        ]
+    },
+    {
+        "code": "GH",
+        "name": "Ghana",
+        "flag": "🇬🇭",
+        "adjective": "Ghanaian",
+        "genres": ["highlife", "afrobeats", "dancehall", "hip-hop", "r-and-b"],
+        "featureGenres": ["highlife", "afrobeats"],
+        "albumTitle": "Accra Calling",
+        "trackTitles": [
+            "Adome Ridge",
+            "Jollof Anthem GH",
+            "Hiplife Highway",
+            "Makola Morning",
+            "Azonto Motion",
+            "Highlife Guitar Loop",
+            "Tema Terminal",
+            "Dancehall Detour",
+            "Chale Anthem",
+            "Ga Language Flow",
+            "Labadi Sunset",
+            "Wealth Flow",
+            "Kente Groove",
+            "Accra Beats 24",
+            "Homecoming Road"
+        ],
+        "playlists": [
+            {
+                "name": "Afrobeats Ghana",
+                "description": "Ghana's Afrobeats and Hiplife records dominating the charts.",
+                "order": "popular",
+                "size": 25
+            },
+            {
+                "name": "Highlife Revival",
+                "description": "Classic Highlife rhythms rebuilt for a new generation.",
+                "order": "fresh",
+                "size": 20
+            }
+        ]
+    },
+    {
+        "code": "IN",
+        "name": "India",
+        "flag": "🇮🇳",
+        "adjective": "Indian",
+        "genres": ["bollywood", "bhangra", "indian-hip-hop", "indie", "folk", "electronic"],
+        "featureGenres": ["bollywood", "bhangra"],
+        "albumTitle": "Filmi Nights",
+        "trackTitles": [
+            "Mumbai Monsoon",
+            "Dilli Dhol Beat",
+            "Chai Chai Reel",
+            "Kolkata Kathak",
+            "Punjabi Dhol",
+            "Goa Sunset Bass",
+            "Chennai Melody",
+            "Bollywood Disco",
+            "Himalayan Drone",
+            "Delhi Underground",
+            "Rajpath March",
+            "Kerala Monsoon Keys",
+            "Desi Trap",
+            "Masala Rhythm",
+            "Jai Ho Rework"
+        ],
+        "playlists": [
+            {
+                "name": "Bollywood Hits",
+                "description": "The biggest Bollywood songs from film and pop.",
+                "order": "popular",
+                "size": 25
+            },
+            {
+                "name": "Bhangra Dance Hits",
+                "description": "Dhol-driven Punjabi and Bhangra for the dance floor.",
+                "order": "fresh",
+                "size": 25
+            }
+        ]
+    },
+    {
+        "code": "BR",
+        "name": "Brazil",
+        "flag": "🇧🇷",
+        "adjective": "Brazilian",
+        "genres": ["brazilian-pop", "mpb", "sertanejo", "funk", "latin-pop", "electronic"],
+        "featureGenres": ["mpb", "brazilian-pop"],
+        "albumTitle": "Ver-o-Peso",
+        "trackTitles": [
+            "Copacabana Calor",
+            "Samba Orquestrado",
+            "Bossa na Garoa",
+            "Favela Funk Bass",
+            "Sertanejo Estrada",
+            "Rio Sambadrome",
+            "Tropicalia Revival",
+            "Amazonia Drums",
+            "Paulista Guitar",
+            "Beira Mar Maré",
+            "Carnival Blocão",
+            "Baile Funk DJ",
+            "Sudeste Silences",
+            "Brasilia Synth",
+            "Cerrado Anthem"
+        ],
+        "playlists": [
+            {
+                "name": "MPB & Bossa Nova",
+                "description": "Brazil's poetic song tradition, from Rio to the Atlantic.",
+                "order": "popular",
+                "size": 25
+            },
+            {
+                "name": "Brazilian Funk & Sertanejo",
+                "description": "Baile funk and sertanejo for a long night out.",
+                "order": "fresh",
+                "size": 25
+            }
+        ]
+    },
+    {
+        "code": "DE",
+        "name": "Germany",
+        "flag": "🇩🇪",
+        "adjective": "German",
+        "genres": ["techno", "minimal", "electronic", "pop", "industrial"],
+        "featureGenres": ["techno", "electronic"],
+        "albumTitle": "Kantine Sound",
+        "trackTitles": [
+            "Berghain Sub Rosa",
+            "Autobahn Modular",
+            "Berlin Dub Pressure",
+            "Ruhr Terminal",
+            "Hamburg Port Bass",
+            "Kraftwerk Nachbau",
+            "Schwarzwald Pulse",
+            "Munich Synth",
+            "Leipzig Underground",
+            "Frankfurt Skyline",
+            "Dortmund Steel",
+            "Bavarian Breaks",
+            "Isar River Flow",
+            "Berlin Atonal Rework",
+            "Germany Afterhours"
+        ],
+        "playlists": [
+            {
+                "name": "Techno & Minimal",
+                "description": "Driving techno, minimal and industrial from the German underground.",
+                "order": "popular",
+                "size": 25
+            },
+            {
+                "name": "Deutsche Charts",
+                "description": "The German-language pop and schlager dominating the charts.",
+                "order": "fresh",
+                "size": 25
+            }
+        ]
+    },
+    {
+        "code": "FR",
+        "name": "France",
+        "flag": "🇫🇷",
+        "adjective": "French",
+        "genres": ["house", "rap", "chanson", "electronic", "pop", "indie"],
+        "featureGenres": ["rap", "house"],
+        "albumTitle": "Rue De Paris",
+        "trackTitles": [
+            "BPM Boulevard",
+            "Montmartre Bass",
+            "Chanson Ruelle",
+            "Riviera House",
+            "Marseille Rap",
+            "Lyonelectro",
+            "Canal Saint-Martin",
+            "French Touch Revival",
+            "Bordeaux Rouge",
+            "Toulouse Guitare",
+            "Paris Underground 125",
+            "Cote d'Azur Chill",
+            "Mediterranee Loop",
+            "Belle Epoque Pop",
+            "France Nocturne"
+        ],
+        "playlists": [
+            {
+                "name": "French Rap & House",
+                "description": "Rap français alongside the house and electronic that shaped it.",
+                "order": "popular",
+                "size": 25
+            },
+            {
+                "name": "Chanson & Pop",
+                "description": "Classic chanson and modern French pop, in French.",
+                "order": "fresh",
+                "size": 25
+            }
+        ]
+    },
+    {
+        "code": "ES",
+        "name": "Spain",
+        "flag": "🇪🇸",
+        "adjective": "Spanish",
+        "genres": ["reggaeton", "flamenco", "latin-pop", "indie", "pop", "electronic"],
+        "featureGenres": ["reggaeton", "flamenco"],
+        "albumTitle": "Costa Del Ritmo",
+        "trackTitles": [
+            "Bacalar Beat",
+            "Sevilla Compás",
+            "Madrid Perreo",
+            "Barcelona Dub",
+            "Granada Guitar",
+            "Valencia Sunset",
+            "Mallorca Piano Beat",
+            "Bilbao Basque Roots",
+            "Rumba Callejera",
+            "Andalucia Blue",
+            "Reggaeton Duro",
+            "Galicia Viento",
+            "Ibiza Deep House",
+            "Cordoba Campana",
+            "España Baila"
+        ],
+        "playlists": [
+            {
+                "name": "Reggaeton & Flamenco",
+                "description": "Two of Spain's loudest exports, side by side.",
+                "order": "popular",
+                "size": 25
+            },
+            {
+                "name": "Hits en Espanol",
+                "description": "The biggest Latin pop and Spanish-language hits of the moment.",
+                "order": "fresh",
+                "size": 25
+            }
+        ]
+    },
+    {
+        "code": "JP",
+        "name": "Japan",
+        "flag": "🇯🇵",
+        "adjective": "Japanese",
+        "genres": ["j-pop", "city-pop", "anime", "rock", "electronic", "traditional"],
+        "featureGenres": ["j-pop", "city-pop"],
+        "albumTitle": "Tokyo Neon Garden",
+        "trackTitles": [
+            "Shibuya Neon Rain",
+            "City Pop Breeze",
+            "Akihabara Loop",
+            "Kawaii Beat Drop",
+            "Shinkansen Rush",
+            "Harajuku Sunshine",
+            "Anime OST Rework",
+            "Osaka Night Market",
+            "Sakura Static",
+            "Shinjuku Bassline",
+            "Kyoto Bells",
+            "Tokyo Tower Lights",
+            "Hokkaido Drift",
+            "Digital Torii",
+            "Nippon Pop Rework"
+        ],
+        "playlists": [
+            {
+                "name": "J-Pop & Kawaii",
+                "description": "Bright, maximal J-Pop and kawaii future pop favourites.",
+                "order": "popular",
+                "size": 25
+            },
+            {
+                "name": "City Pop Tokyo",
+                "description": "Neon-soaked city pop, anime cuts and Japanese electronic.",
+                "order": "fresh",
+                "size": 25
+            }
+        ]
+    },
+    {
+        "code": "KR",
+        "name": "South Korea",
+        "flag": "🇰🇷",
+        "adjective": "South Korean",
+        "genres": ["k-pop", "k-indie", "trot", "hip-hop", "electronic", "r-and-b"],
+        "featureGenres": ["k-pop", "trot"],
+        "albumTitle": "Seoul Sessions",
+        "trackTitles": [
+            "Gangnam Bassline",
+            "Hongdae Neon",
+            "Han River Glow",
+            "K-Pop Verse One",
+            "Busan Harbour",
+            "Trot Reimagined",
+            "Seoul Fog Beat",
+            "K-Indie Bedroom",
+            "Daegu Drum Break",
+            "Incheon Rains",
+            "K-Pop Dance Cut",
+            "Jeju Island Wave",
+            "Korean R&B Slow",
+            "Studio Hongdae",
+            "Daejeon Drive"
+        ],
+        "playlists": [
+            {
+                "name": "K-Pop Hits",
+                "description": "The biggest K-Pop releases, updated as they drop.",
+                "order": "popular",
+                "size": 25
+            },
+            {
+                "name": "K-Indie & Trot",
+                "description": "Underground Seoul indie and the revival of Korean Trot.",
+                "order": "fresh",
+                "size": 25
+            }
+        ]
+    }
+]
