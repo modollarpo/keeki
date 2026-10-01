@@ -10,6 +10,7 @@ import {
   usePlayerOverlayStore,
 } from '@app/web-player/state/player-overlay-store';
 import {TrackContextDialog} from '@app/web-player/tracks/context-dialog/track-context-dialog';
+import {PlayerBarAmbientBackground} from '@app/web-player/player-controls/player-bar-ambient-background';
 import {TrackImage} from '@app/web-player/tracks/track-image/track-image';
 import {getTrackLink, TrackLink} from '@app/web-player/tracks/track-link';
 import {usePlayerStore} from '@common/player/hooks/use-player-store';
@@ -20,9 +21,8 @@ import {Button} from '@shadcn/button/button';
 import {ContextMenu} from '@shadcn/context-menu/context-menu';
 import {Tooltip} from '@shadcn/tooltip/tooltip';
 import {Trans} from '@ui/i18n/trans';
-import {MediaQueueListIcon} from '@ui/icons/media/media-queue-list';
 import {useSettings} from '@ui/settings/use-settings';
-import {ChevronDownIcon, ChevronUpIcon} from 'lucide-react';
+import {ChevronDownIcon, ChevronUpIcon, ListMusic} from 'lucide-react';
 import {ReactNode, use} from 'react';
 import {Link} from 'react-router';
 
@@ -31,7 +31,8 @@ export function DesktopPlayerControls() {
   if (!mediaIsCued) return null;
 
   return (
-    <DashboardLayout.Section className="bg-card z-30 h-24 shrink-0 flex-row items-center justify-between px-4">
+    <DashboardLayout.Section className="relative z-30 h-24 shrink-0 flex-row items-center justify-between px-4 overflow-hidden border-t border-border/50">
+      <PlayerBarAmbientBackground />
       <QueuedTrack />
       <PlaybackControls className="w-2/5 max-w-180" />
       <SecondaryControls />
@@ -45,31 +46,31 @@ function QueuedTrack() {
 
   if (track) {
     content = (
-      <div className="flex items-center gap-3.5">
+      <div className="flex items-center gap-3.5 group">
         <ContextMenu>
           <ContextMenu.Trigger>
             <Link to={getTrackLink(track)} className="shrink-0">
               <TrackImage
-                className="size-14 rounded object-cover"
+                className="size-14 rounded object-cover shadow-sm transition-all duration-300 ease-out group-hover:scale-105 group-hover:brightness-110"
                 track={track}
               />
             </Link>
           </ContextMenu.Trigger>
           <TrackContextDialog tracks={[track]} type="contextMenu" />
         </ContextMenu>
-        <div className="min-w-0 overflow-hidden text-ellipsis">
+        <div className="min-w-0 overflow-hidden text-ellipsis flex flex-col justify-center">
           <ContextMenu>
             <ContextMenu.Trigger>
               <TrackLink
                 track={track}
-                className="max-w-full min-w-0 text-sm whitespace-nowrap"
+                className="max-w-full min-w-0 text-be-body font-bold whitespace-nowrap text-foreground hover:underline transition-colors"
               />
             </ContextMenu.Trigger>
             <TrackContextDialog tracks={[track]} type="contextMenu" />
           </ContextMenu>
           {track.artists?.length ? (
             <ContextMenu>
-              <ContextMenu.Trigger className="text-muted-foreground text-xs">
+              <ContextMenu.Trigger className="text-muted-foreground text-be-caption font-medium mt-0.5 block whitespace-nowrap hover:text-foreground hover:underline transition-colors">
                 <ArtistLinks
                   artists={track.artists}
                   className="whitespace-nowrap"
@@ -82,7 +83,7 @@ function QueuedTrack() {
             </ContextMenu>
           ) : null}
         </div>
-        <LikeIconButton likeable={track} />
+        <LikeIconButton likeable={track} className="opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100 data-[liked=true]:opacity-100" />
       </div>
     );
   } else {
@@ -110,7 +111,7 @@ function SecondaryControls() {
             />
           }
         >
-          <MediaQueueListIcon className="size-6" />
+          <ListMusic className="size-6" />
         </Tooltip.Trigger>
         <Tooltip.Content>
           <Trans message="Queue" />

@@ -68,7 +68,7 @@ export function MobileNavbar() {
             'text-sm font-medium text-muted-foreground',
             'transition-colors duration-150 hover:bg-muted/80 active:bg-muted/60',
             'focus-visible:outline-2 focus-visible:outline-offset-2',
-            'focus-visible:outline-[var(--be-brand-ink,#e8611f)]',
+            'focus-visible:outline-primary',
           )}
         >
           <SearchIcon className="size-[18px] shrink-0" />

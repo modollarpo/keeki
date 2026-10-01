@@ -16,9 +16,9 @@ type SectionShellProps = {
 };
 
 const spacingClasses: Record<SectionSpacing, string> = {
-  compact: 'py-16 sm:py-20',
-  default: 'py-24 sm:py-32',
-  spacious: 'py-28 sm:py-40',
+  compact: 'py-8 sm:py-12',
+  default: 'py-12 sm:py-16',
+  spacious: 'py-16 sm:py-24',
 };
 
 const backgroundClasses: Record<SectionBackground, string> = {

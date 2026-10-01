@@ -215,7 +215,7 @@ export function MobileSearchOverlay({isOpen, onClose}: MobileSearchOverlayProps)
       <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-border shrink-0">
         {/* Search input */}
         <form
-          className="flex flex-1 items-center gap-3 h-12 rounded-2xl bg-muted px-4 focus-within:ring-2 focus-within:ring-[var(--be-brand-ink,#e8611f)]/50 transition-shadow"
+          className="flex flex-1 items-center gap-3 h-12 rounded-2xl bg-muted px-4 focus-within:ring-2 focus-within:ring-primary/50 transition-shadow"
           onSubmit={e => {
             e.preventDefault();
             submit(query);
@@ -224,7 +224,7 @@ export function MobileSearchOverlay({isOpen, onClose}: MobileSearchOverlayProps)
           <SearchIcon
             className={cn(
               'size-5 shrink-0 transition-colors',
-              query ? 'text-[var(--be-brand-ink,#e8611f)]' : 'text-muted-foreground',
+              query ? 'text-primary' : 'text-muted-foreground',
             )}
           />
           <input
@@ -278,7 +278,7 @@ export function MobileSearchOverlay({isOpen, onClose}: MobileSearchOverlayProps)
         <button
           type="button"
           aria-label="Cancel search"
-          className="shrink-0 text-sm font-semibold text-[var(--be-brand-ink,#e8611f)] hover:opacity-70 transition-opacity px-1 py-2"
+          className="shrink-0 text-sm font-semibold text-primary hover:opacity-70 transition-opacity px-1 py-2"
           onClick={() => {
             voiceSearch.stop();
             onClose();
@@ -293,7 +293,7 @@ export function MobileSearchOverlay({isOpen, onClose}: MobileSearchOverlayProps)
         {/* Loading indicator */}
         {isFetching && (
           <div className="flex items-center justify-center py-10">
-            <LoaderCircleIcon className="size-6 animate-spin text-[var(--be-brand-ink,#e8611f)]" />
+            <LoaderCircleIcon className="size-6 animate-spin text-primary" />
           </div>
         )}
 
@@ -312,10 +312,9 @@ export function MobileSearchOverlay({isOpen, onClose}: MobileSearchOverlayProps)
         {!isFetching && query.trim().length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
             <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
-              style={{background: 'linear-gradient(135deg, var(--be-brand-ink,#e8611f), var(--be-brand-ink-alt,#f0864a))'}}
+              className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 bg-primary"
             >
-              <SearchIcon className="size-7 text-white" />
+              <SearchIcon className="size-7 text-primary-foreground" />
             </div>
             <p className="text-base font-semibold text-foreground">Search Keekii</p>
             <p className="text-sm text-muted-foreground mt-1">
@@ -324,12 +323,7 @@ export function MobileSearchOverlay({isOpen, onClose}: MobileSearchOverlayProps)
             {voiceSearch.isSupported && (
               <button
                 type="button"
-                className="mt-6 flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all active:scale-95"
-                style={{
-                  background: 'linear-gradient(135deg, var(--be-brand-ink,#e8611f), var(--be-brand-ink-alt,#f0864a))',
-                  color: 'white',
-                  boxShadow: '0 4px 16px rgba(232,97,31,0.35)',
-                }}
+                className="mt-6 flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all active:scale-95 bg-primary text-primary-foreground shadow-md"
                 onClick={voiceSearch.toggle}
               >
                 <MicIcon className="size-4" />
@@ -362,7 +356,7 @@ export function MobileSearchOverlay({isOpen, onClose}: MobileSearchOverlayProps)
         {!isFetching && hasResults && query.trim().length > 0 && (
           <button
             type="button"
-            className="w-full flex items-center justify-center gap-2 py-4 text-sm font-semibold text-[var(--be-brand-ink,#e8611f)] hover:bg-muted/50 transition-colors border-t border-border"
+            className="w-full flex items-center justify-center gap-2 py-4 text-sm font-semibold text-primary hover:bg-muted/50 transition-colors border-t border-border"
             onClick={() => submit(query)}
           >
             See all results for &ldquo;{query}&rdquo;

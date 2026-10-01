@@ -7,7 +7,7 @@ export function MainSeekbar() {
   return (
     <Fragment>
       <div className="flex items-center gap-3">
-        <div className="text-muted-foreground min-w-10 shrink-0 text-right text-xs">
+        <div className="text-[var(--be-brand-ink)] min-w-10 shrink-0 text-right text-xs">
           <FormattedCurrentTime />
         </div>
         <Seekbar className="flex-auto" trackClassName="bg-secondary" />

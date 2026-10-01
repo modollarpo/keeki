@@ -19,9 +19,9 @@ import {ContextMenu} from '@shadcn/context-menu/context-menu';
 import {message} from '@ui/i18n/message';
 import {Trans} from '@ui/i18n/trans';
 import {useTrans} from '@ui/i18n/use-trans';
-import {CloseIcon} from '@ui/icons/material/Close';
 import {PauseIcon} from '@ui/icons/material/Pause';
 import {cn} from '@ui/utils/cn';
+import {ListMusic} from 'lucide-react';
 import {useMediaQuery} from '@ui/utils/hooks/use-media-query';
 import clsx from 'clsx';
 import {ReactElement, use, useState} from 'react';
@@ -51,7 +51,7 @@ export function QueueSidenav() {
           size="icon-xs"
           onClick={() => rightSidebar.setStatus('collapsed')}
         >
-          <CloseIcon />
+          <ListMusic className="size-5" />
         </Button>
       </Sidebar.Header>
       <Sidebar.Content

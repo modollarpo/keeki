@@ -60,9 +60,11 @@ export function ChannelHeading({
   }
 
   return (
-    <div className={clsx('flex items-center gap-1 text-xl', margin)}>
+    <div className={clsx('flex items-center justify-between gap-4', margin)}>
+      <h2 className="keekii-display text-2xl md:text-3xl">
+        <Trans message={channel.name} />
+      </h2>
       <NestedChannelLink channel={channel} />
-      <ChevronRightIcon className="mt-1" />
     </div>
   );
 }
@@ -74,14 +76,15 @@ function NestedChannelLink({channel}: ChannelLinkProps) {
   const {restriction: genreName} = useParams();
   return (
     <Link
-      className="outline-hidden hover:underline focus-visible:underline"
+      className="text-sm font-semibold text-muted-foreground hover:text-foreground outline-hidden focus-visible:underline flex items-center"
       to={
         channel.config.restriction === 'genre' && genreName
           ? `/${channel.slug}/${genreName}`
           : `/${channel.slug}`
       }
     >
-      <Trans message={channel.name} />
+      <Trans message="See all" />
+      <ChevronRightIcon className="size-4 ml-0.5" />
     </Link>
   );
 }

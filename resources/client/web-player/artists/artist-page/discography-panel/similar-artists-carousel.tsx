@@ -10,8 +10,9 @@ import {
 import {ContentGrid} from '@app/web-player/playable-item/content-grid';
 import {useRequiredParams} from '@common/ui/navigation/use-required-params';
 import {getScrollParent} from '@react-aria/utils';
-import {LinkButton} from '@shadcn/button/button';
 import {useSuspenseQuery} from '@tanstack/react-query';
+import {ChevronRightIcon} from 'lucide-react';
+import {Link} from 'react-router';
 import {Trans} from '@ui/i18n/trans';
 
 type SimilarArtistsCarouselProps = {
@@ -32,22 +33,23 @@ export function SimilarArtistsCarousel({
         <ArtistPageSubtitle margin="m-0">
           <Trans message="Fans also like" />
         </ArtistPageSubtitle>
-        <ContentCarouselControls {...controls} className="ml-auto" />
-        <LinkButton
-          size="sm"
-          className="ml-1"
-          variant="outline"
-          to={`${getArtistLink(artistQuery.data.artist, {absolute: true})}?tab=similar`}
-          onClick={() => {
-            if (controls.scrollContainerRef.current) {
-              getScrollParent(controls.scrollContainerRef.current).scrollTo({
-                top: 0,
-              });
-            }
-          }}
-        >
-          <Trans message="View all" />
-        </LinkButton>
+        <div className="ml-auto flex items-center gap-4">
+          <Link
+            className="text-sm font-semibold text-muted-foreground hover:text-foreground focus-visible:underline flex items-center"
+            to={`${getArtistLink(artistQuery.data.artist, {absolute: true})}?tab=similar`}
+            onClick={() => {
+              if (controls.scrollContainerRef.current) {
+                getScrollParent(controls.scrollContainerRef.current).scrollTo({
+                  top: 0,
+                });
+              }
+            }}
+          >
+            <Trans message="See all" />
+            <ChevronRightIcon className="size-4 ml-0.5" />
+          </Link>
+          <ContentCarouselControls {...controls} />
+        </div>
       </div>
 
       <ContentGrid

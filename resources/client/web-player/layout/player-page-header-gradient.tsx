@@ -15,7 +15,7 @@ export function PlayerPageHeaderGradient({
 }: Props) {
   const [imageLoaded, setImageLoaded] = useState(false);
   return (
-    <div className="pointer-events-none isolate hidden dark:block">
+    <div className="pointer-events-none isolate block">
       <div
         className={clsx(
           'absolute top-0 right-0 left-0 z-10 blur-[80px]',

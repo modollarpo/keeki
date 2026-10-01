@@ -608,7 +608,7 @@ export function TrackTableRow({
         tabIndex={-1}
         aria-colindex={cellIndex + 1}
         className={cn(
-          'flex h-14 items-center py-0 whitespace-nowrap',
+          'flex h-12 items-center py-0 whitespace-nowrap',
           truncate ? 'overflow-hidden' : 'overflow-visible',
           column.width,
           column.className,
@@ -633,10 +633,10 @@ export function TrackTableRow({
     tabIndex: -1,
     selected: isSelected,
     className: cn(
-      'flex cursor-pointer items-center border-b border-transparent transition-colors gap-3 rounded-md',
+      'flex cursor-pointer items-center border-b border-transparent transition-all gap-3 rounded-md',
       !isMobile && 'px-3',
       isSelected && 'bg-accent hover:bg-accent',
-      !isSelected && 'hover:bg-accent focus-visible:bg-accent',
+      !isSelected && 'hover:bg-accent focus-visible:bg-muted/50 hover:scale-[1.02] active:scale-[0.98]',
       className,
     ),
     style,

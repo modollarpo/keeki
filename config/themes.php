@@ -65,6 +65,12 @@ return [
         '--be-background' => 'oklch(0.992 0.005 78)',
         '--be-foreground' => 'oklch(0.205 0.02 59)',
 
+        '--be-font-display' => '3rem',
+        '--be-font-heading' => '2rem',
+        '--be-font-subheading' => '1.25rem',
+        '--be-font-body' => '1rem',
+        '--be-font-caption' => '0.875rem',
+
         '--be-card' => 'oklch(1 0 0)',
         '--be-card-foreground' => 'oklch(0.205 0.02 59)',
 
@@ -139,6 +145,12 @@ return [
         // violet removed the surface reads warm at every level.
         '--be-background' => 'oklch(0.159 0.012 61)',
         '--be-foreground' => 'oklch(0.968 0.007 81)',
+
+        '--be-font-display' => '3rem',
+        '--be-font-heading' => '2rem',
+        '--be-font-subheading' => '1.25rem',
+        '--be-font-body' => '1rem',
+        '--be-font-caption' => '0.875rem',
 
         '--be-card' => 'oklch(0.191 0.011 61)',
         '--be-card-foreground' => 'oklch(0.968 0.007 81)',

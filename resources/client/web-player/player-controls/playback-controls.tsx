@@ -31,14 +31,14 @@ function PlaybackButtons() {
         isMobile && 'mb-5',
       )}
     >
-      <ShuffleButton />
-      <PreviousButton iconClassName="size-6" />
+      <ShuffleButton className="hover:scale-105 active:scale-95 transition-transform" />
+      <PreviousButton iconClassName="size-6" className="hover:scale-105 active:scale-95 transition-transform" />
       <div className="relative flex items-center justify-center">
         <BufferingIndicator />
-        <PlayButton className="size-10.5" iconClassName="size-10" />
+        <PlayButton className="size-10.5 text-[var(--be-brand-ink)] hover:scale-105 active:scale-95 transition-transform" iconClassName="size-10" />
       </div>
-      <NextButton iconClassName="size-6" />
-      <RepeatButton />
+      <NextButton iconClassName="size-6" className="hover:scale-105 active:scale-95 transition-transform" />
+      <RepeatButton className="hover:scale-105 active:scale-95 transition-transform" />
     </div>
   );
 }

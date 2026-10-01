@@ -49,7 +49,7 @@ function DefaultGridItem({
       <ContextMenu>
         <ContextMenu.Trigger className="group relative isolate w-full">
           <div
-            className="this aspect-square w-full"
+            className="this aspect-square w-full hover:scale-[1.02] active:scale-[0.98] transition-transform focus-visible:bg-muted/50"
             onClick={() => navigate(link)}
           >
             {cloneElement(image, {
@@ -146,7 +146,7 @@ function CompactGridItem({
   return (
     <div className="flex snap-start snap-normal items-center gap-4 border-t py-2.5">
       <div
-        className={`group relative h-10.5 w-10.5 shrink-0 cursor-pointer overflow-hidden rounded-md`}
+        className={`group relative h-10.5 w-10.5 shrink-0 cursor-pointer overflow-hidden rounded-md hover:scale-[1.02] active:scale-[0.98] transition-transform`}
         onPointerEnter={() => setIsHover(true)}
         onPointerLeave={() => setIsHover(false)}
       >

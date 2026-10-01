@@ -4,6 +4,14 @@
 @import './web-player/playable-item/content-grid.css';
 @import './keekii-brand.css';
 
+@theme {
+  --text-be-display: var(--be-font-display);
+  --text-be-heading: var(--be-font-heading);
+  --text-be-subheading: var(--be-font-subheading);
+  --text-be-body: var(--be-font-body);
+  --text-be-caption: var(--be-font-caption);
+}
+
 @source '../../**/*.ts*';
 
 @layer base {

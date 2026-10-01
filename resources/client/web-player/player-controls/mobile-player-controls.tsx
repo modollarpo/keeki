@@ -4,6 +4,7 @@ import {webPlayerSidebarIcons} from '@app/web-player/layout/web-player-sidebar-i
 import {BufferingIndicator} from '@app/web-player/player-controls/buffering-indicator';
 import {useCuedTrack} from '@app/web-player/player-controls/use-cued-track';
 import {playerOverlayState} from '@app/web-player/state/player-overlay-store';
+import {PlayerBarAmbientBackground} from '@app/web-player/player-controls/player-bar-ambient-background';
 import {TrackImage} from '@app/web-player/tracks/track-image/track-image';
 import {useAuth} from '@common/auth/use-auth';
 import {UnstyledCustomMenuItem} from '@common/menus/custom-menu';
@@ -26,7 +27,8 @@ import {ComponentProps, ReactElement} from 'react';
 
 export function MobilePlayerControls() {
   return (
-    <div className="bg-background/85 dark:bg-card/85 backdrop-blur-3xl border-t border-border/50 shadow-[0_-4px_32px_rgba(0,0,0,0.1)] w-full pb-[env(safe-area-inset-bottom)]">
+    <div className="relative overflow-hidden border-t border-border/50 shadow-[0_-4px_32px_rgba(0,0,0,0.1)] w-full pb-[env(safe-area-inset-bottom)]">
+      <PlayerBarAmbientBackground />
       <PlayerControls />
       <MobileNavbar />
     </div>
@@ -59,13 +61,13 @@ function QueuedTrack() {
   }
 
   return (
-    <div className="flex min-w-0 flex-auto items-center gap-2.5">
-      <TrackImage className="h-9 w-9 rounded object-cover" track={track} />
-      <div className="flex-auto overflow-hidden whitespace-nowrap">
-        <div className="overflow-hidden text-sm font-medium text-ellipsis">
+    <div className="flex min-w-0 flex-auto items-center gap-2.5 group">
+      <TrackImage className="h-9 w-9 rounded object-cover shadow-sm transition-all duration-300 ease-out group-active:scale-95 group-active:brightness-90" track={track} />
+      <div className="flex-auto overflow-hidden whitespace-nowrap flex flex-col justify-center">
+        <div className="overflow-hidden text-be-body font-bold text-ellipsis text-foreground">
           {track.name}
         </div>
-        <div className="text-muted-foreground overflow-hidden text-xs text-ellipsis">
+        <div className="text-muted-foreground overflow-hidden text-be-caption font-medium text-ellipsis mt-0.5">
           {track.artists?.map(a => a.name).join(', ')}
         </div>
       </div>
@@ -79,7 +81,7 @@ function PlaybackButtons() {
       <PreviousButton stopPropagation />
       <div className="relative isolate">
         <BufferingIndicator />
-        <PlayButton iconClassName="size-8" stopPropagation size="icon-lg" />
+        <PlayButton className="text-[var(--be-brand-ink)] hover:scale-105 active:scale-95 transition-transform" iconClassName="size-8" stopPropagation size="icon-lg" />
       </div>
       <NextButton stopPropagation />
     </div>
@@ -94,7 +96,7 @@ function PlayerProgressBar() {
       size="xs"
       className="absolute right-0 bottom-0 left-0"
       trackColor="bg-border/30"
-      progressColor="bg-[var(--be-brand-ink,var(--be-primary))]"
+      progressColor="bg-[var(--be-brand-ink)]"
       trackHeight="h-[2px]"
       radius="rounded-none"
       minValue={0}
@@ -119,7 +121,7 @@ function MobileNavbar() {
             cn(
               "flex flex-col items-center gap-1 overflow-hidden text-[11px] whitespace-nowrap transition-colors duration-200 [&_svg:not([class*='size-'])]:size-[22px]",
               isActive 
-                ? 'text-[var(--be-brand-ink,var(--be-primary))] font-bold scale-[1.02]' 
+                ? 'text-primary font-bold scale-[1.02]' 
                 : 'text-muted-foreground font-medium',
             )
           }
