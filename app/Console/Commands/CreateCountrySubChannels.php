@@ -401,8 +401,19 @@ class CreateCountrySubChannels extends Command
             $owner->save();
 
             $this->line("  created editorial owner '{$owner->name}'");
-        } elseif ($owner->name !== 'Keekii') {
+        }
+
+        if ($owner->name !== 'Keekii') {
             $owner->name = 'Keekii';
+        }
+
+        // also covers an account created before this rule existed, which would
+        // otherwise stay an empty-password row forever
+        if (blank($owner->password)) {
+            $owner->password = Hash::make(Str::random(48));
+        }
+
+        if ($owner->isDirty()) {
             $owner->save();
         }
 
