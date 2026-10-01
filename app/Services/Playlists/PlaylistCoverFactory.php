@@ -115,9 +115,9 @@ class PlaylistCoverFactory
     }
 
     /**
-     * @param  array{0: int, 1: int, 2: int}  $ink
+     * @param  int  $ink  a GD colour index, as returned by imagecolorallocate()
      */
-    private function text(\GdImage $image, string $font, int $size, int $x, int $y, string $value, array $ink): void
+    private function text(\GdImage $image, string $font, int $size, int $x, int $y, string $value, int $ink): void
     {
         $lines = $this->wrap($value, $font, $size, self::SIZE - ($x * 2));
 

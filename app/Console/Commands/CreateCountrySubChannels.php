@@ -415,13 +415,23 @@ class CreateCountrySubChannels extends Command
                 'owner_id' => $ownerId,
             ]);
 
-            $playlist->fill([
-                'description' => $definition['description'] ?? null,
-                'image' => app(PlaylistCoverFactory::class)->ensure(
+            // artwork is nice-to-have: a cover must never be able to take the
+            // whole market's expansion down with it
+            $cover = null;
+
+            try {
+                $cover = app(PlaylistCoverFactory::class)->ensure(
                     $code,
                     $definition['name'],
                     (string) ($market['name'] ?? $code),
-                ) ?: $playlist->image,
+                );
+            } catch (\Throwable $e) {
+                $this->warn("  [{$code}] cover for '{$definition['name']}' failed: ".$e->getMessage());
+            }
+
+            $playlist->fill([
+                'description' => $definition['description'] ?? null,
+                'image' => $cover ?: $playlist->image,
                 'public' => true,
                 'collaborative' => false,
             ])->save();
