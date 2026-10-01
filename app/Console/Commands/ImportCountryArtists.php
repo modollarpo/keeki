@@ -81,9 +81,14 @@ class ImportCountryArtists extends Command
 
                 $match = $this->resolveArtist($provider, $name);
 
-                if (!$match) {
+                if (!$match || !$match['id']) {
                     $unresolved++;
-                    $this->line("  $market  $name -> NO DEEZER MATCH");
+                    $this->line(sprintf(
+                        '  %s  %s -> NO EXACT MATCH (nearest: %s)',
+                        $market,
+                        $name,
+                        $match['matched'] ?? 'none',
+                    ));
                     continue;
                 }
 
@@ -293,44 +298,46 @@ class ImportCountryArtists extends Command
     }
 
     /**
-     * Find the Deezer artist whose name best matches the curated name.
+     * Find the Deezer artist whose name matches the curated name.
      *
-     * A curated name that resolves to a different artist would import the wrong
-     * catalogue entry, so the match has to be close enough.
+     * Exact match only. A fuzzy match is how "Niall Horne" quietly becomes
+     * "Niall Horan" - a different person, imported into the right country and
+     * therefore invisible to the biography check afterwards. When nothing
+     * matches exactly the nearest candidate is reported instead, so the
+     * curated list gets corrected rather than silently working around.
      *
-     * @return array{id: int|string, matched: string}|null
+     * @return array{id: int|string|null, matched: string|null}|null
      */
     private function resolveArtist(MusicMetadataProvider $provider, string $name): ?array
     {
         $search = $provider->getProvider()?->search($name, 1, 5, ['artist']);
 
-        $candidates = $search?->artists['data'] ?? collect();
+        $candidates = collect($search?->artists['data'] ?? []);
 
         if ($candidates->isEmpty()) {
             return null;
         }
 
         $needle = $this->normalizeName($name);
-        $best = null;
-        $bestScore = 0.0;
 
-        foreach ($candidates as $candidate) {
-            $score = $this->similarity($needle, $this->normalizeName((string) $candidate->name));
+        $exact = $candidates->filter(
+            fn ($candidate) => $this->normalizeName((string) $candidate->name) === $needle,
+        );
 
-            if ($score > $bestScore) {
-                $bestScore = $score;
-                $best = $candidate;
-            }
+        if ($exact->isNotEmpty()) {
+            // several artists can share a name ("Black Coffee"); the popular one is
+            // the intended one, and the biography still has the final say
+            $best = $exact->sortByDesc(fn ($c) => $c->popularity ?? 0)->first();
+
+            return ['id' => $best->externalId, 'matched' => $best->name];
         }
 
-        if (!$best || $bestScore < 0.72) {
-            return null;
-        }
+        $nearest = $candidates
+            ->map(fn ($c) => ['name' => $c->name, 'score' => $this->similarity($needle, $this->normalizeName((string) $c->name))])
+            ->sortByDesc('score')
+            ->first();
 
-        return [
-            'id' => $best->externalId,
-            'matched' => $best->name,
-        ];
+        return ['id' => null, 'matched' => $nearest['name'] ?? null];
     }
 
     private function normalizeName(string $name): string
