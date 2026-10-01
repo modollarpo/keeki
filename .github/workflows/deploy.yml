@@ -119,7 +119,7 @@ jobs:
             # the same deploy. Idempotent and resumable: already-tagged artists are skipped,
             # and only results at or above --min-confidence are written.
             echo '--- music:resolve-artist-countries ---'
-            sudo -u www-data -H php /var/www/bemusic/artisan music:resolve-artist-countries --limit=400 --min-confidence=0.9 || echo 'music:resolve-artist-countries skipped'
+            sudo -u www-data -H php /var/www/bemusic/artisan music:resolve-artist-countries --limit=600 --pause=0.8 --min-confidence=0.8 || echo 'music:resolve-artist-countries skipped'
             # Country channels + geo homepage mapping (idempotent: updateOrCreate by slug, merges existing map)
             sudo -u www-data -H php /var/www/bemusic/artisan channels:country || echo 'channels:country skipped'
             # Expand each country channel into a hub of sub-channels + localized playlists.

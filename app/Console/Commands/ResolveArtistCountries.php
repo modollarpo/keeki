@@ -32,6 +32,7 @@ class ResolveArtistCountries extends Command
         {--country=* : Restrict to these ISO-2 markets (default: all configured countries)}
         {--target-per-market=10 : Stop early once every market has this many real artists}
         {--include-tagged : Also re-evaluate artists that already have a country}
+        {--refetch : Re-fetch Wikipedia leads for artists that already have a stored bio}
         {--dry-run : Report what would change, write nothing}';
 
     protected $description = 'Map real artists to countries using their Wikipedia biography';
@@ -77,13 +78,26 @@ class ResolveArtistCountries extends Command
         $reasons = [];
         $noBioSamples = [];
         $samples = [];
+        $attempted = [];
 
         while ($remaining > 0) {
-            $candidates = $this->candidates(min($batchSize, $remaining), (bool) $this->option('include-tagged'));
+            $candidates = $this->candidates(
+                min($batchSize, $remaining),
+                (bool) $this->option('include-tagged'),
+                (bool) $this->option('refetch'),
+                $attempted,
+            );
 
             if ($candidates->isEmpty()) {
                 $this->line('<comment>no further candidates</comment>');
                 break;
+            }
+
+            // Remember them before fetching, otherwise an artist that ends up
+            // with a bio but no country is selected again in the next batch and
+            // its Wikipedia lead is requested a second time.
+            foreach ($candidates as $artist) {
+                $attempted[$artist->id] = true;
             }
 
             $bios = $fetcher->fetchMany($candidates, $pause);
@@ -204,16 +218,33 @@ class ResolveArtistCountries extends Command
     /**
      * Real artists that could be mapped, most content first.
      *
+     * Artists that already carry a stored bio are skipped by default: their
+     * Wikipedia lead has been fetched and judged already, so asking again only
+     * burns the rate limit and re-reports the same verdict.
+     *
+     * @param  array<int, true>  $attempted  ids already handled in this run
      * @return \Illuminate\Support\Collection<int, Artist>
      */
-    private function candidates(int $limit, bool $includeTagged)
-    {
+    private function candidates(
+        int $limit,
+        bool $includeTagged,
+        bool $refetch,
+        array $attempted = [],
+    ) {
         return Artist::query()
             ->with('profile')
             ->withCount(['tracks', 'albums'])
             ->where('name', 'not like', '%[Demo]%')
             ->where(fn ($q) => $q->whereNotNull('deezer_id')->orWhereNotNull('spotify_id'))
             ->whereHas('tracks')
+            ->when($attempted !== [], fn ($q) => $q->whereNotIn('artists.id', array_keys($attempted)))
+            ->when(
+                !$refetch,
+                fn ($q) => $q->whereDoesntHave(
+                    'profile',
+                    fn ($p) => $p->whereNotNull('description')->where('description', '!=', ''),
+                ),
+            )
             ->when(
                 !$includeTagged,
                 fn ($q) => $q->whereDoesntHave('profile', fn ($p) => $p->whereNotNull('country')->where('country', '!=', '')),
