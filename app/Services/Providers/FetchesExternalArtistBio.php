@@ -35,7 +35,7 @@ trait FetchesExternalArtistBio
             );
     }
 
-    private function getBioResponseData(?Response $response): string|null
+    public function getBioResponseData(?Response $response): string|null
     {
         if (!$response?->successful()) {
             if ($response?->body()) {
@@ -103,7 +103,7 @@ trait FetchesExternalArtistBio
         return $longest;
     }
 
-    private function makeWikipediaApiUrl(
+    public function makeWikipediaApiUrl(
         string $name,
         string $lang = 'en',
     ): string {

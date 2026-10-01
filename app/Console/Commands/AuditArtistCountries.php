@@ -121,9 +121,12 @@ class AuditArtistCountries extends Command
         // Spotify token probe
         if (filled($spotifyId) && filled($spotifySecret)) {
             try {
-                $res = Http::asForm()->timeout(8)->post('https://accounts.spotify.com/api/token', [
-                    'grant_type' => 'client_credentials',
-                ])->withBasicAuth($spotifyId, $spotifySecret);
+                $res = Http::asForm()
+                    ->withBasicAuth($spotifyId, $spotifySecret)
+                    ->timeout(8)
+                    ->post('https://accounts.spotify.com/api/token', [
+                        'grant_type' => 'client_credentials',
+                    ]);
 
                 $this->line('spotify token:    '.($res->successful() ? 'OK' : 'FAILED ('.$res->status().')'));
             } catch (\Throwable $e) {

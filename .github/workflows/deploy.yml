@@ -124,6 +124,10 @@ jobs:
             # whether the Wikipedia bios could yield a country per market. Writes nothing.
             echo '--- music:audit-countries ---'
             sudo -u www-data -H php /var/www/bemusic/artisan music:audit-countries || echo 'music:audit-countries skipped'
+            # Derive country from each real artist's Wikipedia bio. Dry run only:
+            # report what would be mapped without writing anything.
+            echo '--- music:resolve-artist-countries (dry run) ---'
+            sudo -u www-data -H php /var/www/bemusic/artisan music:resolve-artist-countries --dry-run --limit=200 || echo 'music:resolve-artist-countries skipped'
             sudo -u www-data -H php /var/www/bemusic/ops/sync-settings.php || echo 'settings sync skipped'
             sudo -u www-data php artisan cache:clear 2>/dev/null || echo 'cache:clear skipped'
             sudo systemctl restart php8.3-fpm
