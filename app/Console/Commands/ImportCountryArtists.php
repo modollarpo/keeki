@@ -205,20 +205,28 @@ class ImportCountryArtists extends Command
 
                 if (!$bio) {
                     $unresolved++;
-                    $rows[] = sprintf('  %-3s %-26s NO BIO', $market, Str::limit($artist->name, 26));
+                    $rows[] = sprintf(
+                        '  %-3s %-26s NO BIO (%s)',
+                        $market,
+                        Str::limit($artist->name, 26),
+                        $bios[$artist->id]['reason'] ?? 'unknown',
+                    );
+
                     continue;
                 }
 
                 $result = $detector->detect($bio, $artist->name);
+                $lead = $this->lead($bio);
 
                 if (!$result['code'] || $result['confidence'] < $minConfidence) {
                     $unresolved++;
                     $rows[] = sprintf(
-                        '  %-3s %-26s unresolved (conf=%s, top=%s)',
+                        '  %-3s %-26s unresolved (conf=%s, top=%s) %s',
                         $market,
                         Str::limit($artist->name, 26),
                         $result['confidence'],
                         $result['all'][0]['code'] ?? '--',
+                        $lead,
                     );
 
                     continue;
@@ -338,6 +346,15 @@ class ImportCountryArtists extends Command
             ->first();
 
         return ['id' => null, 'matched' => $nearest['name'] ?? null];
+    }
+
+    /**
+     * The opening of a biography, on one line, so an unresolved row shows what
+     * was actually read rather than only that it failed.
+     */
+    private function lead(string $bio): string
+    {
+        return mb_substr(trim(preg_replace('/\s+/', ' ', $bio) ?? ''), 0, 90);
     }
 
     private function normalizeName(string $name): string
