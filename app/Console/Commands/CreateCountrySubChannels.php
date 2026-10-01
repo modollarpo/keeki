@@ -6,11 +6,12 @@ use App\Models\Artist;
 use App\Models\Channel;
 use App\Models\Genre;
 use App\Models\Playlist;
-use App\Services\Playlists\PlaylistCoverFactory;
 use App\Models\Track;
 use App\Models\User;
+use App\Services\Playlists\PlaylistCoverFactory;
 use App\Traits\ScopesByCountry;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
@@ -394,6 +395,9 @@ class CreateCountrySubChannels extends Command
             $owner->username = $username;
             $owner->name = 'Keekii';
             $owner->email = $username.'@localhost';
+            // set, but to a random hash nobody knows: this account exists to
+            // carry a byline, so it must never be a usable way in
+            $owner->password = Hash::make(Str::random(48));
             $owner->save();
 
             $this->line("  created editorial owner '{$owner->name}'");
@@ -480,7 +484,10 @@ class CreateCountrySubChannels extends Command
                 $picked->mapWithKeys(fn($track, $i) => [$track->id => ['position' => $i]])->all(),
             );
 
-            $playlist->editors()->syncWithoutDetaching([$ownerId]);
+            // set rather than syncWithoutDetaching: the admin account was attached as an
+            // editor back when these playlists were owned by it, and leaving it
+            // there would keep the admin account on the public byline
+            $playlist->editors()->sync([$ownerId]);
 
             $ids->push($playlist->id);
         }
