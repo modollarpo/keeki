@@ -1,5 +1,6 @@
 <?php
 
+use App\Console\Commands\ImportCountryArtists;
 use App\Console\Commands\ImportMissingLyrics;
 use App\Console\Commands\ResetDemoAdminAccount;
 use App\Console\Commands\ResolveYoutubeSources;
@@ -48,6 +49,16 @@ Schedule::call(function () {
 Schedule::command(ImportMissingLyrics::class, ['--limit' => 150])
     ->dailyAt('04:10')
     ->name('import-missing-lyrics')
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// Backfill the country markets the Deezer-derived catalogue cannot cover on its
+// own (GH, IN, JP and the thinner ones) by importing a curated list of real
+// artists, then verifying each one's country against its own Wikipedia bio.
+// Resumable: already-mapped artists are skipped without touching the network.
+Schedule::command(ImportCountryArtists::class, ['--limit' => 40])
+    ->dailyAt('04:30')
+    ->name('import-country-artists')
     ->withoutOverlapping()
     ->onOneServer();
 
