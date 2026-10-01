@@ -138,23 +138,44 @@ trait FetchesExternalArtistBio
         // capitalisation is deliberate.
         $firstLetterUpper = mb_strtoupper(mb_substr($name, 0, 1)).mb_substr($name, 1);
 
+        // Providers sometimes return a name in all caps ("ROSALIA"). Wikipedia
+        // titles are case-sensitive and always proper-cased, so fold those with
+        // a UTF-8 aware title case - but only when the entire name is uppercase,
+        // because applying it unconditionally would turn "A.R. Rahman" into
+        // "A.r. Rahman" and lose a real article.
+        $folded = $name === mb_strtoupper($name, 'UTF-8')
+            ? mb_convert_case(mb_strtolower($name, 'UTF-8'), MB_CASE_TITLE, 'UTF-8')
+            : $firstLetterUpper;
+
         // The raw name first, so an exactly-matching article wins before any
         // disambiguation guess is tried. "(singer)", "(musician)" and friends
         // catch the common "Artist (band)" / "Artist (rapper)" article titles.
         $titles = array_unique([
             str_replace(' ', '_', $name),
             str_replace(' ', '_', $firstLetterUpper),
+            str_replace(' ', '_', $folded),
             $normalized,
-            $normalized.'_(singer)',
-            $normalized.'_(rapper)',
-            $normalized.'_(band)',
-            $normalized.'_(musician)',
-            $normalized.'_(singer-songwriter)',
-            $normalized.'_(recording_artist)',
-            // K-pop and J-pop articles usually sit under these two
-            $normalized.'_(entertainer)',
-            $normalized.'_(songwriter)',
         ]);
+
+        // Every capitalisation form gets the suffixed variants. Building them from
+        // the lowercased form alone silently misses articles whose title keeps
+        // its capitals: IU's biography is at "IU (entertainer)", not
+        // "Iu (entertainer)", so only the disambiguation page came back.
+        // Five suffixes keeps the total at or under exlimit; a longer list would
+        // leave some requested titles without extracts.
+        foreach (array_unique([$name, $firstLetterUpper, $folded, $normalized]) as $prefix) {
+            foreach ([
+                '_(singer)',
+                '_(band)',
+                '_(musician)',
+                '_(entertainer)',
+                '_(rapper)',
+            ] as $suffix) {
+                $titles[] = str_replace(' ', '_', $prefix).$suffix;
+            }
+        }
+
+        $titles = array_values(array_unique($titles));
 
         // each title is encoded individually so that "&", "#", "?" and other
         // characters in an artist name cannot break the query string
