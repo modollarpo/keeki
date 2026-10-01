@@ -26,13 +26,22 @@ class DetectArtistCountry
     /**
      * Music roles that identify the sentence as a nationality statement.
      */
-    private const ROLE_WORDS = 'singer|singers|singer-songwriter|songwriter|rapper|rapper-songwriter|artist|artists|musician|musicians|band|bandleader|group|groups|duo|trio|quartet|composer|producer|record producer|dj|disc jockey|performer|vocalist|guitarist|drummer|beatmaker|multi-instrumentalist|instrumentalist|recordings? artist|recording artist|emcee|mc';
+    private const ROLE_WORDS = 'singer|singers|singer-songwriter|songwriter|rapper|rapper-songwriter|artist|artists|musician|musicians|band|bandleader|group|groups|duo|trio|quartet|composer|producer|record producer|music director|lyricist|dj|disc jockey|performer|vocalist|guitarist|drummer|trumpeter|beatmaker|multi-instrumentalist|instrumentalist|recordings? artist|recording artist|emcee|mc';
 
     /**
-     * Optional qualifier between a demonym and the role, so that group leads
-     * read as nationality: "a South Korean girl group" is still South Korean.
+     * Text that may sit between a demonym and the role that makes it a
+     * nationality claim. Wikipedia loves to qualify the genre:
+     * "a German hard rock/heavy metal band", "a French electronic music duo",
+     * "an Indian playback singer". An earlier version only allowed a short
+     * whitelist, which pushed those artists onto the weak fallback rule and
+     * left them permanently below threshold.
+     *
+     * It cannot cross a sentence end, is capped so it cannot drift across the
+     * whole lead, and will not start on a conjunction - so a second clause like
+     * "a British singer who later became an American rapper" produces two
+     * competing high scores and is held as ambiguous rather than guessed.
      */
-    private const ROLE_FILLER = '(?:\s+(?:girl|boy|female|male|all-female|all-boy|pop|rock|rap|jazz|folk|traditional|electronic))?';
+    private const ROLE_FILLER = '(?:\s+(?!(?:is|was|are|were|and|or|but|who|which|that)\b)[^.\n;]{0,45}?)?';
 
     /**
      * Words that turn a country mention into "they went there" instead of

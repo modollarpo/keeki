@@ -94,6 +94,42 @@ class TestCountryDetection extends Command
             'Blackpink is a South Korean girl group formed in Seoul, South Korea in 2016.',
             'KR',
         ],
+        // Real Wikipedia leads that the first version of the patterns missed,
+        // because a genre or descriptor sits between the demonym and the role.
+        'A.R. Rahman' => [
+            'Allah Rakha Rahman (; born A. S. Dileep Kumar; 6 January 1967), also known as ARR, is an Indian composer and music director.',
+            'IN',
+        ],
+        'Scorpions' => [
+            'The Scorpions are a German hard rock/heavy metal band formed in Hanover in 1965 by guitarist Rudolf Schenker.',
+            'DE',
+        ],
+        'Daft Punk' => [
+            'Daft Punk were a French electronic music duo formed in 1993 in Paris by Thomas Bangalter and Guy-Manuel de Homem-Christo.',
+            'FR',
+        ],
+        'ZARD' => [
+            'Zard (; Zdo) (stylized as ZARD) were a Japanese pop rock group, originally with five members.',
+            'JP',
+        ],
+        'Seeed' => [
+            'Seeed is a German hip hop, reggae and dancehall band based in Berlin. Founded in 1998.',
+            'DE',
+        ],
+        'Sia' => [
+            'Sia Kate Isobelle Furler ( SEE-; born 18 December 1975) is an Australian singer and songwriter.',
+            'AU',
+        ],
+        'Shania Twain' => [
+            'Eilleen Regina "Shania" Twain (nee Edwards; born August 28, 1965) is a Canadian singer-songwriter.',
+            'CA',
+        ],
+        // The looser filler must not drift from one clause into the next and claim
+        // the nationality mentioned in passing. The primary claim wins.
+        'filler-must-not-drift' => [
+            'Alex Smith is a British singer who later became an American rapper.',
+            'GB',
+        ],
         // no usable nationality -> must stay unresolved
         'no-signal' => [
             'John Example is a musician and record producer active since the 1990s. He has released records in Germany, France and Japan.',
