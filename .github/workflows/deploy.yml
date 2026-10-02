@@ -43,7 +43,25 @@ jobs:
             --exclude='./release' \
             .
 
-      # 5️⃣ Stage build in azureuser home (no permission issues)
+      # 5️⃣ Clear deploy staging
+      # The install step rsyncs *from* these staging dirs *into* the app, and
+      # `rsync --delete` only removes what is missing at the source. scp, by
+      # contrast, overwrites and never removes, so a hashed bundle the build
+      # dropped stayed in staging and was copied straight back to the server on
+      # every later deploy. Wiping staging first makes the deployed asset tree
+      # match the current build exactly.
+      - name: Clear deploy staging directories
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            rm -rf /home/azureuser/deploy/public/build /home/azureuser/deploy/php-source
+            mkdir -p /home/azureuser/deploy/public/build
+
+      # 6️⃣ Stage build in azureuser home (no permission issues)
       - name: Stage build for deploy
         uses: appleboy/scp-action@v1
         with:
@@ -55,7 +73,7 @@ jobs:
           target: '/home/azureuser/deploy/'
           overwrite: true
 
-      # 6️⃣ Stage PHP source tarball
+      # 7️⃣ Stage PHP source tarball
       - name: Stage PHP source
         uses: appleboy/scp-action@v1
         with:
@@ -67,7 +85,7 @@ jobs:
           target: '/home/azureuser/deploy/'
           overwrite: true
 
-      # 7️⃣ rsync into place, restore ownership, refresh autoload + caches, restart PHP-FPM
+      # 8️⃣ rsync into place, restore ownership, refresh autoload + caches, restart PHP-FPM
       - name: Install build + PHP source, restart PHP-FPM
         uses: appleboy/ssh-action@v1
         with:
