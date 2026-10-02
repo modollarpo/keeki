@@ -33,7 +33,16 @@ trait RendersClientSideApp
 
         // seo should not be included only for non-internal API requests
         if (isset($seoTagsView) && (!$isApiRequest || $requestIsFromFrontend)) {
-            $data['seoTags'] = view($seoTagsView, $data)->render();
+            // keekii: editable SEO views are authored on the server, so strip
+            // BOM/zero-width chars here. A leading U+FEFF makes the parser close
+            // <head> early (remaining meta/title/link land in <body>) and forms a
+            // phantom line box that pushed #root down 24px, clipping the mobile
+            // player bar. Re-apply after re-syncing common/foundation.
+            $data['seoTags'] = str_replace(
+                ["\u{FEFF}", "\u{200B}", "\u{200C}", "\u{200D}", "\u{2060}"],
+                '',
+                view($seoTagsView, $data)->render(),
+            );
         }
 
         // if it's an API request, simply return data as JSON
