@@ -2,6 +2,7 @@
 
 namespace App\Services\Tracks;
 
+use App\Http\Middleware\RequireAuthForPlayback;
 use App\Models\Album;
 use App\Models\Artist;
 use App\Models\Genre;
@@ -145,7 +146,18 @@ class TrackLoader
 
         // set "src_local" so we know on frontend if track is locally uploaded
         // and update "src" based on file entry backend so custom domain is reflected
-        if (requestIsFromFrontend() || Auth::user()?->hasPermission('admin')) {
+        //
+        // "src" is the only place a playable source is ever serialized, and for
+        // provider backed tracks it holds a bare YouTube video id, which the
+        // player turns straight into an embed url. Handing it to a guest would
+        // therefore hand over playback and make the route level guard pointless,
+        // so it is withheld while the "signed-in users only can play" setting is
+        // on. Without "src" the player falls back to asking the api to resolve
+        // one, and that request is refused too.
+        if (
+            (requestIsFromFrontend() || Auth::user()?->hasPermission('admin'))
+            && ! RequireAuthForPlayback::blocks(Auth::user())
+        ) {
             $resource['src'] = $track->src;
             $resource['src_local'] = false;
 

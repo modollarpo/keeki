@@ -5,15 +5,14 @@ import {getArtistLink} from '@app/web-player/artists/artist-link';
 import {ArtistPageSubtitle} from '@app/web-player/artists/artist-page/artist-page-subtitle';
 import {GetArtistResponse} from '@app/web-player/artists/requests/get-artist-response';
 import {
-  ContentCarouselControls,
+  ContentCarouselNav,
   useContentCarouselControls,
-} from '@app/web-player/channels/channel-content-carousel';
+} from '@app/web-player/playable-item/content-carousel-nav';
 import {ContentGrid} from '@app/web-player/playable-item/content-grid';
 import {useRequiredParams} from '@common/ui/navigation/use-required-params';
 import {LinkButton} from '@shadcn/button/button';
 import {useSuspenseQuery} from '@tanstack/react-query';
 import {Trans} from '@ui/i18n/trans';
-import {useRef} from 'react';
 
 type GroupedAlbums = NonNullable<GetArtistResponse['grouped_albums']>;
 
@@ -46,20 +45,19 @@ function AlbumsCarousel({albums, albumType}: AlbumsCarouselProps) {
     appQueries.artists.show(artistId).artist('artistPage'),
   );
   const controls = useContentCarouselControls();
-  const containerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="mb-11" ref={containerRef}>
+    <div className="mb-11">
+      {/* Header line: section name left, "View all" right. */}
       <div className="mb-2.5 flex items-center">
         <ArtistPageSubtitle margin="m-0">
           <AlbumTypeDisplayName albumType={albumType} />
         </ArtistPageSubtitle>
-        <ContentCarouselControls {...controls} className="ml-auto" />
         {albums.hasMore ? (
           <LinkButton
             size="sm"
             variant="outline"
-            className="ml-2"
+            className="ml-auto"
             to={`${getArtistLink(artistQuery.data.artist, {absolute: true})}/albums?recordType=${albumType}`}
           >
             <Trans message="View all" />
@@ -67,15 +65,22 @@ function AlbumsCarousel({albums, albumType}: AlbumsCarouselProps) {
         ) : null}
       </div>
 
-      <ContentGrid
-        isCarousel
-        contentModel="album"
-        containerRef={controls.containerRefCallback}
-      >
-        {albums.data.map(item => (
-          <AlbumGridItem key={item.id} album={item} />
-        ))}
-      </ContentGrid>
+      {/* Arrows flank the rail itself, the way a product carousel does. */}
+      <ContentCarouselNav controls={controls}>
+        {/* The rail is its own container so the grid keeps laying out against
+            the width it actually occupies rather than the full page width. */}
+        <div className="@container min-w-0 flex-1">
+          <ContentGrid
+            isCarousel
+            contentModel="album"
+            containerRef={controls.containerRefCallback}
+          >
+            {albums.data.map(item => (
+              <AlbumGridItem key={item.id} album={item} />
+            ))}
+          </ContentGrid>
+        </div>
+      </ContentCarouselNav>
     </div>
   );
 }

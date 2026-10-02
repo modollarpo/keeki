@@ -51,6 +51,7 @@ use App\Http\Controllers\UserProfile\UserProfileController;
 use App\Http\Controllers\WaveController;
 use App\Http\Controllers\YoutubeLogController;
 use App\Http\Controllers\YoutubeStreamController;
+use App\Http\Middleware\RequireAuthForPlayback;
 use Common\Auth\Controllers\FollowedUsersController;
 use Common\Auth\Controllers\FollowersController;
 use Common\Channels\ChannelContentOrderController;
@@ -63,7 +64,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['optionalAuth:sanctum', 'verifi
     Route::get('landing-page-data', LandingPageController::class);
 
     // SEARCH
-    Route::get('search/audio/{trackId}/{artistName}/{trackName}', [SearchController::class, 'searchAudio']);
+    Route::get('search/audio/{trackId}/{artistName}/{trackName}', [SearchController::class, 'searchAudio'])
+        ->middleware(RequireAuthForPlayback::class);
     Route::get('search', [SearchController::class, 'index']);
     Route::get('search/model/{modelType}', [SearchController::class, 'searchSingleModelType']);
     Route::get('search/suggestions/artist', [ArtistSearchSuggestionsController::class, 'index']);
@@ -185,19 +187,22 @@ Route::group(['prefix' => 'v1', 'middleware' => ['optionalAuth:sanctum', 'verifi
     // YOUTUBE
     Route::post('youtube/log-client-error', [YoutubeLogController::class, 'store']);
     Route::get('youtube/streams/{videoId}', [YoutubeStreamController::class, 'show'])
-        ->withoutMiddleware('verifyApiAccess');
+        ->withoutMiddleware('verifyApiAccess')
+        ->middleware(RequireAuthForPlayback::class);
 
     // AUDIUS
     Route::get('audius/search', [AudiusStreamController::class, 'search'])
         ->withoutMiddleware('verifyApiAccess');
     Route::get('audius/streams/{trackId}', [AudiusStreamController::class, 'show'])
-        ->withoutMiddleware('verifyApiAccess');
+        ->withoutMiddleware('verifyApiAccess')
+        ->middleware(RequireAuthForPlayback::class);
 
     // JAMENDO
     Route::get('jamendo/search', [JamendoStreamController::class, 'search'])
         ->withoutMiddleware('verifyApiAccess');
     Route::get('jamendo/streams/{trackId}', [JamendoStreamController::class, 'show'])
-        ->withoutMiddleware('verifyApiAccess');
+        ->withoutMiddleware('verifyApiAccess')
+        ->middleware(RequireAuthForPlayback::class);
 
     // RADIO BROWSER
     Route::get('radio/stations', [RadioBrowserController::class, 'search'])
@@ -209,9 +214,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['optionalAuth:sanctum', 'verifi
 
     // STREAM (temp playable source for tracks without a stored one)
     Route::get('stream/{track}.mp3', [PreviewStreamController::class, 'show'])
-        ->withoutMiddleware('verifyApiAccess');
+        ->withoutMiddleware('verifyApiAccess')
+        ->middleware(RequireAuthForPlayback::class);
     Route::get('stream/{track}', [PreviewStreamController::class, 'show'])
-        ->withoutMiddleware('verifyApiAccess');
+        ->withoutMiddleware('verifyApiAccess')
+        ->middleware(RequireAuthForPlayback::class);
 
     // IMPORT
     Route::post('import-media/single-item', [ImportMediaController::class, 'import']);
