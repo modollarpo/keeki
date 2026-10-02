@@ -173,7 +173,7 @@ export function ContentCarouselNav({
         <ContentCarouselArrow
           controls={controls}
           direction="prev"
-          className="absolute left-0 top-1/2 z-10 -translate-y-1/2"
+          className="absolute left-0 top-1/2 z-40 -translate-y-1/2"
         />
       ) : null}
       {children}
@@ -181,7 +181,7 @@ export function ContentCarouselNav({
         <ContentCarouselArrow
           controls={controls}
           direction="next"
-          className="absolute right-0 top-1/2 z-10 -translate-y-1/2"
+          className="absolute right-0 top-1/2 z-40 -translate-y-1/2"
         />
       ) : null}
     </div>
