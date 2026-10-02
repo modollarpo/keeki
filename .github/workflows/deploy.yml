@@ -147,6 +147,11 @@ jobs:
             # Runs after channels:country, and falls back to a plain artist grid per market
             # on error so a country page can never end up empty.
             sudo -u www-data -H php /var/www/bemusic/artisan channels:country:expand || echo 'channels:country:expand skipped'
+            # Give the genre page's artist/album sections the same carousel navigation as
+            # every other rail. Nested genre channels are laid out by `nestedLayout`, and a
+            # database seeded before that key existed kept `grid`, so they rendered as a
+            # flat grid with no arrows. Idempotent, and skips country genre sections.
+            sudo -u www-data -H php /var/www/bemusic/artisan channels:genre:carousel || echo 'channels:genre:carousel skipped'
             # Read-only diagnostics: how much of the catalogue is real vs demo, and
             # whether the Wikipedia bios could yield a country per market. Writes nothing.
             echo '--- music:audit-countries ---'

@@ -50,12 +50,12 @@ export function SimilarArtistsCarousel({
         </Link>
       </div>
 
-      {/* Arrows overlay the two ends of the rail, so the rail keeps the full
+      {/* Arrows sit beside the rail, so the rail keeps nearly the full
           section width it had before. */}
       <ContentCarouselNav controls={controls}>
-        {/* The rail is its own container so the grid lays out against the
+        {/* The rail is its own flex child so the grid lays out against the
             width it actually occupies rather than the full page width. */}
-        <div className="@container w-full min-w-0">
+        <div className="@container min-w-0 flex-1">
           <ContentGrid
             isCarousel
             contentModel="artist"
