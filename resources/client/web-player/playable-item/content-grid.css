@@ -33,9 +33,6 @@
   position: relative;
   width: 100%;
   min-width: 0;
-
-  /* used only by the narrow fallback below */
-  container-type: inline-size;
 }
 
 .carousel-nav-arrow {
@@ -45,33 +42,33 @@
   transform: translateY(-50%);
 }
 
+/* Default placement: tucked against the ends of the rail, on top of the outer
+   edge of the first and last visible cover. This always works, because it
+   cannot run off the side of the screen. */
 .carousel-nav-arrow-prev {
+  left: 8px;
+}
+
+.carousel-nav-arrow-next {
+  right: 8px;
+}
+
+/* When the page gutter beside the rail is wide enough to hold an arrow without
+   pushing it off screen, step them fully outside the rail so they clear the
+   covers. The switch is made from the measured space rather than a width
+   breakpoint, because the space depends on the surrounding page - a sidebar,
+   or a centred max-width container, gives very different gutters at the same
+   viewport width. */
+.carousel-nav-arrow-gutter.carousel-nav-arrow-prev {
   left: 0;
   margin-left: -10px;
   transform: translate(-100%, -50%);
 }
 
-.carousel-nav-arrow-next {
+.carousel-nav-arrow-gutter.carousel-nav-arrow-next {
   right: 0;
   margin-right: -10px;
   transform: translate(100%, -50%);
-}
-
-/* A section that runs to the edge of its container has no gutter to sit in, so
-   the arrows tuck against the ends of the rail instead. They stay absolutely
-   positioned, so the fallback costs nothing in card size. */
-@container (max-width: 520px) {
-  .carousel-nav-arrow-prev {
-    left: 4px;
-    margin-left: 0;
-    transform: translateY(-50%);
-  }
-
-  .carousel-nav-arrow-next {
-    right: 4px;
-    margin-right: 0;
-    transform: translateY(-50%);
-  }
 }
 
 .carousel-grid {
