@@ -26,28 +26,12 @@ export function useCaptcha(action: CaptchaAction, disabled = false) {
 
   useEffect(() => {
     let cancelled = false;
+    // The onload callback and the poll below can both fire, so rendering has
+    // to be idempotent: a second render throws "reCAPTCHA has already been
+    // rendered in this element".
+    let renderAttempted = false;
     if (captchaEnabled && !cancelled && !alreadyRendered.current) {
       if (cancelled || alreadyRendered.current) return;
-
-      const renderCaptcha = () => {
-        if (provider === 'recaptcha') {
-          window.grecaptcha.render('captcha-container', {
-            sitekey: siteKey,
-            action,
-            callback: function (token: string) {
-              setCaptchaToken(token);
-            },
-          });
-        } else {
-          turnstile.render('#captcha-container', {
-            sitekey: siteKey,
-            action,
-            callback: function (token: string) {
-              setCaptchaToken(token);
-            },
-          });
-        }
-      };
 
       // The provider script publishes its global before the API surface is
       // populated, so the mere presence of `window.grecaptcha`/`window.turnstile`
@@ -59,23 +43,54 @@ export function useCaptcha(action: CaptchaAction, disabled = false) {
           ? typeof window.grecaptcha?.render === 'function'
           : typeof window.turnstile?.render === 'function';
 
+      const renderCaptcha = () => {
+        if (renderAttempted || cancelled || !isProviderReady()) return;
+        renderAttempted = true;
+        try {
+          if (provider === 'recaptcha') {
+            window.grecaptcha.render('captcha-container', {
+              sitekey: siteKey,
+              action,
+              callback: function (token: string) {
+                setCaptchaToken(token);
+              },
+            });
+          } else {
+            turnstile.render('#captcha-container', {
+              sitekey: siteKey,
+              action,
+              callback: function (token: string) {
+                setCaptchaToken(token);
+              },
+            });
+          }
+        } catch (e) {
+          // The container can already hold a widget from an earlier mount,
+          // which the provider reports by throwing. The widget is present,
+          // which is all that is needed here, so this is not fatal.
+        }
+      };
+
       if (isProviderReady()) {
         setTimeout(renderCaptcha);
       } else {
+        // Chain rather than replace, so a second captcha consumer mounting
+        // before the script loads does not drop the first one's render.
+        const previousOnload = window.captchaOnloadCallback;
         window.captchaOnloadCallback = function () {
+          previousOnload?.();
           renderCaptcha();
         };
 
         // The script may already be loaded and may already have fired its
-        // onload callback, in which case waiting on the callback would never
-        // resolve. Poll as well so a late-arriving API is still picked up.
+        // onload callback, in which case waiting on the callback alone would
+        // never resolve. Poll as well so a late-arriving API is still picked
+        // up.
         const startedAt = Date.now();
         const interval = setInterval(() => {
-          if (isProviderReady() || Date.now() - startedAt > 15000) {
+          renderCaptcha();
+          if (renderAttempted || Date.now() - startedAt > 15000) {
             clearInterval(interval);
-            if (isProviderReady()) {
-              renderCaptcha();
-            }
           }
         }, 250);
       }
