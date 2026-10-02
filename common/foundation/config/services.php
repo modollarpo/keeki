@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'ftp' => [
@@ -112,12 +112,21 @@ return [
         'secret' => env('MAILGUN_SECRET'),
         'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
     ],
-    'envato' => [
-        'client_id' => env('ENVATO_ID'),
-        'client_secret' => env('ENVATO_SECRET'),
-        'personal_token' => env('ENVATO_PERSONAL_TOKEN'),
-        'redirect' => env('APP_URL') . '/secure/auth/social/envato/callback',
+
+    'ses' => [
+        'key' => env('AWS_ACCESS_KEY_ID'),
+        'secret' => env('AWS_SECRET_ACCESS_KEY'),
+        'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+
+    'postmark' => [
+        'token' => env('POSTMARK_TOKEN'),
+    ],
+
+    'resend' => [
+        'key' => env('RESEND_KEY'),
+    ],
+
     'slack' => [
         'webhook_url' => env('SLACK_WEBHOOK_URL'),
         'notifications' => [
@@ -131,5 +140,11 @@ return [
     'cloudflare' => [
         'account_id' => env('CLOUDFLARE_ACCOUNT_ID'),
         'api_token' => env('CLOUDFLARE_API_TOKEN'),
+    ],
+    'envato' => [
+        'client_id' => env('ENVATO_ID'),
+        'client_secret' => env('ENVATO_SECRET'),
+        'personal_token' => env('ENVATO_PERSONAL_TOKEN'),
+        'redirect' => env('APP_URL') . '/secure/auth/social/envato/callback',
     ],
 ];
