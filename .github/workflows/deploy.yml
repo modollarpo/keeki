@@ -157,6 +157,9 @@ jobs:
             echo '--- music:audit-countries ---'
             sudo -u www-data -H php /var/www/bemusic/artisan music:audit-countries || echo 'music:audit-countries skipped'
             sudo -u www-data -H php /var/www/bemusic/ops/sync-settings.php || echo 'settings sync skipped'
+            # Admin-editable SEO overrides for the public pages. Named explicitly
+            # because this deploy does not run a blanket `migrate`.
+            sudo -u www-data -H php /var/www/bemusic/artisan migrate --force --path=database/migrations/2026_10_02_000000_create_company_page_seo_overrides_table.php || echo 'company page seo migration skipped'
             sudo -u www-data php artisan cache:clear 2>/dev/null || echo 'cache:clear skipped'
             sudo systemctl restart php8.3-fpm
             echo 'Deploy complete'

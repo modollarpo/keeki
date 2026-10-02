@@ -2,6 +2,9 @@
 
 namespace App\Support;
 
+use App\Models\CompanyPageSeoOverride;
+use Illuminate\Database\QueryException;
+
 /**
  * Server-side SEO copy for Keekii's public marketing, plan and legal pages.
  *
@@ -240,7 +243,50 @@ class CompanyPageSeo
             'path' => $key,
             'slug' => trim($key, '/'),
             ...$pages[$key],
+            ...static::overrides()[$key] ?? [],
         ];
+    }
+
+    /**
+     * Admin overrides, keyed by path, as a sparse array of only the fields that
+     * were actually changed.
+     *
+     * This is the only place that reads the overrides table, and it is reached
+     * from a public page render, so a missing table must never take a page
+     * down: the code defaults are always a correct answer.
+     *
+     * @return array<string, array{title?: string, description?: string}>
+     */
+    public static function overrides(): array
+    {
+        try {
+            $rows = CompanyPageSeoOverride::query()->get();
+        } catch (QueryException) {
+            // The table arrives with a migration that can run after this code is
+            // already serving. Until it does, every page falls back to the
+            // defaults baked in below.
+            return [];
+        }
+
+        $overrides = [];
+
+        foreach ($rows as $row) {
+            $fields = array_filter(
+                [
+                    'title' => $row->title,
+                    'description' => $row->description,
+                ],
+                // Whitespace only counts as "cleared" too: an empty <title> is
+                // worse for SEO than falling back to the default.
+                fn ($value) => $value !== null && trim((string) $value) !== '',
+            );
+
+            if ($fields !== []) {
+                $overrides[$row->path] = $fields;
+            }
+        }
+
+        return $overrides;
     }
 
     /**

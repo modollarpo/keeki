@@ -1,22 +1,23 @@
-import {CompanySiteLinkWithGroup} from '@app/company/company-site-map';
+import {CompanyPageSeoItem} from '@app/admin/company-pages-queries';
 import {Button} from '@shadcn/button/button';
 import {Dropdown} from '@shadcn/dropdown/dropdown';
 import {Item} from '@shadcn/item/item';
 import {Trans} from '@ui/i18n/trans';
-import {EllipsisIcon, EyeIcon, NewspaperIcon} from 'lucide-react';
 import {useSettings} from '@ui/settings/use-settings';
+import {EllipsisIcon, EyeIcon, NewspaperIcon, SearchIcon} from 'lucide-react';
+import {Link} from 'react-router';
 
 /**
  * A public page whose body is a React component rather than a database record.
  *
  * The marketing, plan and legal pages are routes registered in
  * resources/client/company/company-routes.tsx with their copy in
- * company-siteMap, so there is no custom_pages row for them and no admin form
- * that could edit one. They are listed here so that every page the site serves
- * is visible from one place, with only a preview action - offering Edit or
- * Delete would promise something the page cannot do.
+ * CompanyPageSeo, so there is no custom_pages row to edit. What an admin can
+ * change is the title and description the server writes into the page, which is
+ * what search engines and link previews read, so that is what the Edit action
+ * opens.
  */
-export function StaticCustomPageCard({page}: {page: CompanySiteLinkWithGroup}) {
+export function StaticCustomPageCard({page}: {page: CompanyPageSeoItem}) {
   const {base_url} = useSettings();
 
   return (
@@ -29,13 +30,20 @@ export function StaticCustomPageCard({page}: {page: CompanySiteLinkWithGroup}) {
           <a
             className="hover:underline"
             target="_blank"
-            href={`${base_url}${page.to}`}
+            href={`${base_url}${page.path}`}
           >
             {page.label}
           </a>
         </Item.Title>
         <Item.Description>
-          {page.group} · <Trans message="Managed in code" />
+          {page.group} ·{' '}
+          {page.is_overridden ? (
+            <span className="text-primary">
+              <Trans message="Customised" />
+            </span>
+          ) : (
+            <Trans message="Managed in code" />
+          )}
         </Item.Description>
       </Item.Content>
       <Item.Actions>
@@ -45,9 +53,17 @@ export function StaticCustomPageCard({page}: {page: CompanySiteLinkWithGroup}) {
           </Dropdown.Trigger>
           <Dropdown.Content align="end">
             <Dropdown.LinkItem
-              href={`${base_url}${page.to}`}
-              target="_blank"
+              render={
+                <Link
+                  to={`company/${page.path.replace(/^\//, '')}`}
+                  relative="path"
+                />
+              }
             >
+              <SearchIcon />
+              <Trans message="Edit SEO" />
+            </Dropdown.LinkItem>
+            <Dropdown.LinkItem href={`${base_url}${page.path}`} target="_blank">
               <EyeIcon />
               <Trans message="Preview" />
             </Dropdown.LinkItem>

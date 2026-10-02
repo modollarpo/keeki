@@ -13,6 +13,7 @@
 
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\AudiusStreamController;
+use App\Http\Controllers\CompanyPageSeoController;
 use App\Http\Controllers\JamendoStreamController;
 use App\Http\Controllers\RadioBrowserController;
 use App\Http\Controllers\TagsController;
@@ -72,6 +73,15 @@ Route::group(['prefix' => 'v1', 'middleware' => ['optionalAuth:sanctum', 'verifi
     Route::get('search/suggestions/artist/{id}', [ArtistSearchSuggestionsController::class, 'show']);
     Route::get('search/suggestions/album', [AlbumSearchSuggestionsController::class, 'index']);
     Route::get('search/suggestions/album/{id}', [AlbumSearchSuggestionsController::class, 'show']);
+
+    // COMPANY PAGES
+    // SEO title/description for the static public pages. The page path travels in
+    // the body/query rather than the URL, because the paths carry slashes
+    // themselves (/plans/premium-family) and percent-encoding those is not
+    // dependable across web servers.
+    Route::get('company-page-seo', [CompanyPageSeoController::class, 'index']);
+    Route::put('company-page-seo', [CompanyPageSeoController::class, 'update']);
+    Route::delete('company-page-seo', [CompanyPageSeoController::class, 'destroy']);
 
     // CHANNELS
     Route::post('channel/{channel}/update-content', [ChannelController::class, 'updateContent']);

@@ -1,3 +1,4 @@
+import {listCompanyPageSeoOptions} from '@app/admin/company-pages-queries';
 import {
   listCustomPagesOptions,
   retrieveCustomPageOptions,
@@ -14,7 +15,11 @@ export const adminCustomPagesRoutes: Record<string, RouteObject> = {
     loader: async () => {
       const redirect = authGuard({permission: 'custom_pages.update'});
       if (redirect) return redirect;
-      await queryClient.ensureQueryData(listCustomPagesOptions());
+      await Promise.all([
+        queryClient.ensureQueryData(listCustomPagesOptions()),
+        // The same view also lists the code-managed public pages.
+        queryClient.ensureQueryData(listCompanyPageSeoOptions()),
+      ]);
     },
   },
   create: {
@@ -31,6 +36,16 @@ export const adminCustomPagesRoutes: Record<string, RouteObject> = {
       await queryClient.ensureQueryData(
         retrieveCustomPageOptions(params.pageId!),
       );
+    },
+  },
+  companySeo: {
+    // Wildcard, not a param, because the page paths contain slashes themselves.
+    path: 'custom-pages/company/*',
+    lazy: () => import('@common/admin/custom-pages/company-page-seo-form'),
+    loader: async () => {
+      const redirect = authGuard({permission: 'custom_pages.update'});
+      if (redirect) return redirect;
+      await queryClient.ensureQueryData(listCompanyPageSeoOptions());
     },
   },
 };

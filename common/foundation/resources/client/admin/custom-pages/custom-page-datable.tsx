@@ -1,5 +1,5 @@
 import {AdminDocsUrls} from '@app/admin/admin-config';
-import {getCompanySiteLinks} from '@app/company/company-site-map';
+import {listCompanyPageSeoOptions} from '@app/admin/company-pages-queries';
 import {CustomPageCard} from '@common/admin/custom-pages/custom-page-card';
 import {StaticCustomPageCard} from '@common/admin/custom-pages/static-custom-page-card';
 import {listCustomPagesOptions} from '@common/admin/custom-pages/custom-pages-queries';
@@ -35,20 +35,24 @@ export function Component() {
 
   // The marketing, plan and legal pages are React routes, not custom_pages
   // rows, so the list endpoint never returns them. Without this the admin would
-  // claim the site has three pages when it actually serves thirty.
-  const staticPages = useMemo(() => getCompanySiteLinks(), []);
+  // claim the site has three pages when it actually serves thirty. The SEO
+  // endpoint is what knows about them, and it also reports which ones an admin
+  // has already customised.
+  const seoQuery = useSuspenseQuery(listCompanyPageSeoOptions());
 
   const filteredStaticPages = useMemo(() => {
+    const staticPages = seoQuery.data;
+
     if (!searchParams.query) {
       return staticPages;
     }
     return staticPages.filter(page =>
       filter.contains(
-        `${page.label} ${page.to}`,
+        `${page.label} ${page.path}`,
         searchParams.query as string,
       ),
     );
-  }, [staticPages, searchParams.query, filter]);
+  }, [seoQuery.data, searchParams.query, filter]);
 
   return (
     <DashboardLayout.MainSection>
@@ -82,7 +86,7 @@ export function Component() {
                 <Trans message="Public pages" />
               </h2>
               {filteredStaticPages.map(page => (
-                <StaticCustomPageCard key={page.to} page={page} />
+                <StaticCustomPageCard key={page.path} page={page} />
               ))}
             </>
           )}
