@@ -92,7 +92,10 @@ function Main({className}: MainProps) {
     <main
       ref={scrollContainerRef}
       className={cn(
-        'compact-scrollbar stable-scrollbar relative flex-auto overflow-x-hidden',
+        // min-h-0 makes this the only child allowed to give up height. The
+        // navbar and the player bar are both shrink-0, so a long page can never
+        // squeeze them out of the viewport and they stay reachable.
+        'compact-scrollbar stable-scrollbar relative min-h-0 flex-auto overflow-x-hidden',
         className,
       )}
     >

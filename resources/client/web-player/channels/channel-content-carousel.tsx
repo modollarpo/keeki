@@ -21,11 +21,12 @@ export function ChannelContentCarousel(props: Props) {
       {/* Heading owns the whole header line: title left, "See all" right. */}
       <ChannelHeading {...props} />
 
-      {/* Arrows flank the rail itself, the way a product carousel does. */}
+      {/* Arrows overlay the two ends of the rail, so the rail keeps the full
+          section width it had before and lines up with the grids around it. */}
       <ContentCarouselNav controls={controls}>
-        {/* The rail is its own container so the grid keeps laying out against
-            the width it actually occupies rather than the full page width. */}
-        <div className="@container min-w-0 flex-1">
+        {/* The rail is its own container so the grid lays out against the
+            width it actually occupies rather than the full page width. */}
+        <div className="@container w-full min-w-0">
           <ContentGrid
             layout={layout}
             isCarousel

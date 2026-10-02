@@ -27,7 +27,14 @@ import {ComponentProps, ReactElement} from 'react';
 
 export function MobilePlayerControls() {
   return (
-    <div className="relative overflow-hidden border-t border-border/50 shadow-[0_-4px_32px_rgba(0,0,0,0.1)] w-full pb-[env(safe-area-inset-bottom)]">
+    // shrink-0 is load bearing. The layout is an h-screen flex column whose
+    // middle child is <main class="flex-auto">, i.e. flex: 1 1 auto, so its
+    // flex basis is the full height of the page content. When the column
+    // overflows, that enormous basis wins the shrink contest and this bar, with
+    // its tiny 67px basis, got squeezed to about 22px and pushed off the bottom
+    // of the viewport, taking the bottom navigation with it. Refusing to shrink
+    // hands the space back to <main>, which scrolls.
+    <div className="relative shrink-0 overflow-hidden border-t border-border/50 shadow-[0_-4px_32px_rgba(0,0,0,0.1)] w-full pb-[env(safe-area-inset-bottom)]">
       <PlayerBarAmbientBackground />
       <PlayerControls />
       <MobileNavbar />

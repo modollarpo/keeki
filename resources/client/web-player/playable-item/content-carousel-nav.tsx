@@ -121,7 +121,10 @@ export function ContentCarouselArrow({
       size="icon"
       disabled={disabled}
       aria-label={isPrev ? 'Scroll carousel left' : 'Scroll carousel right'}
-      className={cn('rounded-full', className)}
+      className={cn(
+        'rounded-full bg-background/85 backdrop-blur-[2px] shadow-sm hover:bg-background',
+        className,
+      )}
       onClick={() => {
         const el = controls.scrollContainerRef.current;
         if (!el) return;
@@ -142,6 +145,16 @@ interface ContentCarouselNavProps {
  * Wraps the scrolling grid with a leading and a trailing arrow. The child is
  * expected to be the scroll container itself.
  *
+ * The arrows are positioned over the two ends of the rail rather than placed
+ * beside it in the layout. Sitting in the row would steal roughly 90px from the
+ * rail on every section, which made each carousel narrower than the grid above
+ * it and broke the alignment of the page. Overlaying keeps the rail exactly as
+ * wide as it was, and puts the arrows right at the edges where the eye already
+ * expects them.
+ *
+ * Because they now sit on top of the artwork, they carry their own blurred
+ * backdrop so the chevron stays legible over any cover.
+ *
  * Both arrows are dropped while the rail has no overflow, so a short section
  * does not sit there advertising navigation it cannot offer. Before the first
  * measurement they render, because assuming "not scrollable" would visibly
@@ -155,13 +168,21 @@ export function ContentCarouselNav({
   const showArrows = controls.scrollable !== false;
 
   return (
-    <div className={cn('flex items-center gap-1 md:gap-2', className)}>
+    <div className={cn('relative', className)}>
       {showArrows ? (
-        <ContentCarouselArrow controls={controls} direction="prev" />
+        <ContentCarouselArrow
+          controls={controls}
+          direction="prev"
+          className="absolute left-0 top-1/2 z-10 -translate-y-1/2"
+        />
       ) : null}
       {children}
       {showArrows ? (
-        <ContentCarouselArrow controls={controls} direction="next" />
+        <ContentCarouselArrow
+          controls={controls}
+          direction="next"
+          className="absolute right-0 top-1/2 z-10 -translate-y-1/2"
+        />
       ) : null}
     </div>
   );

@@ -65,11 +65,12 @@ function AlbumsCarousel({albums, albumType}: AlbumsCarouselProps) {
         ) : null}
       </div>
 
-      {/* Arrows flank the rail itself, the way a product carousel does. */}
+      {/* Arrows overlay the two ends of the rail, so the rail keeps the full
+          section width it had before. */}
       <ContentCarouselNav controls={controls}>
-        {/* The rail is its own container so the grid keeps laying out against
-            the width it actually occupies rather than the full page width. */}
-        <div className="@container min-w-0 flex-1">
+        {/* The rail is its own container so the grid lays out against the
+            width it actually occupies rather than the full page width. */}
+        <div className="@container w-full min-w-0">
           <ContentGrid
             isCarousel
             contentModel="album"
