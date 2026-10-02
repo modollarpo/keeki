@@ -14,6 +14,66 @@
   }
 }
 
+/* ────────────────────────────────────────────────────────────────────────────
+   Carousel navigation
+
+   .content-grid sizes its cards with
+     grid-auto-columns: calc((100% - (cols - 1) * gap) / cols)
+   so the card width is derived from the rail's own width. Anything the arrows
+   take out of the rail's width shrinks every card on that rail, which is why
+   they used to live in the layout flow as flex siblings.
+
+   They are absolutely positioned instead, outside the rail's box in the page
+   gutter, so the rail keeps the exact width it had before the arrows existed
+   and the cards render at their original size. Nothing is underneath them
+   either: no album cover is covered, and the arrows never contend with a
+   card's hover play button for the pointer.
+   ──────────────────────────────────────────────────────────────────────────── */
+.carousel-nav {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+
+  /* used only by the narrow fallback below */
+  container-type: inline-size;
+}
+
+.carousel-nav-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 40;
+  transform: translateY(-50%);
+}
+
+.carousel-nav-arrow-prev {
+  left: 0;
+  margin-left: -10px;
+  transform: translate(-100%, -50%);
+}
+
+.carousel-nav-arrow-next {
+  right: 0;
+  margin-right: -10px;
+  transform: translate(100%, -50%);
+}
+
+/* A section that runs to the edge of its container has no gutter to sit in, so
+   the arrows tuck against the ends of the rail instead. They stay absolutely
+   positioned, so the fallback costs nothing in card size. */
+@container (max-width: 520px) {
+  .carousel-nav-arrow-prev {
+    left: 4px;
+    margin-left: 0;
+    transform: translateY(-50%);
+  }
+
+  .carousel-nav-arrow-next {
+    right: 4px;
+    margin-right: 0;
+    transform: translateY(-50%);
+  }
+}
+
 .carousel-grid {
   overflow-x: auto;
   overflow-y: hidden;

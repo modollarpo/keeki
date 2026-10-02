@@ -12,10 +12,12 @@ import {ReactNode, RefObject, useCallback, useEffect, useRef, useState} from 're
  *
  * The arrows flank the scrolling grid itself rather than sharing a row with the
  * header, which is the pattern shoppers already know from product rails: the
- * arrows always point at the content they move, they sit at the vertical
- * centre of the items, and they never drift into the header line. Keeping them
- * outside the scroller also means they do not get clipped by the carousel's
- * `overflow-x` or ride along with it while scrolling.
+ * arrows always point at the content they move and they sit at the vertical
+ * centre of the items. They are absolutely positioned outside the scroller
+ * rather than laid out beside it, so they cannot change the width of the rail,
+ * and they cannot be clipped by the carousel's `overflow-x` or ride along with
+ * it while scrolling. See ContentCarouselNav for why width is the deciding
+ * factor here.
  */
 
 export interface ContentCarouselControls {
@@ -121,7 +123,11 @@ export function ContentCarouselArrow({
       size="icon"
       disabled={disabled}
       aria-label={isPrev ? 'Scroll carousel left' : 'Scroll carousel right'}
-      className={cn('rounded-full shadow-sm', className)}
+      className={cn(
+        'carousel-nav-arrow size-9 rounded-full bg-background shadow-sm',
+        isPrev ? 'carousel-nav-arrow-prev' : 'carousel-nav-arrow-next',
+        className,
+      )}
       onClick={() => {
         const el = controls.scrollContainerRef.current;
         if (!el) return;
@@ -140,17 +146,23 @@ interface ContentCarouselNavProps {
 }
 /**
  * Wraps the scrolling grid with a leading and a trailing arrow. The child is
- * expected to be the scroll container itself, inside a `flex-1 min-w-0` wrapper.
+ * expected to be the scroll container itself.
  *
- * The arrows sit in the layout beside the rail rather than on top of it, so they
- * never overlap an album cover and never fight the card artwork for the pointer.
- * They only take the width of the chevron itself, which keeps the rail nearly as
- * wide as it was before.
+ * The arrows are absolutely positioned outside the rail rather than placed in
+ * the layout beside it. That matters for size, not just looks: `.content-grid`
+ * derives its card width from the rail's width, so giving the arrows a share of
+ * it shrank every album cover on the rail. Out of flow, the rail keeps the full
+ * width of the section and the cards render exactly as they did before the
+ * arrows were added, while the arrows sit in the page gutter instead of on top
+ * of a cover.
+ *
+ * Being out of flow also makes them stable. They cannot be pushed around by
+ * content, they cannot resize the rail when they appear or disappear, and
+ * nothing scrolls underneath them, so the click target they present is the same
+ * on every frame.
  *
  * Both arrows are dropped while the rail has no overflow, so a short section
- * does not sit there advertising navigation it cannot offer. Before the first
- * measurement they render, because assuming "not scrollable" would visibly
- * shift the rail in once the ResizeObserver reports back.
+ * does not sit there advertising navigation it cannot offer.
  */
 export function ContentCarouselNav({
   controls,
@@ -160,21 +172,13 @@ export function ContentCarouselNav({
   const showArrows = controls.scrollable !== false;
 
   return (
-    <div className={cn('flex items-center gap-2', className)}>
+    <div className={cn('carousel-nav', className)}>
       {showArrows ? (
-        <ContentCarouselArrow
-          controls={controls}
-          direction="prev"
-          className="shrink-0"
-        />
+        <ContentCarouselArrow controls={controls} direction="prev" />
       ) : null}
       {children}
       {showArrows ? (
-        <ContentCarouselArrow
-          controls={controls}
-          direction="next"
-          className="shrink-0"
-        />
+        <ContentCarouselArrow controls={controls} direction="next" />
       ) : null}
     </div>
   );

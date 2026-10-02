@@ -1,4 +1,4 @@
-import {appQueries} from '@app/app-queries';
+﻿import {appQueries} from '@app/app-queries';
 import {FullAlbum} from '@app/web-player/albums/album';
 import {AlbumGridItem} from '@app/web-player/albums/album-grid-item';
 import {getArtistLink} from '@app/web-player/artists/artist-link';
@@ -70,7 +70,7 @@ function AlbumsCarousel({albums, albumType}: AlbumsCarouselProps) {
       <ContentCarouselNav controls={controls}>
         {/* The rail is its own flex child so the grid lays out against the
             width it actually occupies rather than the full page width. */}
-        <div className="@container min-w-0 flex-1">
+        <div className="@container w-full min-w-0">
           <ContentGrid
             isCarousel
             contentModel="album"
