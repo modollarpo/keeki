@@ -14,29 +14,27 @@ use Illuminate\Support\Facades\Cache;
 /**
  * Provides personalized content rows for channels with contentType "personalized".
  *
- * Two sub-types:
+ * GET /api/personalized/recently-played  — last 20 distinct tracks the
+ *     authenticated user played, ordered by most recent play. Falls back to
+ *     popular tracks for guests or users with no history.
  *
- *   GET /api/personalized/recently-played   — last 20 distinct tracks the
- *       authenticated user played, ordered by most recent play. Falls back to
- *       popular tracks for guests or users with no history.
+ * GET /api/personalized/made-for-you     — radio recommendations seeded
+ *     from the user's most-played track in the last 30 days. Falls back to
+ *     popular tracks when there is no history.
  *
- *   GET /api/personalized/made-for-you      — radio recommendations seeded
- *       from the user's most-played track in the last 30 days. Falls back to
- *       popular tracks when there is no history.
- *
- * Both endpoints are cached per-user for 15 minutes (recently-played) or
- * 1 hour (made-for-you) so they add no meaningful load to the homepage.
+ * Both endpoints are cached per-user so they add no meaningful load to
+ * the homepage on every page view.
  */
 class PersonalizedChannelController extends BaseController
 {
     private const RECENTLY_PLAYED_TTL_MINUTES = 15;
     private const MADE_FOR_YOU_TTL_MINUTES    = 60;
 
-    // ---------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Recently played
-    // ---------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 
-    public function recentlyPlayed(): array
+    public function recentlyPlayed()
     {
         $userId = Auth::id();
 
@@ -57,8 +55,6 @@ class PersonalizedChannelController extends BaseController
 
     private function buildRecentlyPlayed(int $userId): array
     {
-        // Fetch the 20 most-recently played distinct track IDs for this user.
-        // The compound index (user_id, track_id, created_at) makes this fast.
         $trackIds = TrackPlay::query()
             ->where('user_id', $userId)
             ->where('created_at', '>=', Carbon::now()->subDays(90))
@@ -77,18 +73,17 @@ class PersonalizedChannelController extends BaseController
         return Track::with(['album.artists', 'artists'])
             ->whereIn('id', $trackIds)
             ->get()
-            // Restore play-order: whereIn doesn't guarantee order
             ->sortBy(fn ($t) => $trackIds->search($t->id))
             ->values()
             ->map(fn ($track) => $loader->toApiResource($track))
             ->all();
     }
 
-    // ---------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Made for you
-    // ---------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 
-    public function madeForYou(): array
+    public function madeForYou()
     {
         $userId = Auth::id();
 
@@ -128,35 +123,44 @@ class PersonalizedChannelController extends BaseController
             return [];
         }
 
-        // Reuse the existing cached RadioController recommendation pipeline.
-        // Cached for 2 days per track (same as RadioController's own cache),
-        // so this inner cache never adds extra requests.
+        // getRecommendations returns a Collection of Track models — convert to
+        // API resources using TrackLoader so the frontend gets the same shape
+        // as every other track endpoint.
+        $loader = new TrackLoader();
+
         $recommendations = Cache::remember(
             "radio.track.{$seedTrackId}",
             Carbon::now()->addDays(2),
             fn () => (new MusicMetadataProvider())
-                ->getRecommendations($seedTrack)
-                ->map(fn (Track $t) => (new TrackLoader())->toApiResource($t)),
+                ->getRecommendations($seedTrack),
         );
 
-        return $recommendations->values()->all();
+        return $recommendations
+            ->map(fn (Track $t) => $loader->toApiResource($t))
+            ->values()
+            ->all();
     }
 
-    // ---------------------------------------------------------------------------
-    // Fallback: popular tracks for guests / users with no history
-    // ---------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // Fallback: popular tracks for guests / new users with no history
+    // -------------------------------------------------------------------------
 
-    private function popularFallback(): array
+    private function popularFallback()
     {
         $tracks = Cache::remember(
             'personalized.popular_fallback',
             Carbon::now()->addHours(6),
-            fn () => Track::with(['album.artists', 'artists'])
-                ->orderByDesc('spotify_popularity')
-                ->take(20)
-                ->get()
-                ->map(fn ($t) => (new TrackLoader())->toApiResource($t))
-                ->all(),
+            function () {
+                $loader = new TrackLoader();
+                return Track::with(['album.artists', 'artists'])
+                    // Use external_popularity (renamed from spotify_popularity in
+                    // the 2026_03_02 migration) — works for Deezer-backed data too.
+                    ->orderByDesc('external_popularity')
+                    ->take(20)
+                    ->get()
+                    ->map(fn ($t) => $loader->toApiResource($t))
+                    ->all();
+            },
         );
 
         return $this->success(['tracks' => $tracks, 'is_personalized' => false]);

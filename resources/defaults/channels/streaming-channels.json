@@ -51,11 +51,11 @@
   {
     "name": "New releases",
     "slug": "new-releases",
-    "presetDescription": "Periodically imports new releases from Spotify API",
+    "presetDescription": "Periodically imports new releases from Deezer API",
     "config": {
       "contentType": "autoUpdate",
       "autoUpdateMethod": "newAlbums",
-      "autoUpdateProvider": "spotify",
+      "autoUpdateProvider": "deezer",
       "contentModel": "album",
       "contentOrder": "release_date:desc",
       "layout": "grid",
@@ -68,11 +68,11 @@
   {
     "name": "Popular albums",
     "slug": "popular-albums",
-    "presetDescription": "Periodically imports popular albums from Spotify API",
+    "presetDescription": "Periodically imports popular albums from Deezer API",
     "config": {
       "contentType": "autoUpdate",
       "autoUpdateMethod": "topAlbums",
-      "autoUpdateProvider": "spotify",
+      "autoUpdateProvider": "deezer",
       "contentModel": "album",
       "contentOrder": "popularity:desc",
       "layout": "grid",
@@ -85,11 +85,11 @@
   {
     "name": "Popular tracks",
     "slug": "popular-tracks",
-    "presetDescription": "Periodically imports popular tracks from Spotify API",
+    "presetDescription": "Periodically imports popular tracks from Deezer API",
     "config": {
       "contentType": "autoUpdate",
       "autoUpdateMethod": "topTracks",
-      "autoUpdateProvider": "spotify",
+      "autoUpdateProvider": "deezer",
       "contentModel": "track",
       "contentOrder": "popularity:desc",
       "layout": "trackTable",
@@ -102,11 +102,11 @@
   {
     "name": "Popular artists",
     "slug": "popular-artists",
-    "presetDescription": "Periodically imports popular artists from Spotify API",
+    "presetDescription": "Periodically imports popular artists from Deezer API",
     "config": {
       "contentType": "autoUpdate",
       "autoUpdateMethod": "topArtists",
-      "autoUpdateProvider": "spotify",
+      "autoUpdateProvider": "deezer",
       "contentModel": "artist",
       "contentOrder": "popularity:desc",
       "layout": "grid",
