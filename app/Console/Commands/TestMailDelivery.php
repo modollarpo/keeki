@@ -28,15 +28,24 @@ class TestMailDelivery extends Command
 
         $this->line('--- transport ---');
         $this->line("mailer            : {$mailer}");
+        $this->line('transport         : '.($config['transport'] ?? 'n/a'));
         $this->line('host              : '.($config['host'] ?? 'n/a'));
         $this->line('port              : '.($config['port'] ?? 'n/a'));
         $this->line('encryption        : '.($config['scheme'] ?? 'n/a'));
-        $this->line('username          : '.($this->mask((string) config('mail.username'))));
-        $this->line('password          : '.(config('mail.password') ? 'set' : 'MISSING'));
+        // Credentials belong to the selected mailer, not to mail.username: a
+        // failover or roundrobin mailer resolves them further down the chain.
+        $this->line('username          : '.$this->mask((string) ($config['username'] ?? '')));
+        $this->line('password          : '.($config['password'] ?? null ? 'set' : 'MISSING'));
         $this->line('from              : '.config('mail.from.address').' ('.config('mail.from.name').')');
+
 
         if ($config['host'] ?? null) {
             $this->line('dns               : '.$this->resolve((string) $config['host']));
+        }
+
+        // A composite transport keeps its credentials on the inner mailers.
+        if (in_array($config['transport'] ?? null, ['failover', 'roundrobin'], true)) {
+            $this->line('inner mailers     : '.implode(', ', (array) ($config['mailers'] ?? [])));
         }
 
         $recipient = $this->argument('recipient') ?: config('mail.from.address');
