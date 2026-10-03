@@ -9,10 +9,12 @@ namespace Common\Notifications;
  * Channel names in the UI are deliberately transport-agnostic:
  *
  *   email   -> Laravel's `mail`
- *   browser -> `database`, plus `broadcast` only when a broadcast driver is
- *              actually configured. Requesting `broadcast` without a driver
- *              makes the notification fail rather than degrade, so it is
- *              treated as unavailable instead.
+ *   browser -> `database`, plus `broadcast` only when a real websocket driver
+ *              is configured. Requesting `broadcast` without one either fails
+ *              the notification or, on the `log` driver, silently writes every
+ *              notification into the application log. Since the in-app
+ *              notification list is already served from `database`, broadcast
+ *              is only worth adding when something can actually receive it.
  *
  * Anything else the user selected is passed through untouched.
  *
@@ -22,6 +24,20 @@ namespace Common\Notifications;
  */
 trait GetsUserPreferredChannels
 {
+    /**
+     * Broadcast drivers that can actually deliver a message to a client.
+     * `null` and `log` are deliberately excluded.
+     *
+     * @var array<int, string>
+     */
+    private static array $liveBroadcastDrivers = [
+        'ably',
+        'pusher',
+        'redis',
+        'reverb',
+        'soketi',
+    ];
+
     /**
      * Channels this notification can actually deliver, regardless of what the
      * user picked. Subclasses that use this trait get this for free; override
@@ -85,7 +101,7 @@ trait GetsUserPreferredChannels
 
                 case 'browser':
                     $resolved[] = 'database';
-                    if (config('broadcasting.default') && config('broadcasting.default') !== 'null') {
+                    if (in_array(config('broadcasting.default'), static::$liveBroadcastDrivers, true)) {
                         $resolved[] = 'broadcast';
                     }
                     break;
