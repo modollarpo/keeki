@@ -5,6 +5,8 @@ import {LikeIconButton} from '@app/web-player/library/like-icon-button';
 import {useMiniPlayerIsHidden} from '@app/web-player/overlay/use-mini-player-is-hidden';
 import {DownloadTrackButton} from '@app/web-player/player-controls/download-track-button';
 import {LyricsButton} from '@app/web-player/player-controls/lyrics-button';
+import {AutoplayButton} from '@app/web-player/player-controls/autoplay-button';
+import {SleepTimerButton} from '@app/web-player/player-controls/sleep-timer-button';
 import {PlaybackControls} from '@app/web-player/player-controls/playback-controls';
 import {useCuedTrack} from '@app/web-player/player-controls/use-cued-track';
 import {
@@ -28,12 +30,11 @@ import {Button} from '@shadcn/button/button';
 import {ContextMenu} from '@shadcn/context-menu/context-menu';
 import {Dropdown} from '@shadcn/dropdown/dropdown';
 import {MediaFullscreenIcon} from '@ui/icons/media/media-fullscreen';
-import {MediaQueueListIcon} from '@ui/icons/media/media-queue-list';
 import {useMediaQuery} from '@ui/utils/hooks/use-media-query';
 import {usePrevious} from '@ui/utils/hooks/use-previous';
 import clsx from 'clsx';
 import fscreen from 'fscreen';
-import {ChevronDownIcon, MoreVerticalIcon} from 'lucide-react';
+import {ChevronDownIcon, ListMusic, MoreVerticalIcon} from 'lucide-react';
 import {
   Fragment,
   MutableRefObject,
@@ -194,10 +195,10 @@ function QueuedTrack() {
     <div className="mx-auto my-10 flex w-full max-w-6xl shrink-0 items-center justify-center gap-8.5 px-3.5 md:my-15">
       <LikeIconButton likeable={track} />
       <div className="min-w-0 text-center">
-        <div className="overflow-hidden text-base text-ellipsis whitespace-nowrap">
+        <div className="overflow-hidden text-be-subheading font-bold text-ellipsis whitespace-nowrap text-foreground">
           <TrackLink track={track} />
         </div>
-        <div className="text-muted-foreground text-sm">
+        <div className="text-muted-foreground text-be-body font-medium mt-1">
           <ArtistLinks artists={track.artists} />
         </div>
       </div>
@@ -279,13 +280,15 @@ function TopControls({overlayRef}: TopControlsProps) {
       </Button>
       {isMobile && <LyricsButton />}
       {isMobile && <DownloadTrackButton />}
+      {isMobile && <AutoplayButton />}
+      {isMobile && <SleepTimerButton />}
       <Button
         variant="ghost"
         size="icon"
         onClick={() => playerOverlayState.toggleQueue()}
         color={isQueueOpen ? 'primary' : undefined}
       >
-        <MediaQueueListIcon className="size-5" />
+        <ListMusic className="size-5" />
       </Button>
       <FullscreenButton overlayRef={overlayRef} />
     </div>

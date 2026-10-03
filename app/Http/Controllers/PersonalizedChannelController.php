@@ -30,6 +30,9 @@ class PersonalizedChannelController extends BaseController
     private const RECENTLY_PLAYED_TTL_MINUTES = 15;
     private const MADE_FOR_YOU_TTL_MINUTES    = 60;
 
+    /** Relations required by TrackLoader::toApiResource() */
+    private const TRACK_RELATIONS = ['album', 'album.artists', 'artists'];
+
     // -------------------------------------------------------------------------
     // Recently played
     // -------------------------------------------------------------------------
@@ -59,7 +62,7 @@ class PersonalizedChannelController extends BaseController
             ->where('user_id', $userId)
             ->where('created_at', '>=', Carbon::now()->subDays(90))
             ->orderBy('created_at', 'desc')
-            ->get(['track_id', 'created_at'])
+            ->get(['track_id'])
             ->unique('track_id')
             ->take(20)
             ->pluck('track_id');
@@ -70,7 +73,7 @@ class PersonalizedChannelController extends BaseController
 
         $loader = new TrackLoader();
 
-        return Track::with(['album.artists', 'artists'])
+        return Track::with(self::TRACK_RELATIONS)
             ->whereIn('id', $trackIds)
             ->get()
             ->sortBy(fn ($t) => $trackIds->search($t->id))
@@ -117,17 +120,14 @@ class PersonalizedChannelController extends BaseController
             return [];
         }
 
-        $seedTrack = Track::with(['album.artists', 'artists'])->find($seedTrackId);
-
+        $seedTrack = Track::with(self::TRACK_RELATIONS)->find($seedTrackId);
         if (!$seedTrack) {
             return [];
         }
 
-        // getRecommendations returns a Collection of Track models — convert to
-        // API resources using TrackLoader so the frontend gets the same shape
-        // as every other track endpoint.
         $loader = new TrackLoader();
 
+        // Cache recommendations per-seed-track (2 days, same as RadioController)
         $recommendations = Cache::remember(
             "radio.track.{$seedTrackId}",
             Carbon::now()->addDays(2),
@@ -135,9 +135,19 @@ class PersonalizedChannelController extends BaseController
                 ->getRecommendations($seedTrack),
         );
 
-        return $recommendations
-            ->map(fn (Track $t) => $loader->toApiResource($t))
+        if ($recommendations->isEmpty()) {
+            return [];
+        }
+
+        // Re-hydrate with all required relations so toApiResource() works
+        $ids = $recommendations->pluck('id')->filter()->values();
+
+        return Track::with(self::TRACK_RELATIONS)
+            ->whereIn('id', $ids)
+            ->get()
+            ->sortBy(fn ($t) => $ids->search($t->id))
             ->values()
+            ->map(fn (Track $t) => $loader->toApiResource($t))
             ->all();
     }
 
@@ -152,9 +162,9 @@ class PersonalizedChannelController extends BaseController
             Carbon::now()->addHours(6),
             function () {
                 $loader = new TrackLoader();
-                return Track::with(['album.artists', 'artists'])
-                    // Use external_popularity (renamed from spotify_popularity in
-                    // the 2026_03_02 migration) — works for Deezer-backed data too.
+                return Track::with(self::TRACK_RELATIONS)
+                    // external_popularity was renamed from spotify_popularity in
+                    // the 2026_03_02 migration — works for Deezer-backed data too.
                     ->orderByDesc('external_popularity')
                     ->take(20)
                     ->get()
