@@ -11,6 +11,7 @@ on:
         options:
           - channels:update
           - channels:country
+          - channels:country:expand
           - storage:link
           - cache:clear
           - optimize:clear
@@ -33,6 +34,6 @@ jobs:
           command_timeout: 25m
           script: |
             set -e
-            echo "â–¶ Running: php artisan ${{ inputs.command }}"
+            echo "Ã¢â€“Â¶ Running: php artisan ${{ inputs.command }}"
             sudo -u www-data php /var/www/bemusic/artisan ${{ inputs.command }}
-            echo "âœ… Done"
+            echo "Ã¢Å“â€¦ Done"
