@@ -68,7 +68,8 @@ class PersonalizedChannelController extends BaseController
             ->pluck('track_id');
 
         if ($trackIds->isEmpty()) {
-            return [];
+            // No history yet — show popular tracks so the row is never blank
+            return $this->popularTracks();
         }
 
         $loader = new TrackLoader();
@@ -117,7 +118,8 @@ class PersonalizedChannelController extends BaseController
             ->value('track_id');
 
         if (!$seedTrackId) {
-            return [];
+            // No listening history — show popular tracks so the row is never blank
+            return $this->popularTracks();
         }
 
         $seedTrack = Track::with(self::TRACK_RELATIONS)->find($seedTrackId);
@@ -157,7 +159,16 @@ class PersonalizedChannelController extends BaseController
 
     private function popularFallback()
     {
-        $tracks = Cache::remember(
+        return $this->success(['tracks' => $this->popularTracks(), 'is_personalized' => false]);
+    }
+
+    /**
+     * Returns the top 20 tracks by external_popularity, cached 6 hours.
+     * Used as fallback for guests and for authenticated users with no history.
+     */
+    private function popularTracks(): array
+    {
+        return Cache::remember(
             'personalized.popular_fallback',
             Carbon::now()->addHours(6),
             function () {
@@ -172,7 +183,5 @@ class PersonalizedChannelController extends BaseController
                     ->all();
             },
         );
-
-        return $this->success(['tracks' => $tracks, 'is_personalized' => false]);
     }
 }

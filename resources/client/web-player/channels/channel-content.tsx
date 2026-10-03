@@ -30,7 +30,7 @@ export function ChannelContent(props: ChannelContentProps) {
         ? 'recently-played'
         : 'made-for-you';
     return (
-      <PersonalizedChannelContent channel={channel} endpoint={endpoint} />
+      <PersonalizedChannelContent channel={channel} endpoint={endpoint} layout={layout} />
     );
   }
 

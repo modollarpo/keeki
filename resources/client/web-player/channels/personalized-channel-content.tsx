@@ -38,18 +38,23 @@ interface Props {
   channel: Channel;
   /** Which sub-type to render. Stored in channel.config.autoUpdateMethod. */
   endpoint: PersonalizedEndpoint;
+  /**
+   * Effective layout, pre-computed by ChannelContent (accounts for isNested).
+   * Falls back to channel.config.layout when not provided.
+   */
+  layout?: string | null;
 }
 
 /**
  * Renders a personalized channel row by fetching from the server-side
- * `/api/personalized/{endpoint}` endpoint. The channel's configured
- * layout (carousel, grid, etc.) is respected unchanged.
+ * `/api/personalized/{endpoint}` endpoint. The effective layout passed from
+ * ChannelContent (which already resolves nestedLayout vs layout) is used so
+ * carousels render correctly when displayed as a nested channel inside a hub.
  *
  * Shows a skeleton row while loading so the page layout doesn't shift.
- * Hides the row entirely when the endpoint returns zero tracks (prevents
- * an empty, broken row for new users before the server fallback kicks in).
+ * Hides the row entirely when the endpoint returns zero tracks.
  */
-export function PersonalizedChannelContent({channel, endpoint}: Props) {
+export function PersonalizedChannelContent({channel, endpoint, layout: layoutProp}: Props) {
   const {data, isLoading} = usePersonalizedTracks(endpoint);
 
   if (isLoading) {
@@ -62,11 +67,13 @@ export function PersonalizedChannelContent({channel, endpoint}: Props) {
     return null;
   }
 
+  // Use the caller-supplied layout (already handles isNested nestedLayout resolution),
+  // falling back to the channel's own config layout.
+  const effectiveLayout = layoutProp ?? channel.config.layout;
+
   // Re-use the existing channel rendering stack by temporarily injecting the
   // personalized tracks as the channel's content. This avoids duplicating any
   // grid/carousel layout logic.
-  // Cast via unknown: the spread preserves all Channel fields; only `content`
-  // and `items` differ, and we own both here.
   const syntheticChannel = {
     ...channel,
     items: tracks,
@@ -81,13 +88,11 @@ export function PersonalizedChannelContent({channel, endpoint}: Props) {
     } as any,
   } as unknown as Channel<Track>;
 
-  const layout = channel.config.layout;
-
-  if (layout === 'carousel' || layout === 'compactGrid') {
+  if (effectiveLayout === 'carousel' || effectiveLayout === 'compactGrid') {
     return (
       <ChannelContentCarousel
         channel={syntheticChannel}
-        layout={layout === 'compactGrid' ? 'compact' : undefined}
+        layout={effectiveLayout === 'compactGrid' ? 'compact' : undefined}
       />
     );
   }
