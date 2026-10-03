@@ -45,6 +45,23 @@ return [
             ],
         ],
         [
+            'group_name' => 'Your music',
+            'subscriptions' => [
+                [
+                    'name' => 'You upload a new track or album',
+                    'notif_id' => 'A01',
+                    'permissions' => [],
+                    'channels' => ['email', 'browser'],
+                ],
+                [
+                    'name' => 'A backstage request is approved or declined',
+                    'notif_id' => 'R01',
+                    'permissions' => [],
+                    'channels' => ['email', 'browser'],
+                ],
+            ],
+        ],
+        [
             'group_name' => 'Comments',
             'subscriptions' => [
                 [

@@ -4,23 +4,21 @@ namespace App\Notifications;
 
 use App\Models\BackstageRequest;
 use App\Services\UrlGenerator;
+use Common\Notifications\GetsUserPreferredChannels;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class BackstageRequestWasHandled extends Notification
 {
-    use Queueable;
+    use GetsUserPreferredChannels, Queueable;
+
+    const NOTIF_ID = 'R01';
 
     public function __construct(
         protected BackstageRequest $backstageRequest,
         protected ?string $notes,
     ) {
-    }
-
-    public function via($notifiable)
-    {
-        return ['mail', 'database'];
     }
 
     public function toMail($notifiable)

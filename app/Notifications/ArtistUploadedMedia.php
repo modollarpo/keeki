@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Track;
 use App\Services\UrlGenerator;
+use Common\Notifications\GetsUserPreferredChannels;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -11,18 +12,15 @@ use Illuminate\Support\Arr;
 
 class ArtistUploadedMedia extends Notification
 {
-    use Queueable;
+    use GetsUserPreferredChannels, Queueable;
+
+    const NOTIF_ID = 'A01';
 
     private UrlGenerator $urlGenerator;
 
     public function __construct(public $media)
     {
         $this->urlGenerator = app(UrlGenerator::class);
-    }
-
-    public function via(): array
-    {
-        return ['database', 'mail'];
     }
 
     public function toMail($notifiable): MailMessage
