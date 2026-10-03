@@ -78,9 +78,12 @@ class MobileBootstrapData extends BaseBootstrapData
     public function getCurrentUser(): ?UserResource
     {
         if ($user = request()->user()) {
-            return $this->loadFcmToken($user);
+            $this->loadFcmToken($user);
         }
-        return null;
+
+        // Delegate to the parent so the user is wrapped in a UserResource and
+        // has its subscriptions, roles and permissions loaded.
+        return parent::getCurrentUser();
     }
 
     private function getMobileMenus(): array
