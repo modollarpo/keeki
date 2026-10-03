@@ -19,6 +19,10 @@ const contentTypeItems = [
     value: 'autoUpdate',
     label: <Trans message="Automatically update content with specified method" />,
   },
+  {
+    value: 'personalized',
+    label: <Trans message="Personalized (recently played / made for you)" />,
+  },
 ];
 
 interface Props {

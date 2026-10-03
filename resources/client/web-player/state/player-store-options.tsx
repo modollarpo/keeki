@@ -10,12 +10,61 @@ import {findYoutubeDirectStream} from '@app/web-player/tracks/requests/find-yout
 import {findYoutubeVideosForTrack, prefetchYoutubeVideoIds} from '@app/web-player/tracks/requests/find-youtube-videos-for-track';
 import {Track} from '@app/web-player/tracks/track';
 import {tracksToMediaItems} from '@app/web-player/tracks/utils/track-to-media-item';
+import {RadioRecommendationsResponse} from '@app/web-player/radio/radio-recommendations-response';
 import {apiClient} from '@common/http/query-client';
 import {
   HtmlAudioMediaItem,
   MediaItem,
   YoutubeMediaItem,
 } from '@common/player/media-item';
+
+// ---------------------------------------------------------------------------
+// Autoplay preference — stored in localStorage so it survives page reloads.
+// The UI toggle reads/writes via these helpers.
+// ---------------------------------------------------------------------------
+const AUTOPLAY_KEY = 'keekii.autoplay';
+
+export function getAutoplayEnabled(): boolean {
+  try {
+    const raw = localStorage.getItem(AUTOPLAY_KEY);
+    return raw === null ? true : raw === 'true'; // on by default
+  } catch {
+    return true;
+  }
+}
+
+export function setAutoplayEnabled(enabled: boolean): void {
+  try {
+    localStorage.setItem(AUTOPLAY_KEY, String(enabled));
+  } catch {}
+}
+
+// groupId prefix used when autoplay appends tracks so the queue UI can
+// distinguish auto-queued items from user-queued ones.
+export const AUTOPLAY_GROUP_PREFIX = 'autoplay:';
+
+// Fetch radio recommendations for a track and return them as MediaItems.
+// Returns undefined when autoplay is off, the track has no numeric id, or the
+// fetch fails — in all cases loadMoreMediaItems falls back to its normal path.
+async function fetchAutoplayTracks(
+  track: Track,
+): Promise<MediaItem<Track>[] | undefined> {
+  if (!getAutoplayEnabled()) return undefined;
+  const trackId = track.id;
+  if (!Number.isInteger(Number(trackId))) return undefined;
+
+  try {
+    const response = await apiClient.get<RadioRecommendationsResponse>(
+      `radio/track/${trackId}`,
+    );
+    const tracks = response.data.recommendations;
+    if (!tracks?.length) return undefined;
+    const groupId = `${AUTOPLAY_GROUP_PREFIX}${trackId}`;
+    return await tracksToMediaItems(tracks, groupId);
+  } catch {
+    return undefined;
+  }
+}
 import {
   YouTubePlayerState,
   YoutubeProviderError,
@@ -173,9 +222,24 @@ export const playerStoreOptions: Partial<PlayerStoreOptions> = {
   },
   loadMoreMediaItems: async media => {
     const groupId = media?.groupId?.toString();
+    // 1. Normal path: load more tracks from the same queue/channel group.
     if (media && groupId && !groupId.includes('libraryDownloadedTracks')) {
       const tracks = await loadMediaItemTracks(groupId, media.meta);
-      return await tracksToMediaItems(tracks);
+      if (tracks?.length) {
+        return await tracksToMediaItems(tracks);
+      }
+    }
+    // 2. Autoplay path: when the queue is exhausted (no more tracks in the
+    //    channel), fetch radio recommendations for the current track via the
+    //    existing RadioController endpoint and append them to the queue.
+    //    Only runs when autoplay is enabled and the track has a real numeric id.
+    //    Downloads queue is excluded (it has no server-side continuation).
+    if (
+      media?.meta &&
+      !groupId?.includes('libraryDownloadedTracks') &&
+      !groupId?.startsWith(AUTOPLAY_GROUP_PREFIX) // don't chain autoplay infinitely
+    ) {
+      return await fetchAutoplayTracks(media.meta as Track);
     }
   },
   listeners: {

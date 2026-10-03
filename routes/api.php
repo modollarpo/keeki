@@ -36,6 +36,7 @@ use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\PlaylistTracksController;
 use App\Http\Controllers\PlaylistTracksOrderController;
 use App\Http\Controllers\RadioController;
+use App\Http\Controllers\PersonalizedChannelController;
 use App\Http\Controllers\RepostController;
 use App\Http\Controllers\Search\AlbumSearchSuggestionsController;
 use App\Http\Controllers\Search\ArtistSearchSuggestionsController;
@@ -150,6 +151,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['optionalAuth:sanctum', 'verifi
 
     // RADIO
     Route::get('radio/{type}/{id}', [RadioController::class, 'getRecommendations']);
+
+    // PERSONALIZED CHANNELS
+    // Authenticated routes that return user-specific content for channels with
+    // contentType "personalized". Cached server-side per user.
+    Route::get('personalized/recently-played', [PersonalizedChannelController::class, 'recentlyPlayed']);
+    Route::get('personalized/made-for-you', [PersonalizedChannelController::class, 'madeForYou']);
 
     // TAGS
     Route::get('tags/{tagName}/tracks', [TagMediaController::class, 'tracks']);

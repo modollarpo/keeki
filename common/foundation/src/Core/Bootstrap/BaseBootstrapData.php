@@ -250,6 +250,10 @@ class BaseBootstrapData implements BootstrapData
 
     protected function isCookieLawCountry(): bool
     {
+        // TEMP: force-enable cookie banner for testing (remove after verification)
+        if (env('COOKIE_BANNER_TEST', false)) {
+            return true;
+        }
         $isoCode = geoip(getIp())['iso_code'];
         // prettier-ignore
         return in_array($isoCode, ['AT', 'BE', 'BG', 'BR', 'CY', 'CZ', 'DE', 'DK', 'EE', 'EL', 'ES', 'FI', 'FR', 'GB', 'HR', 'HU', 'IE', 'IT','LT', 'LU', 'LV', 'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK',

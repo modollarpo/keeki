@@ -5,9 +5,11 @@ import {ChannelContentGrid} from '@app/web-player/channels/channel-content-grid'
 import {ChannelContentList} from '@app/web-player/channels/channel-content-list';
 import {ChannelHeading} from '@app/web-player/channels/channel-heading';
 import {ChannelTrackTable} from '@app/web-player/channels/channel-track-table';
+import {PersonalizedChannelContent} from '@app/web-player/channels/personalized-channel-content';
 import {Track, TRACK_MODEL} from '@app/web-player/tracks/track';
 import {Channel, CHANNEL_MODEL} from '@common/channels/channel';
 import {Fragment} from 'react';
+
 
 export interface ChannelContentProps<
   T extends ChannelContentModel = ChannelContentModel,
@@ -19,6 +21,19 @@ export function ChannelContent(props: ChannelContentProps) {
   const {channel, isNested} = props;
   const contentModel = channel.config.contentModel;
   const layout = isNested ? channel.config.nestedLayout : channel.config.layout;
+
+  // Personalized channels bypass the normal content loading and fetch
+  // user-specific data from dedicated endpoints.
+  if ((channel.config as any).contentType === 'personalized') {
+    const endpoint =
+      (channel.config as any).autoUpdateMethod === 'recentlyPlayed'
+        ? 'recently-played'
+        : 'made-for-you';
+    return (
+      <PersonalizedChannelContent channel={channel} endpoint={endpoint} />
+    );
+  }
+
   if (!channel.content) {
     return null;
   }

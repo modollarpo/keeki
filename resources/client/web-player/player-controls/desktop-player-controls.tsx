@@ -5,6 +5,8 @@ import {DownloadTrackButton} from '@app/web-player/player-controls/download-trac
 import {LyricsButton} from '@app/web-player/player-controls/lyrics-button';
 import {PlaybackControls} from '@app/web-player/player-controls/playback-controls';
 import {useCuedTrack} from '@app/web-player/player-controls/use-cued-track';
+import {AutoplayButton} from '@app/web-player/player-controls/autoplay-button';
+import {SleepTimerButton} from '@app/web-player/player-controls/sleep-timer-button';
 import {
   playerOverlayState,
   usePlayerOverlayStore,
@@ -97,6 +99,8 @@ function SecondaryControls() {
   const {rightSidebar} = use(DashboardLayoutContext);
   return (
     <div className="flex w-[30%] min-w-45 items-center justify-end">
+      <AutoplayButton />
+      <SleepTimerButton />
       <LyricsButton />
       <DownloadTrackButton />
       <Tooltip.Root>
