@@ -118,10 +118,9 @@ class NotificationSubscriptionsController extends Controller
                 $selection['notif_id'],
             );
             if (!$config) {
-                return $this->error(
-                    'Unknown notification: '.$selection['notif_id'],
-                    [],
+                abort(
                     422,
+                    'Unknown notification: '.$selection['notif_id'],
                 );
             }
 
@@ -131,10 +130,9 @@ class NotificationSubscriptionsController extends Controller
                     fn($permission) => $user->hasPermission($permission),
                 );
                 if (!$hasAllPermissions) {
-                    return $this->error(
-                        'You do not have permission to subscribe to one of these notifications.',
-                        [],
+                    abort(
                         403,
+                        'You do not have permission to subscribe to one of these notifications.',
                     );
                 }
             }
@@ -142,7 +140,7 @@ class NotificationSubscriptionsController extends Controller
             $subscription = $user
                 ->notificationSubscriptions()
                 ->firstOrNew(['notif_id' => $selection['notif_id']]);
-            $newChannels = $subscription['channels'];
+            $newChannels = $subscription['channels'] ?? [];
             // can update state of all channels at once or only a single channel
             foreach ($selection['channels'] as $newChannel => $isSubscribed) {
                 $newChannels[$newChannel] = $isSubscribed;
