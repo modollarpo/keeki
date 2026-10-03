@@ -34,6 +34,6 @@ jobs:
           command_timeout: 25m
           script: |
             set -e
-            echo "Ã¢â€“Â¶ Running: php artisan ${{ inputs.command }}"
+            echo "Running: php artisan ${{ inputs.command }}"
             sudo -u www-data php /var/www/bemusic/artisan ${{ inputs.command }}
-            echo "Ã¢Å“â€¦ Done"
+            echo "Done"
