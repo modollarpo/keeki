@@ -1,0 +1,38 @@
+name: Run Artisan Command
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "Artisan command to run (without 'php artisan')"
+        required: true
+        default: "channels:update"
+        type: choice
+        options:
+          - channels:update
+          - channels:country
+          - storage:link
+          - cache:clear
+          - optimize:clear
+          - queue:restart
+
+jobs:
+  run-command:
+    name: "Run: php artisan ${{ inputs.command }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Execute artisan command on production
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          command_timeout: 25m
+          script: |
+            set -e
+            echo "â–¶ Running: php artisan ${{ inputs.command }}"
+            sudo -u www-data php /var/www/bemusic/artisan ${{ inputs.command }}
+            echo "âœ… Done"
