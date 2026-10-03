@@ -16,14 +16,17 @@
       "presetId": "homepage"
     },
     "nestedChannels": [
+      "recently-played",
+      "made-for-you",
       "popular-albums",
       "popular-tracks",
       "new-releases",
+      "popular-artists",
       "genres"
     ]
   },
   {
-    "name": "Genres",
+    "name": "Genres & Moods",
     "slug": "genres",
     "presetDescription": "Lists all genres currently in the database",
     "internal": true,

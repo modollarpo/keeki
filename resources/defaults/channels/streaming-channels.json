@@ -19,6 +19,36 @@
     }
   },
   {
+    "name": "Recently Played",
+    "slug": "recently-played",
+    "presetDescription": "Shows the tracks you've recently played.",
+    "config": {
+      "contentType": "personalized",
+      "autoUpdateMethod": "recentlyPlayed",
+      "contentModel": "track",
+      "layout": "list",
+      "nestedLayout": "carousel",
+      "seoTitle": "Recently Played",
+      "seoDescription": "Jump back into what you were listening to.",
+      "presetId": "streamingRecentlyPlayed"
+    }
+  },
+  {
+    "name": "Made For You",
+    "slug": "made-for-you",
+    "presetDescription": "Personalized track recommendations based on your listening history.",
+    "config": {
+      "contentType": "personalized",
+      "autoUpdateMethod": "madeForYou",
+      "contentModel": "track",
+      "layout": "list",
+      "nestedLayout": "carousel",
+      "seoTitle": "Made For You",
+      "seoDescription": "Personalized picks just for you.",
+      "presetId": "streamingMadeForYou"
+    }
+  },
+  {
     "name": "New releases",
     "slug": "new-releases",
     "presetDescription": "Periodically imports new releases from Spotify API",
@@ -63,7 +93,7 @@
       "contentModel": "track",
       "contentOrder": "popularity:desc",
       "layout": "trackTable",
-      "nestedLayout": "compactGrid",
+      "nestedLayout": "trackTable",
       "seoTitle": "Popular Tracks",
       "seoDescription": "Global Top 50 chart of most popular songs.",
       "presetId": "streamingPopularTracks"
