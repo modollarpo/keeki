@@ -67,11 +67,20 @@ class MobileBootstrapData extends BaseBootstrapData
 
     public function refreshToken(string $deviceName): self
     {
-        $user = $this->data['user'];
-        if ($user) {
-            $user['access_token'] = $user->refreshApiToken($deviceName);
+        $userResource = $this->data['user'];
+        if ($userResource) {
+            $user = $userResource->resource;
+
+            // UserResource only serializes an explicit set of fields, so the
+            // freshly issued token has to be added as resource metadata for
+            // the mobile client to receive it.
+            $userResource->additional = [
+                'access_token' => $user->refreshApiToken($deviceName),
+            ];
+
             $this->loadFcmToken($user);
         }
+
         return $this;
     }
 
