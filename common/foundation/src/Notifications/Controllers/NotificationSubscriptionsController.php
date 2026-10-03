@@ -70,7 +70,9 @@ class NotificationSubscriptionsController extends Controller
          *         subscriptions: array<int, array{
          *             name: string,
          *             notif_id: string,
-         *             permissions?: array<int, string>
+         *             permissions?: array<int, string>,
+         *             user_type?: string,
+         *             channels?: array<int, string>
          *         }>
          *     }>,
          *     user_selections: array<int, array{
@@ -108,11 +110,22 @@ class NotificationSubscriptionsController extends Controller
         );
 
         foreach ($data['selections'] as $selection) {
-            // check if user has permissions to subscribe to this notification
+            // Reject unknown ids rather than writing a row nothing will ever
+            // read. `notif_id` is a varchar(5), so an over-long id would also be
+            // silently truncated by MySQL and then never match a NOTIF_ID.
             $config = $allConfig->firstWhere(
                 'notif_id',
                 $selection['notif_id'],
             );
+            if (!$config) {
+                return $this->error(
+                    'Unknown notification: '.$selection['notif_id'],
+                    [],
+                    422,
+                );
+            }
+
+            // check if user has permissions to subscribe to this notification
             if (isset($config['permissions'])) {
                 $hasAllPermissions = collect($config['permissions'])->every(
                     fn($permission) => $user->hasPermission($permission),

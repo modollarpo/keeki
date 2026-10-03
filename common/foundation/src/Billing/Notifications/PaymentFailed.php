@@ -4,6 +4,7 @@ namespace Common\Billing\Notifications;
 
 use App\Models\User;
 use Common\Billing\Subscription;
+use Common\Notifications\GetsUserPreferredChannels;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -11,15 +12,12 @@ use Illuminate\Notifications\Notification;
 
 class PaymentFailed extends Notification implements ShouldQueue
 {
-    use Queueable;
+    use GetsUserPreferredChannels, Queueable;
+
+    const NOTIF_ID = 'B02';
 
     public function __construct(public Subscription $subscription)
     {
-    }
-
-    public function via(mixed $notifiable): array
-    {
-        return ['mail', 'database'];
     }
 
     public function toMail(User $notifiable): MailMessage

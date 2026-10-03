@@ -5,6 +5,7 @@ namespace Common\Comments\Notifications;
 use App\Services\UrlGenerator;
 use App\Models\User;
 use Common\Comments\Comment;
+use Common\Notifications\GetsUserPreferredChannels;
 use Illuminate\Bus\Queueable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notification;
@@ -12,7 +13,9 @@ use Illuminate\Support\Str;
 
 class CommentReceivedReply extends Notification
 {
-    use Queueable;
+    use GetsUserPreferredChannels, Queueable;
+
+    const NOTIF_ID = 'C01';
 
     public Model $commentable;
 
@@ -25,9 +28,15 @@ class CommentReceivedReply extends Notification
         )->find($newComment['commentable_id']);
     }
 
-    public function via(User $notifiable): array
+    /**
+     * In-app only: there is no comment email to opt into, so `email` is not
+     * offered for this notification in the preferences UI either.
+     *
+     * @return array<int, string>
+     */
+    public static function supportedPreferenceChannels(): array
     {
-        return ['database'];
+        return ['browser'];
     }
 
     public function toArray(User $notifiable): array

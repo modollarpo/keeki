@@ -2,6 +2,7 @@
 
 namespace Common\Workspaces\Notifications;
 
+use Common\Notifications\GetsUserPreferredChannels;
 use Common\Workspaces\Models\Workspace;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -10,7 +11,7 @@ use Illuminate\Notifications\Notification;
 
 class WorkspaceInvitation extends Notification implements ShouldQueue
 {
-    use Queueable;
+    use GetsUserPreferredChannels, Queueable;
 
     const NOTIF_ID = 'W01';
 
@@ -26,17 +27,6 @@ class WorkspaceInvitation extends Notification implements ShouldQueue
         $this->workspace = $workspace;
         $this->inviterName = $inviterName;
         $this->joinCode = $joinCode;
-    }
-
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function via($notifiable)
-    {
-        return ['mail', 'database'];
     }
 
     /**

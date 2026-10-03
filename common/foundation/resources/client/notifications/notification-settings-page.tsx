@@ -16,10 +16,19 @@ type Selection = Record<string, ChannelSelection>;
 // {email: true, mobile: true, browser: false}
 type ChannelSelection = Record<string, boolean>;
 
+// The backend can narrow the channels offered for an individual notification
+// (a comment reply is in-app only, for example). The generated schema predates
+// that field, so it is widened here rather than hand-editing generated code.
+type SubscriptionWithChannels = {
+  name: string;
+  notif_id: string;
+  channels?: string[];
+};
+
 export function Component() {
   return (
-    <div className="min-h-screen bg-muted">
-      <Navbar.Root className="sticky top-0 z-10 border-b bg-background">
+    <div className="bg-muted min-h-screen">
+      <Navbar.Root className="bg-background sticky top-0 z-10 border-b">
         <Navbar.Logo />
         <Navbar.Menu position="notifications-page" />
         <Navbar.Content className="ml-auto">
@@ -28,7 +37,7 @@ export function Component() {
       </Navbar.Root>
 
       <div className="mx-auto my-5 max-w-6xl px-2.5 md:my-10 md:px-5">
-        <div className="rounded-card border bg-background px-5 pt-5 pb-7.5 shadow-xs">
+        <div className="rounded-card bg-background border px-5 pt-5 pb-7.5 shadow-xs">
           <NotificationSettings />
         </div>
       </div>
@@ -41,19 +50,26 @@ export function NotificationSettings() {
   const {data} = useSuspenseQuery(listNotificationSubscriptionsOptions());
   const [selection, setSelection] = useState<Selection>(() => {
     const initialSelection: Selection = {};
-    const initialValue: ChannelSelection = {};
-    data.available_channels.forEach(channel => {
-      initialValue[channel] = false;
-    });
 
     data.subscriptions.forEach(group => {
-      group.subscriptions.forEach(subscription => {
+      group.subscriptions.forEach(rawSubscription => {
+        const subscription = rawSubscription as SubscriptionWithChannels;
+        // Default a subscription to every channel it can actually be delivered
+        // over. Defaulting to "nothing selected" would mean that a user who
+        // simply pressed save had opted out of all notifications.
+        const defaults: ChannelSelection = {};
+        (subscription.channels ?? data.available_channels).forEach(
+          (channel: string) => {
+            defaults[channel] = true;
+          },
+        );
+
         const backendValue = data.user_selections.find(
           s => s.notif_id === subscription.notif_id,
         );
-        initialSelection[subscription.notif_id] = backendValue?.channels || {
-          ...initialValue,
-        };
+        initialSelection[subscription.notif_id] = backendValue?.channels
+          ? {...defaults, ...backendValue.channels}
+          : defaults;
       });
     });
 
@@ -120,10 +136,18 @@ function GroupRow({
   selection,
   setSelection,
 }: GroupRowProps) {
-  const toggleAll = (channelName: string, value: boolean) => {
+  const toggleAll = (
+    notifIds: string[],
+    channelName: string,
+    value: boolean,
+  ) => {
     const nextState = Object.entries(selection).reduce<Selection>(
       (newSelection, [notifId, channels]) => {
-        newSelection[notifId] = {...channels, [channelName]: value};
+        // Leave subscriptions that cannot use this channel untouched, so we do
+        // not persist a preference that can never take effect.
+        newSelection[notifId] = notifIds.includes(notifId)
+          ? {...channels, [channelName]: value}
+          : channels;
         return newSelection;
       },
       {},
@@ -134,9 +158,17 @@ function GroupRow({
   const checkboxes = (
     <div className="ml-auto flex items-center gap-10 max-md:hidden">
       {allChannels.map(channelName => {
-        const allSelected = Object.values(selection).every(s => s[channelName]);
-        const someSelected =
-          !allSelected && Object.values(selection).some(s => s[channelName]);
+        // Only subscriptions that can be delivered over this channel take part
+        // in the group checkbox. Including the others would leave it stuck
+        // indeterminate, because they never hold a value for this channel.
+        const participating = group.subscriptions
+          .map(s => s.notif_id)
+          .filter(notifId => selection[notifId]?.[channelName] !== undefined);
+        const values = participating.map(
+          notifId => selection[notifId][channelName],
+        );
+        const allSelected = values.length > 0 && values.every(Boolean);
+        const someSelected = !allSelected && values.some(Boolean);
         return (
           <label
             key={channelName}
@@ -145,15 +177,20 @@ function GroupRow({
             <Trans message={channelName} />
             <Checkbox
               bindToHookForm={false}
+              disabled={participating.length === 0}
               indeterminate={someSelected}
               checked={allSelected}
               onCheckedChange={async () => {
                 const newValue = !allSelected;
                 if (channelName === 'browser') {
                   const granted = await requestBrowserPermission();
-                  toggleAll(channelName, !granted ? false : newValue);
+                  toggleAll(
+                    participating,
+                    channelName,
+                    !granted ? false : newValue,
+                  );
                 } else {
-                  toggleAll(channelName, newValue);
+                  toggleAll(participating, channelName, newValue);
                 }
               }}
               aria-label={channelName}
@@ -175,18 +212,22 @@ function GroupRow({
 }
 
 interface SubscriptionRowProps {
-  subscription: {name: string; notif_id: string};
+  subscription: SubscriptionWithChannels;
   allChannels: string[];
   selection: Selection;
   setSelection: (value: Selection) => void;
 }
 function SubscriptionRow({
   subscription,
-  allChannels,
   selection,
   setSelection,
+  allChannels,
 }: SubscriptionRowProps) {
   const notifId = subscription.notif_id;
+  // A notification can only be delivered over some of the available channels
+  // (a comment reply is in-app only, for example). Fall back to every channel
+  // when the backend does not narrow the list.
+  const channels = subscription.channels ?? allChannels;
 
   const toggleChannel = (channelName: string, value: boolean) => {
     setSelection({
@@ -204,7 +245,7 @@ function SubscriptionRow({
         <Trans message={subscription.name} />
       </div>
       <div className="ml-auto flex items-center gap-10">
-        {allChannels.map(channelName => (
+        {channels.map(channelName => (
           <label
             key={channelName}
             className="flex flex-col items-center gap-1 capitalize"
