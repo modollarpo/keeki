@@ -128,6 +128,19 @@ jobs:
             if ! grep -q '^MAXMIND_LICENSE_KEY=' /var/www/bemusic/.env; then
               sudo bash -c "echo 'MAXMIND_LICENSE_KEY=${{ secrets.MAXMIND_LICENSE_KEY }}' >> /var/www/bemusic/.env"
             fi
+            # Non-secret feature flags. Upserted (replace-or-append) rather than
+            # appended blindly, so a value already present is corrected instead of
+            # duplicated, and the file keeps its existing ordering. SMTP credentials
+            # are deliberately NOT touched here: they are written by the admin
+            # outgoing-mail settings screen, and `.env` is excluded from the rsync,
+            # so nothing in this deploy can clobber them.
+            for flag in NOTIFICATIONS_ENABLED NOTIF_SUBS_ENABLED; do
+              if grep -q "^${flag}=" /var/www/bemusic/.env; then
+                sudo sed -i "s|^${flag}=.*|${flag}=true|" /var/www/bemusic/.env
+              else
+                sudo bash -c "echo '${flag}=true' >> /var/www/bemusic/.env"
+              fi
+            done
             sudo -u www-data -H php /var/www/bemusic/artisan geoip:update || echo 'geoip:update skipped (creds missing or no network)'
             # Seed clearly-labelled demo artists so per-country channels have content,
             # then map them to the geo homepage (idempotent: only seeds empty markets).
@@ -161,5 +174,6 @@ jobs:
             # because this deploy does not run a blanket `migrate`.
             sudo -u www-data -H php /var/www/bemusic/artisan migrate --force --path=database/migrations/2026_10_02_000000_create_company_page_seo_overrides_table.php || echo 'company page seo migration skipped'
             sudo -u www-data php artisan cache:clear 2>/dev/null || echo 'cache:clear skipped'
+            sudo -u www-data php artisan config:clear 2>/dev/null || echo 'config:clear skipped'
             sudo systemctl restart php8.3-fpm
             echo 'Deploy complete'
