@@ -1,9 +1,18 @@
-import {Track} from '@app/web-player/tracks/track';
-import {ChannelContentCarousel} from '@app/web-player/channels/channel-content-carousel';
-import {ChannelContentGrid} from '@app/web-player/channels/channel-content-grid';
+import {ArtistLinks} from '@app/web-player/artists/artist-links';
+import {PlayableGridItem} from '@app/web-player/playable-item/playable-grid-item';
+import {
+  ContentCarouselNav,
+  useContentCarouselControls,
+} from '@app/web-player/playable-item/content-carousel-nav';
+import {ContentGrid} from '@app/web-player/playable-item/content-grid';
 import {ChannelHeading} from '@app/web-player/channels/channel-heading';
-import {apiClient} from '@common/http/query-client';
+import {TrackContextDialog} from '@app/web-player/tracks/context-dialog/track-context-dialog';
+import {TrackImage} from '@app/web-player/tracks/track-image/track-image';
+import {getTrackLink, TrackLink} from '@app/web-player/tracks/track-link';
+import {LikeIconButton} from '@app/web-player/library/like-icon-button';
+import {Track} from '@app/web-player/tracks/track';
 import {Channel} from '@common/channels/channel';
+import {apiClient} from '@common/http/query-client';
 import {useQuery} from '@tanstack/react-query';
 import {Skeleton} from '@ui/skeleton/skeleton';
 
@@ -36,25 +45,25 @@ function usePersonalizedTracks(endpoint: PersonalizedEndpoint) {
 
 interface Props {
   channel: Channel;
-  /** Which sub-type to render. Stored in channel.config.autoUpdateMethod. */
   endpoint: PersonalizedEndpoint;
-  /**
-   * Effective layout, pre-computed by ChannelContent (accounts for isNested).
-   * Falls back to channel.config.layout when not provided.
-   */
+  /** Effective layout pre-computed by ChannelContent (resolves nestedLayout). */
   layout?: string | null;
 }
 
 /**
- * Renders a personalized channel row by fetching from the server-side
- * `/api/personalized/{endpoint}` endpoint. The effective layout passed from
- * ChannelContent (which already resolves nestedLayout vs layout) is used so
- * carousels render correctly when displayed as a nested channel inside a hub.
+ * Renders a personalized channel row (Recently Played / Made For You) by
+ * fetching tracks from `/api/personalized/{endpoint}`.
  *
- * Shows a skeleton row while loading so the page layout doesn't shift.
- * Hides the row entirely when the endpoint returns zero tracks.
+ * Renders its own carousel instead of re-using the synthetic-channel hack so
+ * that every TrackGridItem in the queue carries a consistent channel-scoped
+ * queueGroupId. Without this, queue autoplay breaks when the player tries to
+ * load the "next page" via `loadMediaItemTracks("track.{id}.*")` — a queueId
+ * that PlayerTracksController doesn't handle.
+ *
+ * Each item receives the full `tracks` array as `newQueue` so clicking play
+ * on any card queues the whole row, and the player can advance through it.
  */
-export function PersonalizedChannelContent({channel, endpoint, layout: layoutProp}: Props) {
+export function PersonalizedChannelContent({channel, endpoint}: Props) {
   const {data, isLoading} = usePersonalizedTracks(endpoint);
 
   if (isLoading) {
@@ -67,43 +76,59 @@ export function PersonalizedChannelContent({channel, endpoint, layout: layoutPro
     return null;
   }
 
-  // Use the caller-supplied layout (already handles isNested nestedLayout resolution),
-  // falling back to the channel's own config layout.
-  const effectiveLayout = layoutProp ?? channel.config.layout;
+  return <PersonalizedCarousel channel={channel} tracks={tracks} />;
+}
 
-  // Re-use the existing channel rendering stack by temporarily injecting the
-  // personalized tracks as the channel's content. This avoids duplicating any
-  // grid/carousel layout logic.
-  const syntheticChannel = {
-    ...channel,
-    items: tracks,
-    content: {
-      data: tracks,
-      current_page: 1,
-      per_page: tracks.length,
-      total: tracks.length,
-      from: 1,
-      to: tracks.length,
-      last_page: 1,
-    } as any,
-  } as unknown as Channel<Track>;
+// ---------------------------------------------------------------------------
+// Carousel — owns the queue threading
+// ---------------------------------------------------------------------------
 
-  if (effectiveLayout === 'carousel' || effectiveLayout === 'compactGrid') {
-    return (
-      <ChannelContentCarousel
-        channel={syntheticChannel}
-        layout={effectiveLayout === 'compactGrid' ? 'compact' : undefined}
-      />
-    );
-  }
+interface CarouselProps {
+  channel: Channel;
+  tracks: Track[];
+}
+
+function PersonalizedCarousel({channel, tracks}: CarouselProps) {
+  const controls = useContentCarouselControls();
 
   return (
     <div>
-      <ChannelHeading channel={syntheticChannel} />
-      <ChannelContentGrid channel={syntheticChannel} />
+      {/* ChannelHeading renders the section title + "See all" link to /{channel.slug} */}
+      <ChannelHeading channel={channel} isNested />
+
+      <ContentCarouselNav controls={controls}>
+        <div className="@container w-full min-w-0">
+          <ContentGrid isCarousel contentModel="track" containerRef={controls.containerRefCallback}>
+            {tracks.map(track => (
+              <PlayableGridItem
+                key={track.id}
+                layout={undefined}
+                image={<TrackImage track={track} />}
+                title={<TrackLink track={track} />}
+                subtitle={
+                  <ArtistLinks artists={track.artists} />
+                }
+                link={getTrackLink(track)}
+                likeButton={<LikeIconButton likeable={track} />}
+                model={track}
+                // Pass the full track list as the queue so:
+                // 1. clicking play on any item queues the whole row
+                // 2. the player can advance to the next/previous track
+                //    without hitting the server for an unknown queueId
+                newQueue={tracks}
+                contextDialog={<TrackContextDialog tracks={[track]} type="dropdown" />}
+              />
+            ))}
+          </ContentGrid>
+        </div>
+      </ContentCarouselNav>
     </div>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Skeleton
+// ---------------------------------------------------------------------------
 
 function PersonalizedSkeleton() {
   return (
