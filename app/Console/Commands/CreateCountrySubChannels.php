@@ -150,33 +150,52 @@ class CreateCountrySubChannels extends Command
         // sections, in display order
         $sections = [];
 
-        $sections[] = $this->ensureSection($code, 'artists', 0, [
-            'name' => 'Top '.($market['adjective'] ?? $market['name']).' Artists',
+        // ── Personalized rows (always first, work in any market) ─────────────
+        // These channels are fetched entirely client-side from /api/personalized/*
+        // so they work inside any country hub with no server-side data loading.
+        // We look them up by slug and attach them only when they exist.
+        $personalizedOrder = 0;
+        foreach (['recently-played', 'made-for-you'] as $slug) {
+            $personalizedChannel = Channel::where('slug', $slug)->first();
+            if ($personalizedChannel) {
+                $sections[] = [
+                    'id'    => $personalizedChannel->id,
+                    'order' => $personalizedOrder++,
+                ];
+            }
+        }
+
+        // Existing country sections start after the personalized rows
+        $countryOffset = $personalizedOrder;
+
+        $sections[] = $this->ensureSection($code, 'artists', $countryOffset + 0, [
+            'name'   => 'Top '.($market['adjective'] ?? $market['name']).' Artists',
             'config' => $this->listAllConfig($code, 'artist', 'popularity:desc', 'grid'),
         ], $dryRun);
 
-        $sections[] = $this->ensureSection($code, 'tracks', 1, [
-            'name' => 'Popular Tracks',
+        $sections[] = $this->ensureSection($code, 'tracks', $countryOffset + 1, [
+            'name'   => 'Popular Tracks',
             'config' => $this->listAllConfig($code, 'track', 'popularity:desc', 'trackTable'),
         ], $dryRun);
 
-        $sections[] = $this->ensureSection($code, 'albums', 2, [
-            'name' => 'New Releases',
+        $sections[] = $this->ensureSection($code, 'albums', $countryOffset + 2, [
+            'name'   => 'New Releases',
             'config' => $this->listAllConfig($code, 'album', 'release_date:desc', 'grid'),
         ], $dryRun);
 
-        $sections[] = $this->ensureSection($code, 'playlists', 3, [
-            'name' => ($market['name'] ?? $code).' Playlists',
+        $sections[] = $this->ensureSection($code, 'playlists', $countryOffset + 3, [
+            'name'   => ($market['name'] ?? $code).' Playlists',
             'config' => $this->manualConfig('playlist', 'grid'),
         ], $dryRun, ['playlists' => $playlistIds]);
 
-        $sections[] = $this->ensureSection($code, 'genres', 4, [
-            'name' => 'Music Styles',
+        $sections[] = $this->ensureSection($code, 'genres', $countryOffset + 4, [
+            'name'   => 'Music Styles',
             'config' => $this->manualConfig('genre', 'grid'),
         ], $dryRun, ['genres' => $genreIds]);
 
         // one channel per feature genre, holding that genre's artists from this market
-        $order = 5;
+        $order = $countryOffset + 5;
+
 
         foreach ($market['featureGenres'] ?? [] as $genreSlug) {
             $genre = Genre::where('name', slugify($genreSlug))->first();
