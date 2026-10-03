@@ -4,6 +4,7 @@ import {Tooltip} from '@shadcn/tooltip/tooltip';
 import {Trans} from '@ui/i18n/trans';
 import {Timer} from 'lucide-react';
 import {useCallback, useEffect, useRef, useState} from 'react';
+import {cn} from '@ui/utils/cn';
 
 // Minutes for the timer picker — user cycles through these options
 const TIMER_OPTIONS_MINUTES = [5, 10, 15, 30, 60] as const;
@@ -71,7 +72,10 @@ export function SleepTimerButton() {
             size="icon"
             aria-pressed={isActive}
             onClick={startTimer}
-            className={isActive ? 'text-[var(--be-brand-ink)]' : 'text-muted-foreground'}
+            className={cn(
+              'relative',
+              isActive ? 'text-[var(--be-brand-ink)]' : 'text-muted-foreground'
+            )}
           />
         }
       >
